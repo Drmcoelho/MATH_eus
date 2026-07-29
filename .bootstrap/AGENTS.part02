@@ -1,0 +1,209 @@
+Cada laboratório possui três profundidades separadas.
+
+## 5.1 Brinque
+
+É o caminho principal.
+
+Contém:
+
+- perguntas;
+- desenhos;
+- animações;
+- controles;
+- comparações;
+- números pequenos;
+- previsões;
+- feedback imediato;
+- exercícios curtos.
+
+Não exige domínio de notação avançada.
+
+O leitor deve conseguir percorrê-la sem abrir demonstração formal.
+
+## 5.2 Entenda
+
+Explica:
+
+- por que o padrão aparece;
+- o significado das grandezas;
+- a origem geométrica das fórmulas;
+- as relações entre representações;
+- os casos especiais;
+- os limites de validade.
+
+Usa álgebra apenas quando necessária.
+
+## 5.3 Oficina
+
+É opcional e expansível.
+
+Pode conter:
+
+- derivação completa;
+- demonstração formal;
+- generalização;
+- notação mais avançada;
+- implementação;
+- testes numéricos;
+- referências;
+- auditoria.
+
+A Oficina não invade o caminho principal.
+
+**Rigor disponível não significa rigor compulsório.**
+
+---
+
+# 6. Protocolo obrigatório para fórmulas
+
+Nenhuma fórmula aparece sem preparação.
+
+Antes de exibir uma fórmula central, o laboratório deve permitir que o leitor reconheça visual ou numericamente a relação que ela comprime.
+
+Toda fórmula central apresenta, nesta ordem:
+
+1. **Leitura em voz natural** — como a expressão é lida em português.
+2. **Dicionário de símbolos** — significado de cada símbolo junto da fórmula.
+3. **Objeto representado** — qual figura, medida ou comportamento ela descreve.
+4. **Exemplo pequeno** — preferencialmente verificável por inspeção.
+5. **Controle interativo** — alterar variável e observar resultado.
+6. **Unidade** — comprimento, área, volume, razão, ângulo ou adimensional.
+7. **Domínio de validade** — quando funciona e quando não deve ser usada.
+8. **Origem curta** — derivação em poucos passos ou botão para abrir.
+
+## 6.1 Limites de densidade no caminho principal
+
+- no máximo dois símbolos novos por bloco;
+- nenhum símbolo antes de definição;
+- nenhuma cadeia com mais de três igualdades sem divisão em passos;
+- nenhum somatório, produto, quantificador ou notação assintótica sem preparação visual;
+- nenhuma equação apenas porque é convencional;
+- nenhuma manipulação algébrica usada como substituto de explicação.
+
+## 6.2 Exemplo canônico: as duas circunferências
+
+Para um polígono regular de `n` lados:
+
+- `R` é o raio da circunferência que passa pelos vértices;
+- `r` é o raio da circunferência tangente aos lados.
+
+A relação correta é:
+
+```text
+r / R = cos(π / n)
+```
+
+O laboratório não começa por ela.
+
+Primeiro mostra:
+
+- centro;
+- vértice;
+- ponto médio de um lado;
+- triângulo retângulo formado;
+- ângulo `π/n`;
+- `r` como cateto adjacente;
+- `R` como hipotenusa.
+
+Depois apresenta:
+
+```text
+cosseno do ângulo
+=
+cateto adjacente / hipotenusa
+=
+r / R
+```
+
+A relação inversa pode aparecer posteriormente:
+
+```text
+R / r = 1 / cos(π/n)
+```
+
+A fórmula deve parecer inevitável, não importada.
+
+---
+
+# 7. Regime visual
+
+## 7.1 A imagem conduz
+
+Todo conceito central possui representação visual funcional.
+
+Não basta anexar ilustração ao texto.
+
+A imagem participa do raciocínio.
+
+Elementos preferenciais:
+
+- SVG calculado;
+- Canvas interativo;
+- gráfico;
+- diagrama de transformação;
+- tabela vinculada ao gráfico;
+- animação controlável;
+- comparação lado a lado;
+- corte transversal;
+- visualização tridimensional manipulável.
+
+## 7.2 Imagem generativa não é geometria
+
+Imagens geradas por modelos podem ser usadas como:
+
+- moodboard;
+- referência de atmosfera;
+- pesquisa de composição;
+- rascunho descartável.
+
+Não podem ser fonte canônica para:
+
+- geometria;
+- gráfico;
+- escala;
+- tangência;
+- ângulo;
+- proporção;
+- área;
+- volume;
+- demonstração;
+- dados.
+
+Toda figura matemática nasce de dados, coordenadas, equações ou construções verificáveis.
+
+## 7.3 Fonte, derivado e testemunha
+
+- **Fonte:** código, dados, coordenadas e especificação.
+- **Derivado:** SVG, Canvas ou visualização produzida.
+- **Testemunha:** screenshot usado para verificar a renderização.
+
+Screenshot nunca é fonte.
+
+## 7.4 Quatro representações
+
+Quando aplicável, o mesmo objeto aparece em:
+
+1. figura geométrica;
+2. valores numéricos;
+3. gráfico;
+4. expressão matemática.
+
+O leitor deve poder alternar entre elas.
+
+A interface deve destacar a correspondência entre:
+
+- ponto da figura;
+- linha da tabela;
+- ponto do gráfico;
+- termo da fórmula.
+
+---
+
+# 8. Transformação espacial
+
+Objetos bidimensionais relevantes recebem, quando produtivo, extensão tridimensional.
+
+Exemplos:
+
+- polígono extrudado → prisma;
+- círculo extrudado → cilindro;
