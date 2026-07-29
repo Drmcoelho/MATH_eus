@@ -1,0 +1,1357 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Interlúdio do MATHeu$: ligue os pontos de tangência, encontre o polígono escondido e desça a espiral de circunferências.">
+  <title>Lab 01·B — O polígono escondido · MATHeu$</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --bg: #f4f1e8;
+      --ink: #171713;
+      --muted: #666258;
+      --paper: rgba(255, 255, 255, .66);
+      --line: rgba(23, 23, 19, .15);
+      --accent: #246b52;
+      --accent-2: #9b3f31;
+      --circle: #252520;
+      --focus: #d4872d;
+      --shadow: 0 18px 60px rgba(48, 43, 31, .09);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #11130f;
+        --ink: #f0eee7;
+        --muted: #b8b3a8;
+        --paper: rgba(255, 255, 255, .055);
+        --line: rgba(255, 255, 255, .14);
+        --accent: #7bc5a3;
+        --accent-2: #ef9788;
+        --circle: #f0eee7;
+        --focus: #ffc267;
+        --shadow: none;
+      }
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font: 18px/1.55 ui-serif, Georgia, Cambria, "Times New Roman", serif;
+    }
+
+    button, input { font: inherit; }
+
+    a { color: var(--accent); }
+
+    :focus-visible {
+      outline: 3px solid var(--focus);
+      outline-offset: 3px;
+    }
+
+    .skip-link {
+      position: absolute;
+      left: 12px;
+      top: -80px;
+      padding: 10px 14px;
+      background: var(--ink);
+      color: var(--bg);
+      z-index: 20;
+    }
+
+    .skip-link:focus { top: 12px; }
+
+    header, main, footer {
+      width: min(1120px, calc(100% - 32px));
+      margin-inline: auto;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      padding: 22px 0;
+      border-bottom: 1px solid var(--line);
+      font-family: ui-sans-serif, system-ui, sans-serif;
+      font-size: .86rem;
+    }
+
+    header a { text-decoration: none; }
+
+    .brand { font-weight: 800; letter-spacing: -.02em; }
+
+    main { padding: 58px 0 88px; }
+
+    .eyebrow {
+      margin: 0 0 12px;
+      color: var(--accent);
+      font: 800 .76rem/1.2 ui-sans-serif, system-ui, sans-serif;
+      letter-spacing: .15em;
+      text-transform: uppercase;
+    }
+
+    h1, h2, h3 { line-height: 1.08; letter-spacing: -.035em; }
+
+    h1 {
+      max-width: 900px;
+      margin: 0;
+      font-size: clamp(2.9rem, 8vw, 6.6rem);
+    }
+
+    h2 { font-size: clamp(2rem, 5vw, 3.5rem); margin-top: 0; }
+
+    h3 { font-size: 1.25rem; }
+
+    .lead {
+      max-width: 780px;
+      margin: 24px 0 0;
+      color: var(--muted);
+      font-size: clamp(1.18rem, 2.8vw, 1.65rem);
+    }
+
+    .question-card, .lab-card, .formula-card, .challenge-card, details {
+      margin-top: 38px;
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      background: var(--paper);
+      box-shadow: var(--shadow);
+    }
+
+    .question-card, .formula-card, .challenge-card, details { padding: clamp(22px, 4vw, 38px); }
+
+    .question-card strong, .box-label {
+      display: block;
+      color: var(--accent);
+      font: 800 .76rem/1.2 ui-sans-serif, system-ui, sans-serif;
+      letter-spacing: .13em;
+      text-transform: uppercase;
+    }
+
+    .question-card p {
+      max-width: 850px;
+      margin: 12px 0 22px;
+      font-size: clamp(1.45rem, 4vw, 2.45rem);
+      line-height: 1.18;
+    }
+
+    .answer-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    button {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 12px 16px;
+      background: transparent;
+      color: var(--ink);
+      cursor: pointer;
+    }
+
+    button:hover { border-color: var(--accent); }
+
+    button[aria-pressed="true"], .primary {
+      border-color: var(--accent);
+      background: var(--accent);
+      color: var(--bg);
+    }
+
+    button:disabled { opacity: .45; cursor: not-allowed; }
+
+    .feedback {
+      min-height: 1.6em;
+      margin: 16px 0 0;
+      color: var(--muted);
+      font-family: ui-sans-serif, system-ui, sans-serif;
+    }
+
+    .lab-card { overflow: hidden; }
+
+    .lab-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.35fr) minmax(280px, .65fr);
+    }
+
+    .visual-panel {
+      min-height: 620px;
+      padding: 18px;
+      background:
+        linear-gradient(var(--line) 1px, transparent 1px),
+        linear-gradient(90deg, var(--line) 1px, transparent 1px);
+      background-size: 28px 28px;
+    }
+
+    svg { width: 100%; height: 100%; min-height: 580px; display: block; }
+
+    .control-panel {
+      padding: clamp(22px, 4vw, 34px);
+      border-left: 1px solid var(--line);
+    }
+
+    .control-panel h2 { font-size: 1.9rem; }
+
+    .control-panel label {
+      display: block;
+      margin-top: 26px;
+      font: 700 .86rem/1.3 ui-sans-serif, system-ui, sans-serif;
+    }
+
+    input[type="range"] { width: 100%; margin: 14px 0; accent-color: var(--accent); }
+
+    .quick-values {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .quick-values button { padding: 8px 12px; font-size: .88rem; }
+
+    .measurements {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin: 26px 0;
+    }
+
+    .measurement {
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+    }
+
+    .measurement dt {
+      color: var(--muted);
+      font: 700 .73rem/1.2 ui-sans-serif, system-ui, sans-serif;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+    }
+
+    .measurement dd { margin: 5px 0 0; font-size: 1.32rem; font-variant-numeric: tabular-nums; }
+
+    .measurement.twin { border-color: var(--accent); }
+
+    .measurement.twin dd { color: var(--accent); }
+
+    .hint {
+      padding: 16px;
+      border-left: 4px solid var(--accent);
+      background: color-mix(in srgb, var(--accent) 9%, transparent);
+      color: var(--muted);
+    }
+
+    .hint.secret { margin-top: 24px; }
+
+    .reveal-row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-top: 22px; }
+
+    .formula-card[hidden], .challenge-card[hidden] { display: none; }
+
+    .formula {
+      margin: 22px 0;
+      padding: 22px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      text-align: center;
+      font-size: clamp(1.5rem, 4.4vw, 2.6rem);
+      font-variant-numeric: lining-nums;
+      overflow-x: auto;
+    }
+
+    .derivation {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      counter-reset: step;
+    }
+
+    .step {
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+    }
+
+    .step::before {
+      counter-increment: step;
+      content: counter(step);
+      display: grid;
+      place-items: center;
+      width: 28px;
+      height: 28px;
+      margin-bottom: 12px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: var(--bg);
+      font: 800 .82rem/1 ui-sans-serif, system-ui, sans-serif;
+    }
+
+    .step p { margin: 0; }
+
+    .dictionary {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .dictionary div { padding: 14px; border-top: 1px solid var(--line); }
+
+    details summary {
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 1.25rem;
+    }
+
+    details p, details li { color: var(--muted); }
+
+    footer { padding: 28px 0 56px; border-top: 1px solid var(--line); color: var(--muted); }
+
+    .inner-bet { margin-top: 26px; }
+
+    .chart-controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 22px;
+      align-items: flex-end;
+      margin-top: 26px;
+    }
+
+    .chart-controls .field { flex: 1 1 260px; }
+
+    .chart-controls .control-label {
+      display: block;
+      margin-bottom: 8px;
+      font: 700 .86rem/1.3 ui-sans-serif, system-ui, sans-serif;
+    }
+
+    .chart-frame {
+      margin-top: 26px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 10px;
+      background:
+        linear-gradient(var(--line) 1px, transparent 1px),
+        linear-gradient(90deg, var(--line) 1px, transparent 1px);
+      background-size: 28px 28px;
+    }
+
+    .chart-frame svg { min-height: 0; height: auto; }
+
+    table.pattern {
+      width: 100%;
+      margin-top: 20px;
+      border-collapse: collapse;
+      font-variant-numeric: tabular-nums;
+      font-family: ui-sans-serif, system-ui, sans-serif;
+      font-size: .95rem;
+    }
+
+    table.pattern th, table.pattern td {
+      padding: 10px 12px;
+      border-top: 1px solid var(--line);
+      text-align: left;
+    }
+
+    table.pattern th {
+      font: 700 .74rem/1.2 ui-sans-serif, system-ui, sans-serif;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: var(--muted);
+    }
+
+    .hint-ladder { margin-top: 20px; }
+
+    .hint-ladder details {
+      margin-top: 10px;
+      padding: 14px 18px;
+      border-radius: 14px;
+      box-shadow: none;
+    }
+
+    .hint-ladder summary { font-size: 1rem; }
+
+    .lab-nav {
+      margin-top: 48px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
+      font-family: ui-sans-serif, system-ui, sans-serif;
+    }
+
+    .lab-nav a, .lab-nav .soon {
+      display: block;
+      padding: 16px 18px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: var(--paper);
+      color: var(--ink);
+      text-decoration: none;
+    }
+
+    .lab-nav a:hover { border-color: var(--accent); }
+
+    .lab-nav small {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--accent);
+      font: 800 .7rem/1.2 ui-sans-serif, system-ui, sans-serif;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+    }
+
+    .lab-nav .soon { color: var(--muted); }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    @media (max-width: 820px) {
+      .answer-grid, .derivation, .dictionary { grid-template-columns: 1fr; }
+      .lab-grid { grid-template-columns: 1fr; }
+      .control-panel { border-left: 0; border-top: 1px solid var(--line); }
+      .visual-panel { min-height: 480px; }
+      svg { min-height: 440px; }
+    }
+
+    @media (max-width: 480px) {
+      header { align-items: flex-start; flex-direction: column; }
+      main { padding-top: 38px; }
+      .measurements { grid-template-columns: 1fr; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      * { transition: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#conteudo">Pular para o laboratório</a>
+  <header>
+    <a class="brand" href="../../index.html">MATHeu$</a>
+    <span>Temporada 01 · Interlúdio 01·B</span>
+  </header>
+
+  <main id="conteudo">
+    <p class="eyebrow">O polígono escondido</p>
+    <h1>A circunferência de dentro toca o polígono n vezes. Ligue esses pontos.</h1>
+    <p class="lead">No Laboratório 01, cada ponto de tangência dividia um lado ao meio e ganhou o nome M. Havia n pontos desses na figura o tempo todo — e ninguém os ligou. Vamos ligar agora.</p>
+
+    <section class="question-card" aria-labelledby="aposta-titulo">
+      <strong id="aposta-titulo">Pare e aposte</strong>
+      <p>Ligando cada ponto de tangência ao vizinho, a figura que aparece é…</p>
+      <div class="answer-grid" role="group" aria-label="Escolha sua previsão">
+        <button type="button" data-prediction="same-rotated" aria-pressed="false">o mesmo polígono, menor e girado</button>
+        <button type="button" data-prediction="fewer" aria-pressed="false">um polígono com menos lados</button>
+        <button type="button" data-prediction="star" aria-pressed="false">uma estrela de n pontas</button>
+      </div>
+      <p id="prediction-feedback" class="feedback" aria-live="polite">Aposte antes de ligar os pontos. A figura decide, não a intuição.</p>
+    </section>
+
+    <section class="lab-card" aria-labelledby="lab-title">
+      <div class="lab-grid">
+        <div class="visual-panel">
+          <svg id="geometry" viewBox="0 0 620 620" role="img" aria-labelledby="svg-title svg-desc">
+            <title id="svg-title">Polígono regular, pontos de tangência ligados e espiral de polígonos aninhados</title>
+            <desc id="svg-desc">Os pontos onde a circunferência interna toca o polígono são ligados, formando um polígono igual, menor e girado meio passo. Repetir a construção gera uma espiral de polígonos e circunferências encaixados.</desc>
+            <g id="drawing"></g>
+          </svg>
+        </div>
+
+        <div class="control-panel">
+          <p class="box-label">Brinque</p>
+          <h2 id="lab-title">Ligue e repita</h2>
+          <p>O raio maior vale <strong>R = 1</strong>. Ligue os pontos de tangência — e depois repita a construção dentro do polígono novo.</p>
+
+          <label for="sides">Número de lados: <output id="sides-output" for="sides">6</output></label>
+          <input id="sides" type="range" min="3" max="24" step="1" value="6">
+
+          <div class="quick-values" aria-label="Valores rápidos de lados">
+            <button type="button" data-n="3">3</button>
+            <button type="button" data-n="4">4</button>
+            <button type="button" data-n="5">5</button>
+            <button type="button" data-n="6">6</button>
+            <button type="button" data-n="8">8</button>
+            <button type="button" data-n="12">12</button>
+          </div>
+
+          <label for="depth">Repetições da construção: <output id="depth-output" for="depth">0</output></label>
+          <input id="depth" type="range" min="0" max="8" step="1" value="0">
+
+          <dl class="measurements" aria-label="Medidas normalizadas para R igual a 1">
+            <div class="measurement"><dt>lado do polígono — L</dt><dd id="L-value">1,0000</dd></div>
+            <div class="measurement"><dt>distância entre toques — L′</dt><dd id="Lp-value">0,8660</dd></div>
+            <div class="measurement twin"><dt>L′ / L</dt><dd id="side-ratio">0,8660</dd></div>
+            <div class="measurement twin"><dt>r / R</dt><dd id="radius-ratio">0,8660</dd></div>
+            <div class="measurement"><dt>raio após k repetições</dt><dd id="rk-value">1,0000</dd></div>
+            <div class="measurement"><dt>giro acumulado</dt><dd id="turn-value">0,0°</dd></div>
+          </dl>
+
+          <p class="hint"><strong>Olhe de novo:</strong> as duas medidas destacadas são o mesmo número. A razão entre os lados repete a razão entre os raios — a figura inteira se copia para dentro.</p>
+
+          <div class="reveal-row">
+            <button id="reveal" type="button" class="primary" disabled>Revelar por quê</button>
+            <span id="reveal-status" class="feedback" aria-live="polite">Aposte e faça pelo menos uma repetição.</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="formula-card" class="formula-card" hidden aria-labelledby="formula-title">
+      <p class="box-label">Entenda</p>
+      <h2 id="formula-title">Dois triângulos gêmeos, uma cópia em escala</h2>
+
+      <p>Na figura, dois triângulos isósceles saem do centro O: um grande, com dois lados <strong>R</strong> e base <strong>L</strong> (dois vértices vizinhos), e um pequeno, com dois lados <strong>r</strong> e base <strong>L′</strong> (dois toques vizinhos). Os dois têm o mesmo ângulo no centro, <strong>2π/n</strong> — então são semelhantes, e tudo no pequeno é o grande multiplicado por <strong>r/R = cos(π/n)</strong>.</p>
+
+      <div class="derivation">
+        <div class="step"><p>Os n pontos de tangência estão todos à distância <strong>r</strong> do centro. Ligados em sequência, formam um polígono regular de n lados cuja circunferência <em>circunscrita</em> já está desenhada: é a circunferência interna do polígono original.</p></div>
+        <div class="step"><p>O triângulo pequeno (r, r, L′) é o grande (R, R, L) em escala <strong>cos(π/n)</strong>. Por isso <strong>L′ = L · cos(π/n)</strong> — a distância entre toques denuncia o fator de cópia.</p></div>
+        <div class="step"><p>O polígono novo tem sua própria circunferência interna. O triângulo fundamental do Lab 01 vale de novo, um andar abaixo: <strong>r′ = r · cos(π/n)</strong>. Nada de novo acontece — e isso é a descoberta.</p></div>
+      </div>
+
+      <p>Repetindo a construção k vezes, cada andar multiplica o raio pelo mesmo fator e gira a figura meio passo (π/n):</p>
+
+      <div class="formula" aria-label="raio após k repetições é igual a R vezes cosseno de pi sobre n elevado a k">
+        raio após k repetições = R · cos<sup>k</sup>(π/n)
+      </div>
+
+      <div class="dictionary" aria-label="Dicionário da fórmula">
+        <div><strong>R</strong><br>raio da circunferência dos vértices originais</div>
+        <div><strong>cos(π/n)</strong><br>fator de cópia de cada andar — o mesmo r/R do Lab 01</div>
+        <div><strong>k</strong><br>quantas vezes a construção foi repetida</div>
+      </div>
+
+      <p><strong>Exemplo pequeno:</strong> no quadrado, cos(π/4) = √2/2 ≈ 0,7071. Duas repetições multiplicam o raio por cos²(π/4) = 1/2: o quadrado do neto tem exatamente metade do tamanho do avô. Confira com n = 4 e k = 2 no painel.</p>
+      <p><strong>O que ela mede:</strong> um comprimento, na unidade de R. O giro acumulado é k · (π/n), um ângulo.</p>
+      <p><strong>Quando vale:</strong> polígonos regulares, n ≥ 3, construção repetida sempre ligando pontos de tangência vizinhos.</p>
+      <p class="hint"><strong>Olhe de novo:</strong> cada andar gira meio passo, e dois meios passos somam um passo inteiro — que é exatamente a simetria do polígono. Por isso o neto de qualquer polígono aparece <em>alinhado</em> com o avô: a espiral alterna entre duas orientações apenas.</p>
+    </section>
+
+    <section id="exercise-1" class="challenge-card" hidden aria-labelledby="ex1-title">
+      <p class="box-label">Agora use a fórmula</p>
+      <h2 id="ex1-title">Hexágono, duas repetições: qual é o raio?</h2>
+      <p>Comece com R = 1 e n = 6. Antes de mexer no painel, decida: depois de k = 2 repetições, o raio vale…</p>
+      <div class="challenge-options" role="group" aria-label="Escolha o raio">
+        <button type="button" data-ex1="0.8660">0,8660</button>
+        <button type="button" data-ex1="0.75">0,7500</button>
+        <button type="button" data-ex1="0.6495">0,6495</button>
+      </div>
+      <p id="ex1-feedback" class="feedback" aria-live="polite"></p>
+      <div class="hint-ladder">
+        <details><summary>Primeira pista</summary><p>Cada repetição multiplica o raio pelo mesmo fator: cos(π/6) = √3/2 ≈ 0,8660. Duas repetições multiplicam por esse fator duas vezes seguidas.</p></details>
+        <details><summary>Pista visual</summary><p>Coloque n = 6 e k = 2 no painel lá de cima e leia a medida “raio após k repetições”.</p></details>
+        <details><summary>Solução comentada</summary><p>Raio = cos²(π/6) = (√3/2)² = <strong>3/4</strong> — um valor exato, sem arredondamento. A armadilha era parar no primeiro andar (0,8660) ou descer um a mais (0,6495 é k = 3). Verificação por inspeção: 0,8660 × 0,8660 = 0,7500. Esse cos² vai reaparecer quando as áreas entrarem em cena, no Laboratório 03.</p></details>
+      </div>
+    </section>
+
+    <section id="spiral-card" class="challenge-card" hidden aria-labelledby="spiral-title">
+      <p class="box-label">Brinque de novo</p>
+      <h2 id="spiral-title">A espiral encolhe — mas em que ritmo?</h2>
+      <p>Cada repetição multiplica o raio por cos(π/n). Isso dá à espiral uma velocidade própria, que depende só de n. Vamos medi-la pelo número de repetições até o raio cair à metade.</p>
+
+      <div class="question-card inner-bet" aria-labelledby="spiral-bet-title">
+        <strong id="spiral-bet-title">Pare e aposte</strong>
+        <p>Com mais lados, a espiral cai à metade em…</p>
+        <div class="answer-grid" role="group" aria-label="Escolha sua previsão sobre a espiral">
+          <button type="button" data-spiral-bet="fewer" aria-pressed="false">menos repetições</button>
+          <button type="button" data-spiral-bet="same" aria-pressed="false">o mesmo número</button>
+          <button type="button" data-spiral-bet="more" aria-pressed="false">mais repetições</button>
+        </div>
+        <p id="spiral-bet-feedback" class="feedback" aria-live="polite">Aposte — e depois confira no painel: <span id="halving-live">com n = 6, o raio cai à metade em 5 repetições</span>.</p>
+      </div>
+    </section>
+
+    <section id="graph-card" class="formula-card" hidden aria-labelledby="graph-title">
+      <p class="box-label">Padrão</p>
+      <h2 id="graph-title">O que acontece quando n cresce</h2>
+      <p>Três medidas da mesma figura, todas com R = 1, agora vistas de longe: n no eixo horizontal, a medida no vertical. Troque a medida e a escala.</p>
+
+      <div class="chart-controls">
+        <div class="field">
+          <span class="control-label" id="series-label">Medida no eixo vertical</span>
+          <div class="quick-values" role="group" aria-labelledby="series-label">
+            <button type="button" data-series="gap" aria-pressed="true">folga R − r</button>
+            <button type="button" data-series="ring" aria-pressed="false">área da coroa</button>
+            <button type="button" data-series="steps" aria-pressed="false">repetições até a metade</button>
+          </div>
+        </div>
+        <div class="field">
+          <span class="control-label" id="scale-label">Escala vertical</span>
+          <div class="quick-values" role="group" aria-labelledby="scale-label">
+            <button type="button" data-scale="linear" aria-pressed="true">linear</button>
+            <button type="button" data-scale="log" aria-pressed="false">logarítmica</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="chart-frame">
+        <svg id="chart" viewBox="0 0 660 400" role="img" aria-labelledby="chart-title-el chart-desc-el">
+          <title id="chart-title-el">Gráfico da medida escolhida em função do número de lados</title>
+          <desc id="chart-desc-el">A folga entre as circunferências e a área da coroa despencam quando n cresce; o número de repetições até a metade dispara. O ponto destacado acompanha o n escolhido no laboratório.</desc>
+          <g id="chart-drawing"></g>
+        </svg>
+      </div>
+
+      <p id="chart-reading" class="feedback" aria-live="polite"></p>
+
+      <p>O ponto cheio acompanha o n escolhido lá em cima. Repare no padrão ao <strong>dobrar</strong> os lados:</p>
+
+      <table class="pattern">
+        <thead><tr><th scope="col">n</th><th scope="col">folga R − r</th><th scope="col">repetições até a metade</th></tr></thead>
+        <tbody>
+          <tr><td>6</td><td>0,1340</td><td>5</td></tr>
+          <tr><td>12</td><td>0,0341</td><td>20</td></tr>
+          <tr><td>24</td><td>0,0086</td><td>81</td></tr>
+          <tr><td>48</td><td>0,0021</td><td>324</td></tr>
+        </tbody>
+      </table>
+
+      <p>Dobrar n divide a folga por <strong>≈ 4</strong> e multiplica as repetições por <strong>≈ 4</strong>. As duas circunferências se aproximam, o fator de cópia encosta em 1 e a espiral fica preguiçosa — mais lados encolhem <em>mais devagar</em>. Esse “≈ 4” não é coincidência, e o expoente por trás dele é o segredo que o Laboratório 04 vai medir.</p>
+
+      <p><strong>Porta futura:</strong> aqui a coroa apareceu como figura; medir as <em>áreas dos cercos</em> e seus erros é a pergunta que abre o Laboratório 03. E a própria série “área da coroa” esconde um segredo — continue descendo.</p>
+    </section>
+
+    <section id="exercise-2" class="challenge-card" hidden aria-labelledby="ex2-title">
+      <p class="box-label">Encontre o erro</p>
+      <h2 id="ex2-title">“Se em 5 repetições o raio caiu à metade, em mais 5 ele chega a zero.”</h2>
+      <p>Alguém olhou o hexágono — metade em 5 repetições — e concluiu isso. Esse raciocínio…</p>
+      <div class="challenge-options" role="group" aria-label="Julgue o raciocínio">
+        <button type="button" data-ex2="right">está certo</button>
+        <button type="button" data-ex2="halves">erra: cai à metade de novo, para ≈ 1/4</button>
+        <button type="button" data-ex2="stops">erra: o raio para de cair</button>
+      </div>
+      <p id="ex2-feedback" class="feedback" aria-live="polite"></p>
+      <div class="hint-ladder">
+        <details><summary>Primeira pista</summary><p>Repetição <em>multiplica</em>, não subtrai. Cair à metade não foi “perder 0,5 de raio”; foi “multiplicar por ≈ 0,5”.</p></details>
+        <details><summary>Pista visual</summary><p>No painel, com n = 6, leia o raio em k = 5 e depois em k = 10: 0,4871 e 0,2373.</p></details>
+        <details><summary>Solução comentada</summary><p>As 5 repetições seguintes aplicam <em>os mesmos</em> 5 fatores: multiplicam por cos⁵(π/6) ≈ 0,4871 outra vez. De 0,4871 o raio vai a ≈ 0,2373 — outra metade, nunca zero. É o decaimento geométrico: a meia-vida vale a partir de <em>qualquer</em> andar, não só do primeiro. A armadilha é tratar a queda como subtração; a verificação é o painel; e essa mesma estrutura reaparece em juros, meia-vida radioativa e atenuação de sinal.</p></details>
+      </div>
+    </section>
+
+    <section id="ring-card" class="formula-card" hidden aria-labelledby="ring-title">
+      <p class="box-label">Segredo de mestre</p>
+      <h2 id="ring-title">A coroa entre as circunferências é um círculo disfarçado</h2>
+      <p>A região entre as duas circunferências — a coroa que a espiral atravessa — tem exatamente a mesma área de um único círculo. Resta descobrir qual.</p>
+
+      <div class="question-card inner-bet" aria-labelledby="ring-bet-title">
+        <strong id="ring-bet-title">Pare e aposte</strong>
+        <p>O círculo com a área da coroa tem raio…</p>
+        <div class="answer-grid" role="group" aria-label="Escolha o raio do círculo equivalente">
+          <button type="button" data-ring-bet="gap" aria-pressed="false">R − r, a folga</button>
+          <button type="button" data-ring-bet="halfside" aria-pressed="false">L/2, meio lado</button>
+          <button type="button" data-ring-bet="geom" aria-pressed="false">√(R·r)</button>
+        </div>
+        <p id="ring-bet-feedback" class="feedback" aria-live="polite">Aposte — a demonstração vem em três passos logo depois.</p>
+      </div>
+
+      <div id="ring-demo" hidden>
+        <div class="chart-frame">
+          <svg id="ring-figure" viewBox="0 0 660 360" role="img" aria-labelledby="ring-fig-title ring-fig-desc">
+            <title id="ring-fig-title">A coroa entre as circunferências ao lado do círculo de raio meio lado</title>
+            <desc id="ring-fig-desc">À esquerda, a coroa entre as duas circunferências, com o triângulo fundamental de catetos r e meio lado. À direita, um círculo de raio meio lado, com a mesma área pintada.</desc>
+            <g id="ring-drawing"></g>
+          </svg>
+        </div>
+
+        <div class="chart-controls">
+          <div class="field">
+            <label class="control-label" for="ring-n">Número de lados: <output id="ring-n-output" for="ring-n">6</output></label>
+            <input id="ring-n" type="range" min="3" max="24" step="1" value="6">
+          </div>
+        </div>
+
+        <dl class="measurements" aria-label="Comparação de áreas com R igual a 1">
+          <div class="measurement"><dt>área da coroa — πR² − πr²</dt><dd id="ring-area">0,7854</dd></div>
+          <div class="measurement"><dt>área do círculo de raio L/2</dt><dd id="disk-area">0,7854</dd></div>
+        </dl>
+
+        <p>A figura confere caso a caso. A garantia para <em>todo</em> n são três passos, todos já conquistados no Lab 01:</p>
+
+        <div class="derivation">
+          <div class="step"><p>O triângulo fundamental é retângulo em M, e Pitágoras dá <strong>R² = r² + (L/2)²</strong>.</p></div>
+          <div class="step"><p>Passe r² para o outro lado: <strong>R² − r² = (L/2)²</strong>.</p></div>
+          <div class="step"><p>Multiplique tudo por π: <strong>πR² − πr² = π(L/2)²</strong>. À esquerda, a coroa; à direita, o círculo de raio meio lado.</p></div>
+        </div>
+
+        <div class="formula" aria-label="pi R ao quadrado menos pi r ao quadrado é igual a pi vezes meio lado ao quadrado">
+          πR² − πr² = π(L/2)²
+        </div>
+
+        <div class="chart-frame">
+          <svg id="ring-chart" viewBox="0 0 660 300" role="img" aria-labelledby="ring-chart-title ring-chart-desc">
+            <title id="ring-chart-title">Área da coroa e área do círculo de meio lado em função de n</title>
+            <desc id="ring-chart-desc">A linha contínua é a área do círculo de raio meio lado; as bolinhas são a área da coroa, calculada de forma independente para cada n. As bolinhas caem exatamente sobre a linha.</desc>
+            <g id="ring-chart-drawing"></g>
+          </svg>
+        </div>
+        <p class="feedback">A linha é π(L/2)²; as bolinhas, πR² − πr², calculadas separadamente para cada n de 3 a 60. Elas caem sobre a linha em todos os casos — mas quem garante a igualdade para todo n são os três passos acima. O gráfico mostra; a demonstração fecha.</p>
+
+        <p class="box-label" style="margin-top: 30px;">Agora use a ideia</p>
+        <h3>Para qual n a coroa tem a área de um círculo de raio 1/2?</h3>
+        <div class="challenge-options" role="group" aria-label="Escolha o número de lados">
+          <button type="button" data-ex3="4">n = 4</button>
+          <button type="button" data-ex3="6">n = 6</button>
+          <button type="button" data-ex3="8">n = 8</button>
+        </div>
+        <p id="ex3-feedback" class="feedback" aria-live="polite"></p>
+        <div class="hint-ladder">
+          <details><summary>Primeira pista</summary><p>Com R = 1, a coroa vale π(L/2)². Você procura π(L/2)² = π(1/2)² — ou seja, meio lado igual a 1/2.</p></details>
+          <details><summary>Pista visual</summary><p>Arraste o controle desta seção e observe quando as duas áreas marcam 0,7854 = π/4.</p></details>
+          <details><summary>Solução comentada</summary><p>L/2 = 1/2 significa L = 1: o lado igual ao raio. Esse é o hexágono — sen(π/6) = 1/2, logo n = 6 e coroa = π/4 ≈ 0,7854. No quadrado o meio lado é ≈ 0,7071 (coroa maior); no octógono, ≈ 0,3827 (coroa menor). A mesma pergunta invertida — “que raio de círculo iguala esta coroa?” — sempre tem resposta: meio lado.</p></details>
+        </div>
+      </div>
+    </section>
+
+    <details>
+      <summary>Oficina — as provas e a espiral infinita</summary>
+      <p><strong>Por que o polígono escondido é regular.</strong> Os pontos de tangência estão todos à distância r do centro (Lab 01) e em ângulos igualmente espaçados: cada um está no meio do arco entre dois vértices, deslocado π/n dos vizinhos. Pontos equidistantes do centro e igualmente espaçados em ângulo são os vértices de um polígono regular de circunraio r, girado π/n em relação ao original.</p>
+      <p><strong>A distância entre toques.</strong> Dois toques vizinhos e o centro formam o triângulo isósceles (r, r, L′) com ângulo central 2π/n. A corda vale L′ = 2r·sen(π/n). Como o lado original vale L = 2R·sen(π/n), a razão é L′/L = r/R = cos(π/n): a semelhança dos dois triângulos gêmeos, em números.</p>
+      <p><strong>A incircunferência do polígono menor.</strong> O triângulo fundamental do Lab 01 aplicado ao polígono novo dá r′ = r·cos(π/n) = R·cos²(π/n). Nenhuma fórmula nova é necessária — a configuração é autossimilar, e cada repetição multiplica todos os comprimentos por cos(π/n) e gira π/n. Daí raio após k repetições = R·cosᵏ(π/n) e giro acumulado k·π/n.</p>
+      <p><strong>A velocidade da espiral.</strong> O número de repetições até cair à metade é o menor k com cosᵏ(π/n) ≤ 1/2, ou seja, k ≈ ln 2 / (−ln cos(π/n)). Para n grande, −ln cos(π/n) ≈ π²/(2n²), então k cresce como (2 ln 2/π²)·n² ≈ 0,14·n². É o mesmo n² que faz a folga R − r cair por 4 quando n dobra: 1 − cos(π/n) ≈ π²/(2n²).</p>
+      <p><strong>Curiosidade — a espiral que não morre.</strong> Se em vez de repetir o mesmo n você usar n = 3, depois 4, depois 5, … (triângulo, dentro dele a circunferência, nela o quadrado, e assim por diante), o raio <em>não</em> vai a zero: o produto infinito cos(π/3)·cos(π/4)·cos(π/5)·… converge para ≈ 0,1149. Existe uma circunferência-limite, com cerca de 11,5% do raio original — a constante de Kepler–Bouwkamp.</p>
+      <p><strong>Verificação.</strong> O verificador do módulo (<code>check-math.mjs</code>) constrói os pontos de tangência por coordenadas e confere: circunraio r do polígono escondido, L′ = L·cos(π/n), a semelhança L′/L = r/R, o raio e o giro após k repetições, a identidade da coroa π(R² − r²) = π(L/2)², os valores exatos dos exercícios (3/4 no hexágono com k = 2, meia-vida que se repete, sen(π/6) = 1/2), a tabela de repetições até a metade e o produto de Kepler–Bouwkamp.</p>
+    </details>
+
+    <nav class="lab-nav" aria-label="Continuar no MATHeu$">
+      <a href="../01-duas-circunferencias/index.html"><small>Anterior</small>Lab 01 — Duas circunferências, um polígono</a>
+      <a href="../../index.html"><small>Índice</small>Todos os laboratórios</a>
+      <a href="../02-perimetros/index.html"><small>Próximo</small>Lab 02 — Quanto mede o contorno?</a>
+    </nav>
+  </main>
+
+  <footer>
+    <p>MATHeu$ · Interlúdio 01·B · HTML autocontido, SVG calculado e funcionamento offline.</p>
+  </footer>
+
+  <script>
+    (() => {
+      'use strict';
+
+      const NS = 'http://www.w3.org/2000/svg';
+      const cx = 310;
+      const cy = 318;
+      const visualR = 238;
+
+      const drawing = document.getElementById('drawing');
+      const sides = document.getElementById('sides');
+      const sidesOutput = document.getElementById('sides-output');
+      const depth = document.getElementById('depth');
+      const depthOutput = document.getElementById('depth-output');
+      const LValue = document.getElementById('L-value');
+      const LpValue = document.getElementById('Lp-value');
+      const sideRatio = document.getElementById('side-ratio');
+      const radiusRatio = document.getElementById('radius-ratio');
+      const rkValue = document.getElementById('rk-value');
+      const turnValue = document.getElementById('turn-value');
+      const reveal = document.getElementById('reveal');
+      const revealStatus = document.getElementById('reveal-status');
+      const formulaCard = document.getElementById('formula-card');
+      const spiralCard = document.getElementById('spiral-card');
+      const graphCard = document.getElementById('graph-card');
+      const predictionFeedback = document.getElementById('prediction-feedback');
+      const spiralBetFeedback = document.getElementById('spiral-bet-feedback');
+      const halvingLive = document.getElementById('halving-live');
+      const chartDrawing = document.getElementById('chart-drawing');
+      const chartReading = document.getElementById('chart-reading');
+      const exercise1 = document.getElementById('exercise-1');
+      const exercise2 = document.getElementById('exercise-2');
+      const ringCard = document.getElementById('ring-card');
+      const ringDemo = document.getElementById('ring-demo');
+      const ringBetFeedback = document.getElementById('ring-bet-feedback');
+      const ringN = document.getElementById('ring-n');
+      const ringNOutput = document.getElementById('ring-n-output');
+      const ringAreaEl = document.getElementById('ring-area');
+      const diskAreaEl = document.getElementById('disk-area');
+      const ringDrawing = document.getElementById('ring-drawing');
+      const ringChartDrawing = document.getElementById('ring-chart-drawing');
+      const ex1Feedback = document.getElementById('ex1-feedback');
+      const ex2Feedback = document.getElementById('ex2-feedback');
+      const ex3Feedback = document.getElementById('ex3-feedback');
+
+      let predicted = false;
+      let maxDepthSeen = 0;
+      let series = 'gap';
+      let scale = 'linear';
+
+      function fmt(value, digits = 4) {
+        return new Intl.NumberFormat('pt-BR', {
+          minimumFractionDigits: digits,
+          maximumFractionDigits: digits
+        }).format(value);
+      }
+
+      function el(name, attrs = {}, text = '') {
+        const node = document.createElementNS(NS, name);
+        for (const [key, value] of Object.entries(attrs)) node.setAttribute(key, value);
+        if (text) node.textContent = text;
+        return node;
+      }
+
+      function polar(radius, angle) {
+        return [cx + radius * Math.cos(angle), cy + radius * Math.sin(angle)];
+      }
+
+      function polygonPoints(radius, n, start) {
+        return Array.from({ length: n }, (_, i) => polar(radius, start + (2 * Math.PI * i) / n));
+      }
+
+      function addLabel(x, y, text, anchor = 'start') {
+        drawing.appendChild(el('text', {
+          x, y,
+          'text-anchor': anchor,
+          'font-family': 'ui-sans-serif, system-ui, sans-serif',
+          'font-size': '18',
+          'font-weight': '750',
+          fill: 'currentColor'
+        }, text));
+      }
+
+      function halvingSteps(n) {
+        const factor = Math.cos(Math.PI / n);
+        let radius = 1;
+        let k = 0;
+        while (radius > 0.5 + 1e-12) {
+          radius *= factor;
+          k += 1;
+        }
+        return k;
+      }
+
+      function updateReadiness() {
+        const ready = predicted && maxDepthSeen >= 1;
+        reveal.disabled = !ready || !formulaCard.hidden;
+        if (formulaCard.hidden) {
+          revealStatus.textContent = ready
+            ? 'A figura já contou o essencial. Veja por quê.'
+            : 'Aposte e faça pelo menos uma repetição.';
+        }
+      }
+
+      function render() {
+        const n = Number(sides.value);
+        const k = Number(depth.value);
+        const theta = Math.PI / n;
+        const factor = Math.cos(theta);
+        const baseStart = -Math.PI / 2 - theta;
+
+        sidesOutput.value = String(n);
+        sidesOutput.textContent = String(n);
+        depthOutput.value = String(k);
+        depthOutput.textContent = String(k);
+
+        LValue.textContent = fmt(2 * Math.sin(theta));
+        LpValue.textContent = fmt(2 * factor * Math.sin(theta));
+        sideRatio.textContent = fmt(factor);
+        radiusRatio.textContent = fmt(factor);
+        rkValue.textContent = fmt(factor ** k);
+        turnValue.textContent = `${fmt(k * 180 / n, 1)}°`;
+        halvingLive.textContent = `com n = ${n}, o raio cai à metade em ${halvingSteps(n)} repetições`;
+
+        drawing.replaceChildren();
+
+        drawing.appendChild(el('circle', {
+          cx, cy, r: visualR,
+          fill: 'none',
+          stroke: 'var(--circle)',
+          'stroke-width': '3',
+          'stroke-dasharray': '3 8'
+        }));
+
+        for (let j = 0; j <= k; j += 1) {
+          const radius = visualR * factor ** j;
+          const start = baseStart + j * theta;
+          const outermost = j === 0;
+          drawing.appendChild(el('polygon', {
+            points: polygonPoints(radius, n, start).map(point => point.join(',')).join(' '),
+            fill: outermost
+              ? 'color-mix(in srgb, var(--accent) 8%, transparent)'
+              : 'color-mix(in srgb, var(--accent-2) 5%, transparent)',
+            stroke: outermost ? 'var(--accent)' : 'var(--accent-2)',
+            'stroke-width': outermost ? '4' : String(Math.max(1.4, 3 - j * 0.35)),
+            'stroke-linejoin': 'round'
+          }));
+        }
+
+        drawing.appendChild(el('circle', {
+          cx, cy, r: visualR * factor ** (k + 1),
+          fill: 'none',
+          stroke: 'var(--accent-2)',
+          'stroke-width': '3',
+          'stroke-dasharray': '12 8'
+        }));
+
+        const tangentDots = polygonPoints(visualR * factor, n, baseStart + theta);
+        for (const point of tangentDots) {
+          drawing.appendChild(el('circle', {
+            cx: point[0], cy: point[1], r: 5.5,
+            fill: 'var(--accent-2)'
+          }));
+        }
+
+        if (n <= 12) {
+          const O = [cx, cy];
+          const V1 = polar(visualR, baseStart);
+          const V2 = polar(visualR, baseStart + 2 * theta);
+          const M1 = polar(visualR * factor, baseStart + theta);
+          const M2 = polar(visualR * factor, baseStart + 3 * theta);
+
+          drawing.appendChild(el('polygon', {
+            points: [O, V1, V2].map(point => point.join(',')).join(' '),
+            fill: 'color-mix(in srgb, var(--focus) 10%, transparent)',
+            stroke: 'var(--circle)',
+            'stroke-width': '3',
+            'stroke-linejoin': 'round'
+          }));
+
+          drawing.appendChild(el('polygon', {
+            points: [O, M1, M2].map(point => point.join(',')).join(' '),
+            fill: 'color-mix(in srgb, var(--focus) 22%, transparent)',
+            stroke: 'var(--focus)',
+            'stroke-width': '3',
+            'stroke-linejoin': 'round'
+          }));
+
+          drawing.appendChild(el('circle', { cx: O[0], cy: O[1], r: 6, fill: 'var(--ink)' }));
+          addLabel(O[0] + 11, O[1] + 22, 'O');
+          addLabel((O[0] + V2[0]) / 2 + 12, (O[1] + V2[1]) / 2, 'R');
+          addLabel((O[0] + M1[0]) / 2 - 16, (O[1] + M1[1]) / 2, 'r', 'end');
+          addLabel((V1[0] + V2[0]) / 2, (V1[1] + V2[1]) / 2 - 12, 'L', 'middle');
+          addLabel((M1[0] + M2[0]) / 2 + 6, (M1[1] + M2[1]) / 2 + 24, 'L′', 'middle');
+        }
+
+        addLabel(cx, 36, `n = ${n} · k = ${k}`, 'middle');
+        addLabel(cx, 594, `raio após ${k} repetições = ${fmt(factor ** k)}`, 'middle');
+      }
+
+      // --- gráfico: medidas em função de n ---
+
+      const CHART = { left: 86, right: 636, top: 26, bottom: 344, nMin: 3, nMax: 60 };
+
+      const SERIES = {
+        gap: {
+          label: 'folga R − r',
+          value: n => 1 - Math.cos(Math.PI / n),
+          color: 'var(--accent)',
+          reading: n => `Com n = ${n}, a folga entre as circunferências vale ${fmt(1 - Math.cos(Math.PI / n))}. Ela despenca no começo e depois se arrasta rumo a zero.`
+        },
+        ring: {
+          label: 'área da coroa',
+          value: n => Math.PI * (1 - Math.cos(Math.PI / n) ** 2),
+          color: 'var(--accent-2)',
+          reading: n => `Com n = ${n}, a coroa entre as circunferências tem área ${fmt(Math.PI * (1 - Math.cos(Math.PI / n) ** 2))} — exatamente π·(L/2)².`
+        },
+        steps: {
+          label: 'repetições até a metade',
+          value: n => halvingSteps(n),
+          color: 'var(--focus)',
+          reading: n => `Com n = ${n}, a espiral precisa de ${halvingSteps(n)} repetições para o raio cair à metade. Mais lados, espiral mais preguiçosa.`
+        }
+      };
+
+      function labelInto(target, x, y, text, anchor = 'middle', size = 14, weight = '700') {
+        target.appendChild(el('text', {
+          x, y,
+          'text-anchor': anchor,
+          'font-family': 'ui-sans-serif, system-ui, sans-serif',
+          'font-size': String(size),
+          'font-weight': weight,
+          fill: 'currentColor'
+        }, text));
+      }
+
+      function chartLabel(x, y, text, anchor = 'middle', size = 14) {
+        labelInto(chartDrawing, x, y, text, anchor, size);
+      }
+
+      function fmtTick(value) {
+        if (value >= 1) return Number.isInteger(value) ? fmt(value, 0) : fmt(value, 1);
+        if (value >= 0.01) return fmt(value, 3);
+        return fmt(value, 4);
+      }
+
+      function renderChart() {
+        const spec = SERIES[series];
+        const currentN = Number(sides.value);
+        const points = [];
+        for (let n = CHART.nMin; n <= CHART.nMax; n += 1) {
+          points.push([n, spec.value(n)]);
+        }
+
+        const values = points.map(point => point[1]);
+        const vMin = Math.min(...values);
+        const vMax = Math.max(...values);
+
+        const toY = value => {
+          if (scale === 'log') {
+            const lo = Math.log10(vMin);
+            const hi = Math.log10(vMax);
+            const span = (hi - lo) || 1;
+            const t = (Math.log10(value) - lo) / span;
+            return CHART.bottom - t * (CHART.bottom - CHART.top);
+          }
+          const hi = vMax * 1.06;
+          return CHART.bottom - (value / hi) * (CHART.bottom - CHART.top);
+        };
+
+        const toX = n => CHART.left
+          + (n - CHART.nMin) / (CHART.nMax - CHART.nMin) * (CHART.right - CHART.left);
+
+        chartDrawing.replaceChildren();
+
+        let ticks = [];
+        if (scale === 'log') {
+          const lo = Math.floor(Math.log10(vMin));
+          const hi = Math.ceil(Math.log10(vMax));
+          for (let p = lo; p <= hi; p += 1) {
+            for (const m of [1, 3]) {
+              const value = m * 10 ** p;
+              if (value >= vMin * 0.999 && value <= vMax * 1.001) ticks.push(value);
+            }
+          }
+        } else {
+          const hi = vMax * 1.06;
+          ticks = [1, 2, 3, 4].map(i => hi * i / 5);
+          chartLabel(CHART.left - 10, CHART.bottom + 5, '0', 'end', 13);
+        }
+
+        for (const value of ticks) {
+          const y = toY(value);
+          chartDrawing.appendChild(el('line', {
+            x1: CHART.left, y1: y, x2: CHART.right, y2: y,
+            stroke: 'var(--line)', 'stroke-width': '1.5'
+          }));
+          chartLabel(CHART.left - 10, y + 5, fmtTick(value), 'end', 13);
+        }
+
+        for (const n of [3, 10, 20, 30, 40, 50, 60]) {
+          const x = toX(n);
+          chartDrawing.appendChild(el('line', {
+            x1: x, y1: CHART.bottom, x2: x, y2: CHART.bottom + 7,
+            stroke: 'currentColor', 'stroke-width': '2'
+          }));
+          chartLabel(x, CHART.bottom + 26, String(n));
+        }
+
+        chartDrawing.appendChild(el('line', {
+          x1: CHART.left, y1: CHART.bottom, x2: CHART.right, y2: CHART.bottom,
+          stroke: 'currentColor', 'stroke-width': '2'
+        }));
+        chartDrawing.appendChild(el('line', {
+          x1: CHART.left, y1: CHART.top, x2: CHART.left, y2: CHART.bottom,
+          stroke: 'currentColor', 'stroke-width': '2'
+        }));
+
+        chartLabel((CHART.left + CHART.right) / 2, CHART.bottom + 50, 'n — número de lados', 'middle', 15);
+        chartLabel(CHART.left, CHART.top - 10, `${spec.label} (R = 1)`, 'start', 15);
+
+        chartDrawing.appendChild(el('polyline', {
+          points: points.map(([n, value]) => `${toX(n)},${toY(value)}`).join(' '),
+          fill: 'none',
+          stroke: spec.color,
+          'stroke-width': '3.5',
+          'stroke-linejoin': 'round'
+        }));
+
+        for (const [n, value] of points) {
+          chartDrawing.appendChild(el('circle', {
+            cx: toX(n), cy: toY(value), r: 2.4, fill: spec.color
+          }));
+        }
+
+        const markerValue = spec.value(currentN);
+        chartDrawing.appendChild(el('line', {
+          x1: toX(currentN), y1: toY(markerValue), x2: toX(currentN), y2: CHART.bottom,
+          stroke: spec.color, 'stroke-width': '2', 'stroke-dasharray': '6 5'
+        }));
+        chartDrawing.appendChild(el('circle', {
+          cx: toX(currentN), cy: toY(markerValue), r: 7,
+          fill: spec.color, stroke: 'var(--bg)', 'stroke-width': '2.5'
+        }));
+
+        chartReading.textContent = spec.reading(currentN);
+      }
+
+      // --- a coroa é um círculo disfarçado: figura, comparação e demonstração ---
+
+      function ringPath(center, radius) {
+        const [x, y] = center;
+        return `M ${x - radius} ${y} a ${radius} ${radius} 0 1 0 ${2 * radius} 0 a ${radius} ${radius} 0 1 0 ${-2 * radius} 0 Z`;
+      }
+
+      function renderRing() {
+        const n = Number(ringN.value);
+        const theta = Math.PI / n;
+        const scaleR = 120;
+        const leftC = [180, 172];
+        const rightC = [505, 172];
+        const rInner = scaleR * Math.cos(theta);
+        const halfSide = scaleR * Math.sin(theta);
+
+        ringNOutput.value = String(n);
+        ringNOutput.textContent = String(n);
+        ringAreaEl.textContent = fmt(Math.PI * (1 - Math.cos(theta) ** 2));
+        diskAreaEl.textContent = fmt(Math.PI * Math.sin(theta) ** 2);
+
+        ringDrawing.replaceChildren();
+
+        ringDrawing.appendChild(el('path', {
+          d: `${ringPath(leftC, scaleR)} ${ringPath(leftC, rInner)}`,
+          fill: 'color-mix(in srgb, var(--accent-2) 30%, transparent)',
+          'fill-rule': 'evenodd'
+        }));
+        ringDrawing.appendChild(el('circle', {
+          cx: leftC[0], cy: leftC[1], r: scaleR,
+          fill: 'none', stroke: 'var(--circle)', 'stroke-width': '3'
+        }));
+        ringDrawing.appendChild(el('circle', {
+          cx: leftC[0], cy: leftC[1], r: rInner,
+          fill: 'none', stroke: 'var(--accent-2)', 'stroke-width': '3', 'stroke-dasharray': '10 7'
+        }));
+
+        const O = leftC;
+        const M = [leftC[0], leftC[1] - rInner];
+        const V = [leftC[0] + halfSide, leftC[1] - rInner];
+        ringDrawing.appendChild(el('polygon', {
+          points: [O, M, V].map(point => point.join(',')).join(' '),
+          fill: 'color-mix(in srgb, var(--focus) 20%, transparent)',
+          stroke: 'var(--focus)', 'stroke-width': '3', 'stroke-linejoin': 'round'
+        }));
+        labelInto(ringDrawing, O[0] - 10, (O[1] + M[1]) / 2 + 5, 'r', 'end', 16);
+        labelInto(ringDrawing, (O[0] + V[0]) / 2 + 16, (O[1] + V[1]) / 2 + 14, 'R', 'start', 16);
+        labelInto(ringDrawing, (M[0] + V[0]) / 2, M[1] - 10, 'L/2', 'middle', 16);
+
+        labelInto(ringDrawing, 342, 184, '=', 'middle', 46, '800');
+
+        ringDrawing.appendChild(el('circle', {
+          cx: rightC[0], cy: rightC[1], r: halfSide,
+          fill: 'color-mix(in srgb, var(--accent-2) 30%, transparent)',
+          stroke: 'var(--accent-2)', 'stroke-width': '3'
+        }));
+        ringDrawing.appendChild(el('line', {
+          x1: rightC[0], y1: rightC[1], x2: rightC[0] + halfSide, y2: rightC[1],
+          stroke: 'var(--accent-2)', 'stroke-width': '3'
+        }));
+        labelInto(ringDrawing, rightC[0] + halfSide / 2, rightC[1] - 8, 'L/2', 'middle', 16);
+
+        labelInto(ringDrawing, leftC[0], 330, 'coroa entre as circunferências', 'middle', 15);
+        labelInto(ringDrawing, rightC[0], 330, 'círculo de raio L/2', 'middle', 15);
+        labelInto(ringDrawing, 342, 34, `n = ${n}`, 'middle', 16);
+      }
+
+      function renderRingChart() {
+        const RC = { left: 86, right: 636, top: 30, bottom: 240, nMin: 3, nMax: 60 };
+        const disk = n => Math.PI * Math.sin(Math.PI / n) ** 2;
+        const ring = n => Math.PI * (1 - Math.cos(Math.PI / n) ** 2);
+        const hi = disk(RC.nMin) * 1.08;
+        const toX = n => RC.left + (n - RC.nMin) / (RC.nMax - RC.nMin) * (RC.right - RC.left);
+        const toY = value => RC.bottom - (value / hi) * (RC.bottom - RC.top);
+
+        ringChartDrawing.replaceChildren();
+
+        for (const value of [1, 2, 3].map(i => hi * i / 4)) {
+          const y = toY(value);
+          ringChartDrawing.appendChild(el('line', {
+            x1: RC.left, y1: y, x2: RC.right, y2: y,
+            stroke: 'var(--line)', 'stroke-width': '1.5'
+          }));
+          labelInto(ringChartDrawing, RC.left - 10, y + 5, fmtTick(value), 'end', 13);
+        }
+        labelInto(ringChartDrawing, RC.left - 10, RC.bottom + 5, '0', 'end', 13);
+
+        for (const n of [3, 10, 20, 30, 40, 50, 60]) {
+          const x = toX(n);
+          ringChartDrawing.appendChild(el('line', {
+            x1: x, y1: RC.bottom, x2: x, y2: RC.bottom + 7,
+            stroke: 'currentColor', 'stroke-width': '2'
+          }));
+          labelInto(ringChartDrawing, x, RC.bottom + 26, String(n));
+        }
+
+        ringChartDrawing.appendChild(el('line', {
+          x1: RC.left, y1: RC.bottom, x2: RC.right, y2: RC.bottom,
+          stroke: 'currentColor', 'stroke-width': '2'
+        }));
+        ringChartDrawing.appendChild(el('line', {
+          x1: RC.left, y1: RC.top, x2: RC.left, y2: RC.bottom,
+          stroke: 'currentColor', 'stroke-width': '2'
+        }));
+        labelInto(ringChartDrawing, (RC.left + RC.right) / 2, RC.bottom + 50, 'n — número de lados', 'middle', 15);
+
+        const linePoints = [];
+        for (let n = RC.nMin; n <= RC.nMax; n += 0.5) {
+          linePoints.push(`${toX(n)},${toY(disk(n))}`);
+        }
+        ringChartDrawing.appendChild(el('polyline', {
+          points: linePoints.join(' '),
+          fill: 'none', stroke: 'var(--accent)', 'stroke-width': '3.5', 'stroke-linejoin': 'round'
+        }));
+
+        for (let n = RC.nMin; n <= RC.nMax; n += 1) {
+          ringChartDrawing.appendChild(el('circle', {
+            cx: toX(n), cy: toY(ring(n)), r: 3.4,
+            fill: 'var(--accent-2)'
+          }));
+        }
+
+        ringChartDrawing.appendChild(el('line', {
+          x1: RC.left + 44, y1: RC.top + 4, x2: RC.left + 82, y2: RC.top + 4,
+          stroke: 'var(--accent)', 'stroke-width': '3.5'
+        }));
+        labelInto(ringChartDrawing, RC.left + 90, RC.top + 9, 'π(L/2)² — círculo de meio lado', 'start', 13);
+        ringChartDrawing.appendChild(el('circle', {
+          cx: RC.left + 63, cy: RC.top + 28, r: 3.4, fill: 'var(--accent-2)'
+        }));
+        labelInto(ringChartDrawing, RC.left + 90, RC.top + 33, 'πR² − πr² — coroa medida', 'start', 13);
+      }
+
+      document.querySelectorAll('[data-prediction]').forEach(button => {
+        button.addEventListener('click', () => {
+          document.querySelectorAll('[data-prediction]').forEach(item => item.setAttribute('aria-pressed', 'false'));
+          button.setAttribute('aria-pressed', 'true');
+          predicted = true;
+          predictionFeedback.textContent = button.dataset.prediction === 'same-rotated'
+            ? 'Boa aposta. Agora aumente as repetições e veja se a figura sustenta a ideia — inclusive o giro.'
+            : 'Aposta registrada. Aumente as repetições e deixe a figura confirmar — ou destruir — sua hipótese.';
+          updateReadiness();
+        });
+      });
+
+      sides.addEventListener('input', () => {
+        render();
+        if (!graphCard.hidden) renderChart();
+      });
+
+      depth.addEventListener('input', () => {
+        maxDepthSeen = Math.max(maxDepthSeen, Number(depth.value));
+        render();
+        updateReadiness();
+      });
+
+      document.querySelectorAll('[data-n]').forEach(button => {
+        button.addEventListener('click', () => {
+          sides.value = button.dataset.n;
+          render();
+          if (!graphCard.hidden) renderChart();
+        });
+      });
+
+      reveal.addEventListener('click', () => {
+        formulaCard.hidden = false;
+        exercise1.hidden = false;
+        spiralCard.hidden = false;
+        reveal.textContent = 'Relação revelada';
+        reveal.disabled = true;
+        formulaCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+
+      document.querySelectorAll('[data-spiral-bet]').forEach(button => {
+        button.addEventListener('click', () => {
+          document.querySelectorAll('[data-spiral-bet]').forEach(item => item.setAttribute('aria-pressed', 'false'));
+          button.setAttribute('aria-pressed', 'true');
+          spiralBetFeedback.textContent = button.dataset.spiralBet === 'more'
+            ? 'Boa aposta — e talvez contra a intuição. O gráfico abaixo mostra o quanto.'
+            : 'Aposta registrada. Compare n = 4 e n = 12 no painel — e depois olhe o gráfico abaixo.';
+          if (graphCard.hidden) {
+            graphCard.hidden = false;
+            exercise2.hidden = false;
+            ringCard.hidden = false;
+            renderChart();
+            graphCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        });
+      });
+
+      document.querySelectorAll('[data-ex1]').forEach(button => {
+        button.addEventListener('click', () => {
+          const value = button.dataset.ex1;
+          if (value === '0.75') {
+            ex1Feedback.textContent = 'Exato: cos²(π/6) = (√3/2)² = 3/4 — valor exato, sem arredondamento. Confira no painel com n = 6 e k = 2.';
+          } else if (value === '0.8660') {
+            ex1Feedback.textContent = 'Esse é o raio depois de uma repetição só. A segunda repetição multiplica pelo mesmo fator de novo — abra as pistas se quiser.';
+          } else {
+            ex1Feedback.textContent = 'Você desceu um andar a mais: 0,6495 é o raio com k = 3 repetições.';
+          }
+        });
+      });
+
+      document.querySelectorAll('[data-ex2]').forEach(button => {
+        button.addEventListener('click', () => {
+          const value = button.dataset.ex2;
+          if (value === 'halves') {
+            ex2Feedback.textContent = 'Certo. Os próximos 5 andares multiplicam por cos⁵(π/6) ≈ 0,4871 outra vez: de 0,4871 para ≈ 0,2373 — quase metade de novo, e nunca zero.';
+          } else if (value === 'right') {
+            ex2Feedback.textContent = 'Parece natural, mas trata a queda como subtração. Compare k = 5 e k = 10 no painel — ou abra as pistas.';
+          } else {
+            ex2Feedback.textContent = 'O raio nunca para de cair — só cai cada vez menos em valor absoluto. Compare k = 5 e k = 10 no painel.';
+          }
+        });
+      });
+
+      document.querySelectorAll('[data-ring-bet]').forEach(button => {
+        button.addEventListener('click', () => {
+          document.querySelectorAll('[data-ring-bet]').forEach(item => item.setAttribute('aria-pressed', 'false'));
+          button.setAttribute('aria-pressed', 'true');
+          ringBetFeedback.textContent = button.dataset.ringBet === 'halfside'
+            ? 'Boa aposta. Agora a figura confere caso a caso — e os três passos garantem para todo n.'
+            : 'Aposta registrada. A figura abaixo compara as áreas; os três passos dão o veredito.';
+          if (ringDemo.hidden) {
+            ringDemo.hidden = false;
+            renderRing();
+            renderRingChart();
+          }
+        });
+      });
+
+      ringN.addEventListener('input', renderRing);
+
+      document.querySelectorAll('[data-ex3]').forEach(button => {
+        button.addEventListener('click', () => {
+          const value = button.dataset.ex3;
+          if (value === '6') {
+            ex3Feedback.textContent = 'Exato. Raio 1/2 pede L/2 = 1/2, ou seja L = 1 — o lado igual ao raio, que é a assinatura do hexágono: sen(π/6) = 1/2. Coroa = π/4 ≈ 0,7854.';
+          } else if (value === '4') {
+            ex3Feedback.textContent = 'No quadrado, L/2 = sen(π/4) ≈ 0,7071 — a coroa é maior que π/4. Arraste o controle acima e observe.';
+          } else {
+            ex3Feedback.textContent = 'No octógono, L/2 = sen(π/8) ≈ 0,3827 — a coroa é menor que π/4. Arraste o controle acima e observe.';
+          }
+        });
+      });
+
+      document.querySelectorAll('[data-series]').forEach(button => {
+        button.addEventListener('click', () => {
+          document.querySelectorAll('[data-series]').forEach(item => item.setAttribute('aria-pressed', 'false'));
+          button.setAttribute('aria-pressed', 'true');
+          series = button.dataset.series;
+          renderChart();
+        });
+      });
+
+      document.querySelectorAll('[data-scale]').forEach(button => {
+        button.addEventListener('click', () => {
+          document.querySelectorAll('[data-scale]').forEach(item => item.setAttribute('aria-pressed', 'false'));
+          button.setAttribute('aria-pressed', 'true');
+          scale = button.dataset.scale;
+          renderChart();
+        });
+      });
+
+      render();
+      updateReadiness();
+    })();
+  </script>
+</body>
+</html>
