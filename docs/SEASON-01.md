@@ -27,6 +27,12 @@ Entrega cognitiva: reconhecer o triângulo fundamental e deduzir `r/R = cos(π/n
 
 Interações: número de lados, ruído de medição, inferência inversa.
 
+### 01·B — O polígono escondido (interlúdio)
+
+Entrega cognitiva: descobrir que ligar os pontos de tangência reproduz o mesmo polígono em escala `cos(π/n)`, girado `π/n` — a configuração é autossimilar, e a incircunferência do polígono menor obedece à mesma lei (`r' = r·cos(π/n)`).
+
+Interações: repetições da construção (espiral de polígonos aninhados), triângulos gêmeos `R,R,L` e `r,r,L'`, gráfico de `n` contra folga `R − r`, área da coroa `π(R² − r²) = π(L/2)²` e repetições até o raio cair à metade, com escala linear/log.
+
 ### 02 — Quanto mede o contorno?
 
 Entrega cognitiva: construir lado e perímetros interno/externo.

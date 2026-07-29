@@ -16,6 +16,7 @@ Publicação esperada:
 
 - portal: `https://drmcoelho.github.io/MATH_eus/`
 - Laboratório 01: `https://drmcoelho.github.io/MATH_eus/modules/01-duas-circunferencias/`
+- Interlúdio 01·B: `https://drmcoelho.github.io/MATH_eus/modules/01b-poligono-escondido/`
 - Laboratório 02: `https://drmcoelho.github.io/MATH_eus/modules/02-perimetros/`
 
 O repositório é um site estático puro. A fonte do GitHub Pages deve ser configurada como:
@@ -31,6 +32,7 @@ A raiz contém `index.html`, `.nojekyll` e `404.html`; não há build de publica
 **O cerco do círculo**
 
 1. [Duas circunferências, um polígono](modules/01-duas-circunferencias/index.html) — fatia vertical disponível
+   - [Interlúdio 01·B — O polígono escondido](modules/01b-poligono-escondido/index.html) — fatia vertical disponível
 2. [Quanto mede o contorno?](modules/02-perimetros/index.html) — fatia vertical disponível
 3. O que acontece com as áreas?
 4. O erro também tem forma
@@ -49,7 +51,7 @@ Cada módulo possui um verificador matemático independente, sem dependências e
 for checker in modules/*/check-math.mjs; do node "$checker"; done
 ```
 
-O do Lab 01 confere a identidade pitagórica, a monotonicidade de `r/R`, a construção pelo ponto médio, a inferência inversa de `n` e, para a parte de ruído, os intervalos de compatibilidade e o alcance do instrumento em cada tolerância. O do Lab 02 confere o cerco (interno < círculo < externo), as monotonicidades, a razão dos erros descendo para 2, o desafio da barreira de 6,2 e as cotas de Arquimedes com n = 96.
+O do Lab 01 confere a identidade pitagórica, a monotonicidade de `r/R`, a construção pelo ponto médio, a inferência inversa de `n` e, para a parte de ruído, os intervalos de compatibilidade e o alcance do instrumento em cada tolerância. O do Interlúdio 01·B constrói o polígono escondido por coordenadas e confere o circunraio `r`, a semelhança `L'/L = r/R`, o raio e o giro após `k` repetições, a identidade da coroa `π(R² − r²) = π(L/2)²`, a tabela de repetições até a metade e o produto de Kepler–Bouwkamp. O do Lab 02 confere o cerco (interno < círculo < externo), as monotonicidades, a razão dos erros descendo para 2, o desafio da barreira de 6,2 e as cotas de Arquimedes com n = 96.
 
 ## Princípios
 
