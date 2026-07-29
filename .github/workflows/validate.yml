@@ -22,5 +22,9 @@ jobs:
       - name: Baixa o repositório
         uses: actions/checkout@v6
 
-      - name: Verifica o Laboratório 01
-        run: node modules/01-duas-circunferencias/check-math.mjs
+      - name: Verifica a matemática de todos os laboratórios
+        run: |
+          for checker in modules/*/check-math.mjs; do
+            echo "== $checker"
+            node "$checker"
+          done
