@@ -10,6 +10,22 @@ Uma sequência de laboratórios interativos para observar, prever, manipular, de
 
 Não é tratado, currículo ou enciclopédia.
 
+## Site
+
+Publicação esperada:
+
+- portal: `https://drmcoelho.github.io/MATH_eus/`
+- Laboratório 01: `https://drmcoelho.github.io/MATH_eus/modules/01-duas-circunferencias/`
+- Laboratório 02: `https://drmcoelho.github.io/MATH_eus/modules/02-perimetros/`
+
+O repositório é um site estático puro. A fonte do GitHub Pages deve ser configurada como:
+
+- **Source:** Deploy from a branch
+- **Branch:** `main`
+- **Folder:** `/(root)`
+
+A raiz contém `index.html`, `.nojekyll` e `404.html`; não há build de publicação nem dependência de CDN.
+
 ## Primeira temporada
 
 **O cerco do círculo**

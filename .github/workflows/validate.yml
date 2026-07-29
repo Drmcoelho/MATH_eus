@@ -1,0 +1,30 @@
+name: Valida o MATHeu$
+
+on:
+  pull_request:
+    paths:
+      - 'modules/**'
+      - '.github/workflows/validate.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'modules/**'
+      - '.github/workflows/validate.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  matematica:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Baixa o repositório
+        uses: actions/checkout@v6
+
+      - name: Verifica a matemática de todos os laboratórios
+        run: |
+          for checker in modules/*/check-math.mjs; do
+            echo "== $checker"
+            node "$checker"
+          done
