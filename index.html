@@ -42,6 +42,10 @@
     article small { color:var(--accent); font:700 .72rem/1 ui-sans-serif,system-ui; letter-spacing:.1em; }
     article h2 { margin:.5rem 0; font-size:1.35rem; }
     article p { margin:0; color:var(--muted); }
+    article a { color:inherit; text-decoration:none; }
+    article.available { border-color:var(--accent); }
+    article.available:hover { transform:translateY(-2px); }
+    .status { display:inline-block; margin-top:16px; color:var(--accent); font:700 .78rem/1.2 ui-sans-serif,system-ui; }
     footer { margin-top:56px; padding-top:24px; border-top:1px solid var(--line); color:var(--muted); }
   </style>
 </head>
@@ -57,7 +61,7 @@
   </section>
 
   <section class="grid" aria-label="Primeira temporada">
-    <article><small>LAB 01</small><h2>Duas circunferências</h2><p>Inferir a forma a partir da razão entre os raios.</p></article>
+    <article class="available"><a href="modules/01-duas-circunferencias/index.html"><small>LAB 01</small><h2>Duas circunferências</h2><p>Inferir a forma a partir da razão entre os raios.</p><span class="status">Abrir laboratório →</span></a></article>
     <article><small>LAB 02</small><h2>Quanto mede o contorno?</h2><p>Construir os perímetros por dentro e por fora.</p></article>
     <article><small>LAB 03</small><h2>O que acontece com as áreas?</h2><p>Transformar lados em triângulos e triângulos em área.</p></article>
     <article><small>LAB 04</small><h2>O erro também tem forma</h2><p>Observar como o erro muda quando o número de lados dobra.</p></article>
@@ -66,7 +70,7 @@
   </section>
 
   <footer>
-    <p>Bootstrap inicial. O primeiro laboratório ainda será construído sobre geometria calculada, SVG acessível e exercícios entremeados.</p>
+    <p>Primeira fatia vertical disponível: previsão, manipulação, triângulo fundamental e fórmula revelada por último.</p>
   </footer>
 </main>
 </body>
