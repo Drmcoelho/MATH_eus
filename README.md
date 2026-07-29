@@ -33,7 +33,7 @@ O módulo possui um verificador matemático independente, sem dependências exte
 node modules/01-duas-circunferencias/check-math.mjs
 ```
 
-Ele confere 118 valores de `n`, a identidade pitagórica, a monotonicidade de `r/R`, a construção pelo ponto médio e a inferência inversa de `n`.
+Ele confere 118 valores de `n`, a identidade pitagórica, a monotonicidade de `r/R`, a construção pelo ponto médio, a inferência inversa de `n` e, para a parte de ruído, os intervalos de compatibilidade e o alcance do instrumento em cada tolerância.
 
 ## Princípios
 
