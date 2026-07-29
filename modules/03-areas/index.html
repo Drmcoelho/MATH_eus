@@ -247,6 +247,12 @@
       color: var(--muted);
     }
 
+    .chart-card { padding: clamp(18px, 3vw, 30px); }
+
+    .chart-card svg { min-height: 0; height: auto; }
+
+    .chart-card h3 { margin: 6px 0 14px; }
+
     .reveal-row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-top: 22px; }
 
     .hint.secret { margin-top: 24px; }
@@ -417,6 +423,13 @@
       </div>
     </section>
 
+    <section class="lab-card chart-card" aria-labelledby="chart-title">
+      <p class="box-label">Olhe de longe</p>
+      <h3 id="chart-title">As duas áreas apertam o círculo</h3>
+      <svg id="areas-chart" viewBox="0 0 640 300" aria-hidden="true"><g id="areas-chart-drawing"></g></svg>
+      <p id="chart-caption" class="feedback" aria-live="polite"></p>
+    </section>
+
     <section id="formula-card" class="formula-card" hidden aria-labelledby="formula-title">
       <p class="box-label">Entenda</p>
       <h2 id="formula-title">O leque soma triângulos iguais</h2>
@@ -460,7 +473,7 @@
       <p>O polígono de dentro paga duas vezes: o contorno é curto <em>e</em> o apótema é curto. Em percentual, o apótema sozinho erra cerca de três vezes mais que o contorno; somando as duas dívidas, a área de dentro erra quase <strong>quatro vezes</strong> o que o contorno erra — foi isso que a sua aposta mediu.</p>
       <p class="hint"><strong>Curiosidade:</strong> com n = 12 a área de dentro vale exatamente 3. Sem arredondamento: 6 · sen(30°) = 3.</p>
       <p class="hint secret"><strong>Segredo de mestre:</strong> aplique o leque ao próprio círculo, como se ele fosse um polígono de "infinitos lados": área = contorno × raio / 2 = 2πR · R / 2 = πR². A frase "infinitos lados" esconde um salto — domar esse salto é o Laboratório 05.</p>
-      <p><strong>Porta futura:</strong> três laboratórios acumularam números de erro — do contorno, do apótema, da área. Todos encolhem seguindo um mesmo padrão escondido. Medir a <em>forma</em> do erro é a pergunta que abre o Laboratório 04, ainda em construção.</p>
+      <p><strong>Porta futura:</strong> três laboratórios acumularam números de erro — do contorno, do apótema, da área. Todos encolhem seguindo um mesmo padrão escondido. Medir a <em>forma</em> do erro é a pergunta que abre o <a href="../04-erro/index.html">Laboratório 04</a>.</p>
     </section>
 
     <details>
@@ -541,6 +554,103 @@
           'font-weight': '750',
           fill: 'currentColor'
         }, text));
+      }
+
+      // gráfico "áreas versus n": as duas áreas apertando π, com o aperto
+      // (diferença fora − dentro) legível na legenda dinâmica
+      const chartDrawing = document.getElementById('areas-chart-drawing');
+      const chartCaption = document.getElementById('chart-caption');
+      const CHART = { left: 60, right: 610, top: 32, bottom: 258, nMin: 3, nMax: 96, vMin: 1, vMax: 5.4 };
+
+      function areaInOf(n) { return (n / 2) * Math.sin(2 * Math.PI / n); }
+      function areaOutOf(n) { return n * Math.tan(Math.PI / n); }
+
+      function chartX(n) {
+        return CHART.left + (n - CHART.nMin) / (CHART.nMax - CHART.nMin) * (CHART.right - CHART.left);
+      }
+
+      function chartY(value) {
+        return CHART.bottom - (value - CHART.vMin) / (CHART.vMax - CHART.vMin) * (CHART.bottom - CHART.top);
+      }
+
+      function chartLabel(x, y, text, anchor = 'middle', fill = 'var(--muted)') {
+        chartDrawing.appendChild(el('text', {
+          x, y,
+          'text-anchor': anchor,
+          'font-family': 'ui-sans-serif, system-ui, sans-serif',
+          'font-size': '13',
+          'font-weight': '600',
+          fill
+        }, text));
+      }
+
+      function seriesPath(fn) {
+        const points = [];
+        for (let k = CHART.nMin; k <= CHART.nMax; k += 1) {
+          points.push(`${chartX(k)},${chartY(fn(k))}`);
+        }
+        return points.join(' ');
+      }
+
+      function renderChart(n) {
+        chartDrawing.replaceChildren();
+
+        for (let v = 1; v <= 5; v += 1) {
+          const gy = chartY(v);
+          chartDrawing.appendChild(el('line', {
+            x1: CHART.left, y1: gy, x2: CHART.right, y2: gy,
+            stroke: 'var(--line)', 'stroke-width': '.8'
+          }));
+          chartLabel(CHART.left - 8, gy + 4, String(v), 'end');
+        }
+
+        for (const gn of [3, 12, 24, 48, 96]) {
+          chartLabel(chartX(gn), CHART.bottom + 20, String(gn));
+        }
+        chartLabel((CHART.left + CHART.right) / 2, CHART.bottom + 38, 'n — número de lados');
+
+        chartDrawing.appendChild(el('line', {
+          x1: CHART.left, y1: chartY(Math.PI), x2: CHART.right, y2: chartY(Math.PI),
+          stroke: 'var(--circle)', 'stroke-width': '1.5', 'stroke-dasharray': '3 6'
+        }));
+        chartLabel(CHART.right + 4, chartY(Math.PI) + 4, 'π', 'start');
+
+        chartDrawing.appendChild(el('polyline', {
+          points: seriesPath(areaOutOf),
+          fill: 'none', stroke: 'var(--accent-2)', 'stroke-width': '2', 'stroke-dasharray': '7 5'
+        }));
+        chartDrawing.appendChild(el('polyline', {
+          points: seriesPath(areaInOf),
+          fill: 'none', stroke: 'var(--accent)', 'stroke-width': '2'
+        }));
+
+        chartLabel(chartX(3) + 8, chartY(areaOutOf(3)) + 18, 'fora', 'start');
+        chartLabel(chartX(3) + 8, chartY(areaInOf(3)) - 10, 'dentro', 'start');
+
+        const legend = [
+          ['var(--accent)', '', 'área de dentro'],
+          ['var(--accent-2)', '7 5', 'área de fora'],
+          ['var(--circle)', '3 6', 'círculo (π)']
+        ];
+        legend.forEach(([stroke, dash, label], index) => {
+          const ly = 28 + index * 18;
+          chartDrawing.appendChild(el('line', {
+            x1: 470, y1: ly - 4, x2: 492, y2: ly - 4,
+            stroke, 'stroke-width': '2', ...(dash ? { 'stroke-dasharray': dash } : {})
+          }));
+          chartLabel(498, ly, label, 'start');
+        });
+
+        for (const [fn, color] of [[areaInOf, 'var(--accent)'], [areaOutOf, 'var(--accent-2)']]) {
+          const dot = el('circle', {
+            cx: chartX(n), cy: chartY(fn(n)), r: 5,
+            fill: color, stroke: 'var(--bg)', 'stroke-width': '2'
+          });
+          dot.appendChild(el('title', {}, `n = ${n} · ${fmt(fn(n))}`));
+          chartDrawing.appendChild(dot);
+        }
+
+        chartCaption.textContent = `Com n = ${n}: dentro ${fmt(areaInOf(n))} · fora ${fmt(areaOutOf(n))} · aperto (fora − dentro) = ${fmt(areaOutOf(n) - areaInOf(n))}.`;
       }
 
       function updateReadiness() {
@@ -638,6 +748,8 @@
 
         addLabel(cx, 34, `n = ${n}`, 'middle');
         addLabel(cx, 654, `área de dentro cobre ${fmtPct(areaIn / circleArea)} do círculo`, 'middle');
+
+        renderChart(n);
       }
 
       document.querySelectorAll('[data-prediction]').forEach(button => {
