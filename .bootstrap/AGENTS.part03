@@ -1,0 +1,258 @@
+- triângulo rotacionado → cone;
+- semicircunferência rotacionada → esfera;
+- polígonos inscritos e circunscritos → prismas cercando um cilindro;
+- fatias planas → volume acumulado.
+
+A passagem para três dimensões deve responder:
+
+- o que permaneceu;
+- o que ganhou dimensão;
+- como perímetro virou área lateral;
+- como área virou volume;
+- como o erro bidimensional se propagou no espaço.
+
+---
+
+# 9. Exercícios entremeados
+
+Exercícios não ficam concentrados no fim.
+
+O leitor não permanece mais de três ou quatro blocos passivo.
+
+## 9.1 Intervenções
+
+### Pare e aposte
+
+Prever antes de executar animação ou revelar gráfico.
+
+### Arraste e descubra
+
+Manipular parâmetro até encontrar condição.
+
+### Qual não pertence?
+
+Comparar casos e detectar exceção.
+
+### Complete a figura
+
+Preencher segmento, ângulo, valor ou relação.
+
+### Encontre o erro
+
+Analisar explicação plausível, mas errada.
+
+### Quebre a regra
+
+Procurar contraexemplo.
+
+### Explique sem fórmula
+
+Justificar verbal ou visualmente.
+
+### Agora use a fórmula
+
+Aplicar expressão já compreendida.
+
+### Mesma estrutura, outra história
+
+Transferir a ideia para outro contexto.
+
+### Segredo de mestre
+
+Resolver desafio que revela conexão futura.
+
+## 9.2 Escada de pistas
+
+Cada exercício relevante oferece:
+
+1. tentativa livre;
+2. primeira pista;
+3. pista visual;
+4. pista estrutural;
+5. solução comentada.
+
+A solução explica:
+
+- primeiro passo;
+- intuição útil;
+- armadilha provável;
+- verificação;
+- reaparição futura da ideia.
+
+## 9.3 Proibição do exercício burocrático
+
+Não criar vinte substituições numéricas iguais.
+
+Repetição só é válida quando muda deliberadamente:
+
+- representação;
+- escala;
+- domínio;
+- direção da inferência;
+- caso extremo;
+- hipótese;
+- aplicação.
+
+---
+
+# 10. Boxes editoriais
+
+## Pare e aposte
+
+Solicita previsão antes da resposta.
+
+## Olhe de novo
+
+Aponta característica visual fácil de ignorar.
+
+## Erro fértil
+
+Expõe raciocínio plausível que falha de modo instrutivo.
+
+## Curiosidade
+
+Fato lateral curto e estruturalmente ligado.
+
+## Aplicação real
+
+Mostra uso legítimo fora do laboratório.
+
+## Em três dimensões
+
+Transforma o objeto plano em espacial.
+
+## Segredo de mestre
+
+Relação surpreendente já verificável, explicada depois.
+
+## Porta futura
+
+Nomeia ferramenta ainda não construída, sem usá-la como explicação mágica.
+
+## Oficina
+
+Abre derivação, prova, código ou auditoria opcional.
+
+Boxes não servem para despejar conteúdo que o agente não soube integrar.
+
+---
+
+# 11. Anatomia de um laboratório
+
+## 11.1 Provocação
+
+Pergunta curta, concreta e genuína.
+
+## 11.2 Objeto nu
+
+Figura sem fórmula, inspecionável e manipulável.
+
+## 11.3 Primeiro palpite
+
+Resposta solicitada antes do instrumento.
+
+## 11.4 Ferramenta mínima
+
+Apenas a construção necessária para avançar.
+
+## 11.5 Laboratório
+
+Parâmetros variáveis e observações registráveis.
+
+## 11.6 Padrão
+
+Casos organizados em tabela ou gráfico.
+
+## 11.7 Fórmula inevitável
+
+Compressão da relação percebida.
+
+## 11.8 Por que funciona
+
+Explicação curta; prova completa na Oficina.
+
+## 11.9 Teste adversarial
+
+- menor caso;
+- maior caso razoável;
+- degenerado;
+- impossível;
+- arredondamento;
+- ruído de medição.
+
+## 11.10 Transferência
+
+Mesma estrutura em outro objeto.
+
+## 11.11 Segredo
+
+Pergunta final que abre o próximo laboratório.
+
+---
+
+# 12. Primeira temporada — O cerco do círculo
+
+A primeira temporada nasce da configuração de duas circunferências e um polígono.
+
+Ela não tenta ensinar “geometria inteira”.
+
+Ela extrai o máximo de uma única configuração.
+
+## Laboratório 1 — Duas circunferências, um polígono
+
+Perguntas:
+
+- o que as duas circunferências determinam;
+- o que não determinam;
+- qual informação está contida em `r/R`;
+- por que apenas certos valores são compatíveis com polígonos regulares;
+- como erro de medição pode tornar números de lados indistinguíveis.
+
+Resultado central:
+
+```text
+r / R = cos(π/n)
+```
+
+Aplicações:
+
+- inferência geométrica;
+- tolerância de medição;
+- classificação por forma;
+- reconstrução aproximada.
+
+## Laboratório 2 — Quanto mede o contorno?
+
+Construir o lado antes do perímetro:
+
+```text
+lado = 2R · sen(π/n)
+```
+
+Chegar a:
+
+```text
+perímetro inscrito = 2nR · sen(π/n)
+```
+
+E, para o circunscrito:
+
+```text
+perímetro circunscrito = 2nr · tg(π/n)
+```
+
+Explorações:
+
+- aumentar `n`;
+- comparar interno, círculo e externo;
+- medir os erros;
+- observar assimetria;
+- comparar escalas linear e logarítmica.
+
+## Laboratório 3 — O que acontece com as áreas?
+
+Construir área por triângulos.
+
+Chegar a:
+
+```text
