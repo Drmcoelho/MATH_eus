@@ -1,0 +1,26 @@
+name: Valida o MATHeu$
+
+on:
+  pull_request:
+    paths:
+      - 'modules/**'
+      - '.github/workflows/validate.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'modules/**'
+      - '.github/workflows/validate.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  matematica:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Baixa o repositório
+        uses: actions/checkout@v6
+
+      - name: Verifica o Laboratório 01
+        run: node modules/01-duas-circunferencias/check-math.mjs
