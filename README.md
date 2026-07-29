@@ -14,8 +14,8 @@ Não é tratado, currículo ou enciclopédia.
 
 **O cerco do círculo**
 
-1. [Duas circunferências, um polígono](modules/01-duas-circunferencias/index.html) — primeira fatia vertical disponível
-2. Quanto mede o contorno?
+1. [Duas circunferências, um polígono](modules/01-duas-circunferencias/index.html) — fatia vertical disponível
+2. [Quanto mede o contorno?](modules/02-perimetros/index.html) — fatia vertical disponível
 3. O que acontece com as áreas?
 4. O erro também tem forma
 5. Quando “chegar perto” vira limite?
@@ -25,15 +25,15 @@ Não é tratado, currículo ou enciclopédia.
 9. Mudar é derivar
 10. Derivar e integrar são movimentos inversos
 
-## Verificação do Laboratório 01
+## Verificação dos laboratórios
 
-O módulo possui um verificador matemático independente, sem dependências externas:
+Cada módulo possui um verificador matemático independente, sem dependências externas:
 
 ```bash
-node modules/01-duas-circunferencias/check-math.mjs
+for checker in modules/*/check-math.mjs; do node "$checker"; done
 ```
 
-Ele confere 118 valores de `n`, a identidade pitagórica, a monotonicidade de `r/R`, a construção pelo ponto médio, a inferência inversa de `n` e, para a parte de ruído, os intervalos de compatibilidade e o alcance do instrumento em cada tolerância.
+O do Lab 01 confere a identidade pitagórica, a monotonicidade de `r/R`, a construção pelo ponto médio, a inferência inversa de `n` e, para a parte de ruído, os intervalos de compatibilidade e o alcance do instrumento em cada tolerância. O do Lab 02 confere o cerco (interno < círculo < externo), as monotonicidades, a razão dos erros descendo para 2, o desafio da barreira de 6,2 e as cotas de Arquimedes com n = 96.
 
 ## Princípios
 

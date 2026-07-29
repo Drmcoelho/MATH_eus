@@ -28,15 +28,19 @@ jobs:
       - name: Baixa o repositório
         uses: actions/checkout@v6
 
-      - name: Verifica a matemática do Laboratório 01
-        run: node modules/01-duas-circunferencias/check-math.mjs
+      - name: Verifica a matemática de todos os laboratórios
+        run: |
+          for checker in modules/*/check-math.mjs; do
+            echo "== $checker"
+            node "$checker"
+          done
 
       - name: Prepara apenas os arquivos públicos
         run: |
-          mkdir -p _site/modules
+          mkdir -p _site
           cp index.html _site/index.html
-          cp -R modules/01-duas-circunferencias _site/modules/
-          rm -f _site/modules/01-duas-circunferencias/check-math.mjs
+          cp -R modules _site/modules
+          find _site/modules -name 'check-math.mjs' -delete
           touch _site/.nojekyll
 
       - name: Configura o GitHub Pages
