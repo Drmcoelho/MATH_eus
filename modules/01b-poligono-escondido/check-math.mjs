@@ -152,6 +152,32 @@ for (let n = 3; n <= 200; n += 1) {
 // Exemplo do segredo: n = 6 dá coroa pi/4, a área do círculo de raio 1/2.
 close(Math.PI * (1 - Math.cos(Math.PI / 6) ** 2), Math.PI / 4, 1e-12, 'coroa do hexágono');
 
+// Exercício 1: hexágono com k = 2 dá raio exato 3/4; os distratores são k = 1 e k = 3.
+close(Math.cos(Math.PI / 6) ** 2, 0.75, 1e-12, 'hexágono: cos²(pi/6) = 3/4');
+close(Math.cos(Math.PI / 6), 0.8660, 5e-5, 'distrator k=1');
+close(Math.cos(Math.PI / 6) ** 3, 0.6495, 5e-5, 'distrator k=3');
+
+// Exercício 2: a meia-vida se repete a partir de qualquer andar, e o raio nunca zera.
+const c5 = Math.cos(Math.PI / 6) ** 5;
+const c10 = Math.cos(Math.PI / 6) ** 10;
+close(c5, 0.4871, 5e-5, 'raio do hexágono em k=5');
+close(c10, 0.2373, 5e-5, 'raio do hexágono em k=10');
+close(c10, c5 * c5, 1e-12, 'os 5 andares seguintes multiplicam pelo mesmo fator');
+assert.ok(Math.abs(c10 / c5 - 0.5) < 0.02, 'de k=5 para k=10 o raio cai a ≈ metade de novo');
+for (let n = 3; n <= 60; n += 1) {
+  assert.ok(Math.cos(Math.PI / n) ** 1000 > 0, `o raio nunca chega a zero; falhou em n=${n}`);
+}
+
+// Exercício 3: só o hexágono tem meio lado 1/2 (coroa = área do círculo de raio 1/2).
+close(Math.sin(Math.PI / 6), 0.5, 1e-12, 'hexágono: L/2 = 1/2');
+close(Math.sin(Math.PI / 4), 0.7071, 5e-5, 'quadrado: L/2 ≈ 0,7071');
+close(Math.sin(Math.PI / 8), 0.3827, 5e-5, 'octógono: L/2 ≈ 0,3827');
+for (let n = 3; n <= 200; n += 1) {
+  if (n !== 6) {
+    assert.ok(Math.abs(Math.sin(Math.PI / n) - 0.5) > 1e-9, `só n=6 pode dar L/2 = 1/2; falhou em n=${n}`);
+  }
+}
+
 // Espiral com n crescente (3, 4, 5, …): o produto converge para a constante
 // de Kepler–Bouwkamp ≈ 0,1149, sem ir a zero.
 let product = 1;
@@ -164,4 +190,4 @@ for (let n = 3; n <= 100000; n += 1) {
 assert.ok(product > 0.11, 'o produto não pode ir a zero');
 close(product, 0.1149420448, 1e-4, 'constante de Kepler–Bouwkamp');
 
-console.log('Lab 01·B: polígono escondido por coordenadas (118 casos), espiral iterada, repetições até a metade, curvas do gráfico e produto de Kepler–Bouwkamp verificados sem divergência.');
+console.log('Lab 01·B: polígono escondido por coordenadas (118 casos), espiral iterada, repetições até a metade, curvas do gráfico, exercícios e produto de Kepler–Bouwkamp verificados sem divergência.');
