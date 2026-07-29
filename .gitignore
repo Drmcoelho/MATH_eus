@@ -1,0 +1,11 @@
+# macOS
+.DS_Store
+
+# local tooling
+node_modules/
+.playwright/
+coverage/
+
+# generated audits
+**/audit/*.tmp
+**/audit/local-*

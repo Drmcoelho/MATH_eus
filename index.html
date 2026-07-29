@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="MATHeu$ — laboratório visual de intuição matemática.">
+  <title>MATHeu$ — Laboratório visual de intuição matemática</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --bg: #f5f2ea;
+      --ink: #151515;
+      --muted: #615f59;
+      --panel: rgba(255,255,255,.58);
+      --line: rgba(20,20,20,.14);
+      --accent: #246b52;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg:#111310; --ink:#f0eee8; --muted:#b7b3aa;
+        --panel:rgba(255,255,255,.05); --line:rgba(255,255,255,.13);
+        --accent:#77c6a2;
+      }
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin:0; background:var(--bg); color:var(--ink);
+      font: 18px/1.55 ui-serif, Georgia, serif;
+    }
+    main { width:min(980px, calc(100% - 32px)); margin:auto; padding:64px 0 96px; }
+    .eyebrow { font: 700 .75rem/1.2 ui-sans-serif, system-ui; letter-spacing:.15em; text-transform:uppercase; color:var(--accent); }
+    h1 { font-size:clamp(3rem, 10vw, 7rem); line-height:.9; margin:.2em 0; letter-spacing:-.05em; }
+    .lead { font-size:clamp(1.2rem, 3vw, 1.75rem); max-width:760px; color:var(--muted); }
+    .question {
+      margin:48px 0; padding:32px; border:1px solid var(--line);
+      border-radius:24px; background:var(--panel);
+    }
+    .question strong { display:block; font:700 .75rem/1.2 ui-sans-serif,system-ui; text-transform:uppercase; letter-spacing:.12em; color:var(--accent); }
+    .question p { font-size:clamp(1.5rem,4vw,2.6rem); line-height:1.15; margin:.5em 0 0; }
+    .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:16px; }
+    article { padding:24px; border:1px solid var(--line); border-radius:20px; background:var(--panel); }
+    article small { color:var(--accent); font:700 .72rem/1 ui-sans-serif,system-ui; letter-spacing:.1em; }
+    article h2 { margin:.5rem 0; font-size:1.35rem; }
+    article p { margin:0; color:var(--muted); }
+    footer { margin-top:56px; padding-top:24px; border-top:1px solid var(--line); color:var(--muted); }
+  </style>
+</head>
+<body>
+<main>
+  <p class="eyebrow">Laboratório visual de intuição matemática</p>
+  <h1>MATHeu$</h1>
+  <p class="lead">A matemática entra pelos olhos, é interrogada pelas mãos e só então recebe fórmula.</p>
+
+  <section class="question">
+    <strong>Pergunta de abertura</strong>
+    <p>Se eu conheço apenas duas circunferências, consigo descobrir quantos lados tem o polígono entre elas?</p>
+  </section>
+
+  <section class="grid" aria-label="Primeira temporada">
+    <article><small>LAB 01</small><h2>Duas circunferências</h2><p>Inferir a forma a partir da razão entre os raios.</p></article>
+    <article><small>LAB 02</small><h2>Quanto mede o contorno?</h2><p>Construir os perímetros por dentro e por fora.</p></article>
+    <article><small>LAB 03</small><h2>O que acontece com as áreas?</h2><p>Transformar lados em triângulos e triângulos em área.</p></article>
+    <article><small>LAB 04</small><h2>O erro também tem forma</h2><p>Observar como o erro muda quando o número de lados dobra.</p></article>
+    <article><small>LAB 05</small><h2>Quando nasce o limite?</h2><p>Trocar “parece próximo” por uma garantia de tolerância.</p></article>
+    <article><small>LAB 06–10</small><h2>Do plano ao cálculo</h2><p>Prismas, volumes, integração, derivação e reciprocidade.</p></article>
+  </section>
+
+  <footer>
+    <p>Bootstrap inicial. O primeiro laboratório ainda será construído sobre geometria calculada, SVG acessível e exercícios entremeados.</p>
+  </footer>
+</main>
+</body>
+</html>
