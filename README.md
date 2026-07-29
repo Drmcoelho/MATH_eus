@@ -17,6 +17,7 @@ Publicação esperada:
 - portal: `https://drmcoelho.github.io/MATH_eus/`
 - Laboratório 01: `https://drmcoelho.github.io/MATH_eus/modules/01-duas-circunferencias/`
 - Laboratório 02: `https://drmcoelho.github.io/MATH_eus/modules/02-perimetros/`
+- Temporada 02, Laboratório 01: `https://drmcoelho.github.io/MATH_eus/modules/s02-01-ternas-pitagoricas/`
 
 O repositório é um site estático puro. A fonte do GitHub Pages deve ser configurada como:
 
@@ -41,6 +42,16 @@ A raiz contém `index.html`, `.nojekyll` e `404.html`; não há build de publica
 9. Mudar é derivar
 10. Derivar e integrar são movimentos inversos
 
+## Segunda temporada
+
+**Números que constroem formas** — plano completo em [docs/SEASON-02.md](docs/SEASON-02.md).
+
+1. [A fábrica dos ímpares](modules/s02-01-ternas-pitagoricas/index.html) — fatia vertical disponível
+2. O mapa de todas as ternas
+3. Que números entram em ternas?
+4. Ternas viram círculos
+5. Do esquadro ao tijolo
+
 ## Verificação dos laboratórios
 
 Cada módulo possui um verificador matemático independente, sem dependências externas:
@@ -49,7 +60,7 @@ Cada módulo possui um verificador matemático independente, sem dependências e
 for checker in modules/*/check-math.mjs; do node "$checker"; done
 ```
 
-O do Lab 01 confere a identidade pitagórica, a monotonicidade de `r/R`, a construção pelo ponto médio, a inferência inversa de `n` e, para a parte de ruído, os intervalos de compatibilidade e o alcance do instrumento em cada tolerância. O do Lab 02 confere o cerco (interno < círculo < externo), as monotonicidades, a razão dos erros descendo para 2, o desafio da barreira de 6,2 e as cotas de Arquimedes com n = 96.
+O do Lab 01 confere a identidade pitagórica, a monotonicidade de `r/R`, a construção pelo ponto médio, a inferência inversa de `n` e, para a parte de ruído, os intervalos de compatibilidade e o alcance do instrumento em cada tolerância. O do Lab 02 confere o cerco (interno < círculo < externo), as monotonicidades, a razão dos erros descendo para 2, o desafio da barreira de 6,2 e as cotas de Arquimedes com n = 96. O do T02 Lab 01 confere a fábrica dos ímpares (identidade, diferença 1 e primitividade), refaz o censo das ternas por dois caminhos independentes — força bruta e fórmula de Euclides — exigindo listas idênticas até hipotenusa 500, e valida as contagens citadas na página (52/6 até 100, 881/21 até 1.000, 12.471/70 até 10.000).
 
 ## Princípios
 

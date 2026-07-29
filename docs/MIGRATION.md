@@ -45,3 +45,13 @@ Migrar conceitos e componentes, não a burocracia.
 5. verificar matemática;
 6. auditar desktop e iPhone;
 7. integrar apenas após render real.
+
+## Migrações realizadas
+
+- **Ternas do ímpar** (fonte visual do antigo cap-02 do MATH3us) →
+  `modules/s02-01-ternas-pitagoricas/`. Migrados: a regra
+  `(n, (n²−1)/2, (n²+1)/2)` e a caracterização "hipotenusa e cateto maior
+  diferem de 1". Não migrados: a numeração de capítulos e o formato de
+  pôster estático. A regra foi reescrita como laboratório
+  Brinque → Entenda → Oficina, com censo interativo das ternas que escapam
+  e a fórmula de Euclides revelada por último.

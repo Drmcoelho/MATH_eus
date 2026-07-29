@@ -1,0 +1,910 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Laboratório 01 da Temporada 02 do MATHeu$: todo ímpar fabrica uma terna pitagórica — e um censo revela quantas ternas escapam da regra.">
+  <title>T02 · Lab 01 — A fábrica dos ímpares · MATHeu$</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --bg: #f4f1e8;
+      --ink: #171713;
+      --muted: #666258;
+      --paper: rgba(255, 255, 255, .66);
+      --line: rgba(23, 23, 19, .15);
+      --accent: #246b52;
+      --accent-2: #9b3f31;
+      --circle: #252520;
+      --focus: #d4872d;
+      --shadow: 0 18px 60px rgba(48, 43, 31, .09);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #11130f;
+        --ink: #f0eee7;
+        --muted: #b8b3a8;
+        --paper: rgba(255, 255, 255, .055);
+        --line: rgba(255, 255, 255, .14);
+        --accent: #7bc5a3;
+        --accent-2: #ef9788;
+        --circle: #f0eee7;
+        --focus: #ffc267;
+        --shadow: none;
+      }
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font: 18px/1.55 ui-serif, Georgia, Cambria, "Times New Roman", serif;
+    }
+
+    button, input { font: inherit; }
+
+    a { color: var(--accent); }
+
+    :focus-visible {
+      outline: 3px solid var(--focus);
+      outline-offset: 3px;
+    }
+
+    .skip-link {
+      position: absolute;
+      left: 12px;
+      top: -80px;
+      padding: 10px 14px;
+      background: var(--ink);
+      color: var(--bg);
+      z-index: 20;
+    }
+
+    .skip-link:focus { top: 12px; }
+
+    header, main, footer {
+      width: min(1120px, calc(100% - 32px));
+      margin-inline: auto;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      padding: 22px 0;
+      border-bottom: 1px solid var(--line);
+      font-family: ui-sans-serif, system-ui, sans-serif;
+      font-size: .86rem;
+    }
+
+    header a { text-decoration: none; }
+
+    .brand { font-weight: 800; letter-spacing: -.02em; }
+
+    main { padding: 58px 0 88px; }
+
+    .eyebrow {
+      margin: 0 0 12px;
+      color: var(--accent);
+      font: 800 .76rem/1.2 ui-sans-serif, system-ui, sans-serif;
+      letter-spacing: .15em;
+      text-transform: uppercase;
+    }
+
+    h1, h2, h3 { line-height: 1.08; letter-spacing: -.035em; }
+
+    h1 {
+      max-width: 940px;
+      margin: 0;
+      font-size: clamp(2.7rem, 7.4vw, 6rem);
+    }
+
+    h2 { font-size: clamp(2rem, 5vw, 3.5rem); margin-top: 0; }
+
+    h3 { font-size: 1.25rem; }
+
+    .lead {
+      max-width: 800px;
+      margin: 24px 0 0;
+      color: var(--muted);
+      font-size: clamp(1.18rem, 2.8vw, 1.65rem);
+    }
+
+    .question-card, .lab-card, .formula-card, .challenge-card, details {
+      margin-top: 38px;
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      background: var(--paper);
+      box-shadow: var(--shadow);
+    }
+
+    .question-card, .formula-card, .challenge-card, details { padding: clamp(22px, 4vw, 38px); }
+
+    .question-card strong, .box-label {
+      display: block;
+      color: var(--accent);
+      font: 800 .76rem/1.2 ui-sans-serif, system-ui, sans-serif;
+      letter-spacing: .13em;
+      text-transform: uppercase;
+    }
+
+    .question-card p {
+      max-width: 850px;
+      margin: 12px 0 22px;
+      font-size: clamp(1.45rem, 4vw, 2.45rem);
+      line-height: 1.18;
+    }
+
+    .answer-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    button {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 12px 16px;
+      background: transparent;
+      color: var(--ink);
+      cursor: pointer;
+    }
+
+    button:hover { border-color: var(--accent); }
+
+    button[aria-pressed="true"], .primary {
+      border-color: var(--accent);
+      background: var(--accent);
+      color: var(--bg);
+    }
+
+    button:disabled { opacity: .45; cursor: not-allowed; }
+
+    .feedback {
+      min-height: 1.6em;
+      margin: 16px 0 0;
+      color: var(--muted);
+      font-family: ui-sans-serif, system-ui, sans-serif;
+    }
+
+    .lab-card { overflow: hidden; }
+
+    .lab-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.35fr) minmax(280px, .65fr);
+    }
+
+    .visual-panel {
+      min-height: 560px;
+      padding: 18px;
+      background:
+        linear-gradient(var(--line) 1px, transparent 1px),
+        linear-gradient(90deg, var(--line) 1px, transparent 1px);
+      background-size: 28px 28px;
+    }
+
+    svg { width: 100%; height: 100%; min-height: 520px; display: block; }
+
+    .control-panel {
+      padding: clamp(22px, 4vw, 34px);
+      border-left: 1px solid var(--line);
+    }
+
+    .control-panel h2 { font-size: 1.9rem; }
+
+    .control-panel label {
+      display: block;
+      margin-top: 26px;
+      font: 700 .86rem/1.3 ui-sans-serif, system-ui, sans-serif;
+    }
+
+    input[type="range"] { width: 100%; margin: 14px 0; accent-color: var(--accent); }
+
+    .quick-values {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .quick-values button { padding: 8px 12px; font-size: .88rem; }
+
+    .measurements {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin: 26px 0;
+    }
+
+    .measurement {
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+    }
+
+    .measurement dt {
+      color: var(--muted);
+      font: 700 .73rem/1.2 ui-sans-serif, system-ui, sans-serif;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+    }
+
+    .measurement dd { margin: 5px 0 0; font-size: 1.32rem; font-variant-numeric: tabular-nums; }
+
+    .measurement.inside dd { color: var(--accent); }
+
+    .measurement.outside dd { color: var(--accent-2); }
+
+    .hint {
+      padding: 16px;
+      border-left: 4px solid var(--accent);
+      background: color-mix(in srgb, var(--accent) 9%, transparent);
+      color: var(--muted);
+    }
+
+    .reveal-row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-top: 22px; }
+
+    .hint.secret { margin-top: 24px; }
+
+    .formula-card[hidden], .challenge-card[hidden] { display: none; }
+
+    .formula {
+      margin: 22px 0;
+      padding: 22px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      text-align: center;
+      font-size: clamp(1.4rem, 4vw, 2.4rem);
+      font-variant-numeric: lining-nums;
+      overflow-x: auto;
+    }
+
+    .derivation {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      counter-reset: step;
+    }
+
+    .step {
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+    }
+
+    .step::before {
+      counter-increment: step;
+      content: counter(step);
+      display: grid;
+      place-items: center;
+      width: 28px;
+      height: 28px;
+      margin-bottom: 12px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: var(--bg);
+      font: 800 .82rem/1 ui-sans-serif, system-ui, sans-serif;
+    }
+
+    .step p { margin: 0; }
+
+    .dictionary {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .dictionary div { padding: 14px; border-top: 1px solid var(--line); }
+
+    .machine {
+      margin-top: 26px;
+      padding: 20px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+    }
+
+    .machine-controls {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+    }
+
+    .machine output {
+      display: block;
+      margin-top: 14px;
+      font-size: 1.25rem;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .examples-table {
+      width: 100%;
+      margin-top: 22px;
+      border-collapse: collapse;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .examples-table th, .examples-table td {
+      padding: 10px 12px;
+      border-top: 1px solid var(--line);
+      text-align: left;
+    }
+
+    .examples-table th {
+      color: var(--muted);
+      font: 700 .73rem/1.2 ui-sans-serif, system-ui, sans-serif;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+    }
+
+    .examples-table .diagonal td { color: var(--accent); font-weight: 700; }
+
+    .challenge-options { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+
+    details summary {
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 1.25rem;
+    }
+
+    details p, details li { color: var(--muted); }
+
+    footer { padding: 28px 0 56px; border-top: 1px solid var(--line); color: var(--muted); }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    @media (max-width: 820px) {
+      .answer-grid, .derivation, .dictionary, .machine-controls { grid-template-columns: 1fr; }
+      .lab-grid { grid-template-columns: 1fr; }
+      .control-panel { border-left: 0; border-top: 1px solid var(--line); }
+      .visual-panel { min-height: 440px; }
+      svg { min-height: 400px; }
+    }
+
+    @media (max-width: 480px) {
+      header { align-items: flex-start; flex-direction: column; }
+      main { padding-top: 38px; }
+      .measurements { grid-template-columns: 1fr; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      * { transition: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#conteudo">Pular para o laboratório</a>
+  <header>
+    <a class="brand" href="../../index.html">MATHeu$</a>
+    <span>Temporada 02 · Laboratório 01</span>
+  </header>
+
+  <main id="conteudo">
+    <p class="eyebrow">Números que constroem formas</p>
+    <h1>Todo ímpar fabrica um triângulo. A fábrica alcança todos?</h1>
+    <p class="lead">O esquadro 3, 4, 5 fecha certinho: 9 + 16 = 25. Existe uma regra que transforma <em>qualquer</em> número ímpar em um triângulo retângulo de lados inteiros. Este laboratório liga essa fábrica — e depois faz um censo para descobrir quantos triângulos ela deixa de fora.</p>
+
+    <section class="lab-card" aria-labelledby="factory-title">
+      <div class="lab-grid">
+        <div class="visual-panel">
+          <svg id="factory-svg" viewBox="0 0 640 520" role="img" aria-labelledby="factory-svg-title factory-svg-desc">
+            <title id="factory-svg-title">Triângulo retângulo fabricado a partir de um número ímpar</title>
+            <desc id="factory-svg-desc">O cateto vertical é o ímpar escolhido; o cateto horizontal e a hipotenusa são calculados a partir dele e diferem de exatamente 1. A conferência numérica dos quadrados aparece sob a figura.</desc>
+            <g id="factory-drawing"></g>
+          </svg>
+        </div>
+
+        <div class="control-panel">
+          <p class="box-label">Brinque</p>
+          <h2 id="factory-title">A fábrica dos ímpares</h2>
+          <p>Escolha um ímpar <strong>n</strong>. Um cateto é o próprio n; o outro cateto e a hipotenusa saem de n² repartido em duas metades quase iguais.</p>
+
+          <label for="odd">Número ímpar: <output id="odd-output" for="odd">5</output></label>
+          <input id="odd" type="range" min="3" max="21" step="2" value="5">
+
+          <div class="quick-values" aria-label="Valores rápidos do ímpar gerador">
+            <button type="button" data-odd="3">3</button>
+            <button type="button" data-odd="5">5</button>
+            <button type="button" data-odd="7">7</button>
+            <button type="button" data-odd="13">13</button>
+            <button type="button" data-odd="21">21</button>
+          </div>
+
+          <dl class="measurements" aria-label="Medidas da terna fabricada">
+            <div class="measurement"><dt>cateto ímpar</dt><dd id="leg-odd">5</dd></div>
+            <div class="measurement inside"><dt>cateto maior</dt><dd id="leg-big">12</dd></div>
+            <div class="measurement inside"><dt>hipotenusa</dt><dd id="hyp">13</dd></div>
+            <div class="measurement outside"><dt>hipotenusa − cateto maior</dt><dd id="gap">1</dd></div>
+          </dl>
+
+          <p class="hint"><strong>Olhe de novo:</strong> a diferença da última medida não sai do lugar — e o triângulo fica cada vez mais fino, com cateto maior e hipotenusa quase colados.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="question-card" aria-labelledby="aposta-titulo">
+      <strong id="aposta-titulo">Pare e aposte</strong>
+      <p>A fábrica dos ímpares entrega todas as ternas pitagóricas que existem?</p>
+      <div class="answer-grid" role="group" aria-label="Escolha sua previsão">
+        <button type="button" data-prediction="all" aria-pressed="false">sim, todas</button>
+        <button type="button" data-prediction="most" aria-pressed="false">quase todas — escapam poucas</button>
+        <button type="button" data-prediction="few" aria-pressed="false">a maioria escapa</button>
+      </div>
+      <p id="prediction-feedback" class="feedback" aria-live="polite">Aposte antes do censo. Os pontos vão dar o veredito.</p>
+    </section>
+
+    <section class="lab-card" aria-labelledby="census-title">
+      <div class="lab-grid">
+        <div class="visual-panel">
+          <svg id="census-svg" viewBox="0 0 640 560" role="img" aria-labelledby="census-svg-title census-svg-desc">
+            <title id="census-svg-title">Censo das ternas pitagóricas: cateto maior contra hipotenusa</title>
+            <desc id="census-svg-desc">Cada ponto é uma terna pitagórica. Os pontos verdes ficam sobre a linha em que a hipotenusa supera o cateto maior em exatamente 1 — a fábrica dos ímpares. Os pontos vermelhos, acima da linha, escapam da regra.</desc>
+            <g id="census-drawing"></g>
+          </svg>
+        </div>
+
+        <div class="control-panel">
+          <p class="box-label">Brinque</p>
+          <h2 id="census-title">O censo das ternas</h2>
+          <p>Todas as ternas <strong>(a, b, c)</strong> com a² + b² = c² e hipotenusa até o teto escolhido. Verde: fabricadas por um ímpar. Vermelho: fora da regra.</p>
+
+          <label for="ceiling">Teto da hipotenusa: <output id="ceiling-output" for="ceiling">100</output></label>
+          <input id="ceiling" type="range" min="20" max="500" step="5" value="100">
+
+          <div class="quick-values" aria-label="Valores rápidos do teto">
+            <button type="button" data-ceiling="50">50</button>
+            <button type="button" data-ceiling="100">100</button>
+            <button type="button" data-ceiling="250">250</button>
+            <button type="button" data-ceiling="500">500</button>
+          </div>
+
+          <dl class="measurements" aria-label="Contagens do censo">
+            <div class="measurement"><dt>ternas no total</dt><dd id="count-total">52</dd></div>
+            <div class="measurement inside"><dt>saem da fábrica</dt><dd id="count-rule">6</dd></div>
+            <div class="measurement outside"><dt>escapam</dt><dd id="count-escape">46</dd></div>
+            <div class="measurement"><dt>fração fabricada</dt><dd id="count-fraction">11,5%</dd></div>
+          </dl>
+
+          <p class="hint"><strong>Olhe de novo:</strong> os verdes moram todos na borda de baixo da nuvem — e, quando o teto sobe, a nuvem engorda muito mais depressa do que a borda.</p>
+
+          <div class="reveal-row">
+            <button id="reveal" type="button" class="primary" disabled>Revelar quem escapa</button>
+            <span id="reveal-status" class="feedback" aria-live="polite">Faça a aposta e mexa no teto do censo.</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="formula-card" class="formula-card" hidden aria-labelledby="formula-title">
+      <p class="box-label">Entenda</p>
+      <h2 id="formula-title">Quem escapa — e a fábrica que alcança todas</h2>
+
+      <p>A fábrica dos ímpares entrega exatamente as ternas em que <strong>hipotenusa − cateto maior = 1</strong>. O quadro "diferem de 1" não é um detalhe: é a assinatura completa da família. Escapam dela três grupos:</p>
+
+      <div class="derivation">
+        <div class="step"><p><strong>Os múltiplos.</strong> (6, 8, 10) é o (3, 4, 5) dobrado. Dobrar afasta hipotenusa e cateto: a diferença vira 2, 3, 4… nunca mais 1.</p></div>
+        <div class="step"><p><strong>A família do par.</strong> Para n par a partir de 6, a terna é (n, n²/4 − 1, n²/4 + 1): (6, 8, 10), (8, 15, 17), (12, 35, 37). A diferença trava em <strong>2</strong>.</p></div>
+        <div class="step"><p><strong>O interior da nuvem.</strong> (20, 21, 29) tem diferença 8 e catetos quase gêmeos. Nenhuma das duas regras anteriores chega perto dela.</p></div>
+      </div>
+
+      <p>Por trás de todos os grupos existe uma única fábrica, com dois botões em vez de um. Escolha dois inteiros <strong>m &gt; k ≥ 1</strong>; os catetos são a diferença dos quadrados e o dobro do produto; a hipotenusa é a soma dos quadrados:</p>
+
+      <div class="formula" aria-label="terna igual a m ao quadrado menos k ao quadrado, dois m k, m ao quadrado mais k ao quadrado">
+        (m² − k², &nbsp;2mk, &nbsp;m² + k²)
+      </div>
+
+      <div class="dictionary" aria-label="Dicionário da fórmula">
+        <div><strong>m, k</strong><br>inteiros com m &gt; k ≥ 1 — os dois botões da fábrica</div>
+        <div><strong>primitiva</strong><br>sai quando m e k não têm fator comum e um deles é par</div>
+        <div><strong>múltiplos</strong><br>as demais ternas são as primitivas multiplicadas por 2, 3, 4…</div>
+      </div>
+
+      <p><strong>Conferência em uma linha:</strong> (m² − k²)² + (2mk)² = m⁴ + 2m²k² + k⁴ = (m² + k²)². Vale para quaisquer m e k.</p>
+
+      <div class="machine" aria-labelledby="machine-title">
+        <h3 id="machine-title">Gire os dois botões</h3>
+        <div class="machine-controls">
+          <div>
+            <label for="m-dial">m: <output id="m-output" for="m-dial">5</output></label>
+            <input id="m-dial" type="range" min="2" max="12" step="1" value="5">
+          </div>
+          <div>
+            <label for="k-dial">k: <output id="k-output" for="k-dial">2</output></label>
+            <input id="k-dial" type="range" min="1" max="11" step="1" value="2">
+          </div>
+        </div>
+        <output id="machine-result" aria-live="polite">terna: (20, 21, 29) · hipotenusa − cateto maior = 8 · primitiva</output>
+        <p class="feedback">Coloque k = m − 1 e a diferença trava em 1: essa diagonal é a fábrica dos ímpares. Coloque k = 1 e aparece a família do par.</p>
+      </div>
+
+      <table class="examples-table">
+        <caption class="sr-only">Exemplos da fábrica completa</caption>
+        <thead>
+          <tr><th scope="col">m, k</th><th scope="col">terna</th><th scope="col">hipotenusa − cateto maior</th><th scope="col">onde mora</th></tr>
+        </thead>
+        <tbody>
+          <tr class="diagonal"><td>2, 1</td><td>(3, 4, 5)</td><td>1</td><td>diagonal k = m − 1 → ímpar n = 3</td></tr>
+          <tr class="diagonal"><td>3, 2</td><td>(5, 12, 13)</td><td>1</td><td>diagonal k = m − 1 → ímpar n = 5</td></tr>
+          <tr class="diagonal"><td>4, 3</td><td>(7, 24, 25)</td><td>1</td><td>diagonal k = m − 1 → ímpar n = 7</td></tr>
+          <tr><td>4, 1</td><td>(8, 15, 17)</td><td>2</td><td>família do par</td></tr>
+          <tr><td>5, 2</td><td>(20, 21, 29)</td><td>8</td><td>interior da nuvem</td></tr>
+        </tbody>
+      </table>
+
+      <p><strong>O que ela produz:</strong> comprimentos inteiros, todos na mesma unidade. Com as condições do dicionário, cada terna primitiva sai <em>exatamente uma vez</em>; multiplicando por 2, 3, 4… aparecem todas as outras. Nenhuma terna fica de fora — o verificador deste módulo compara a fábrica com a busca exaustiva até hipotenusa 500 e as listas coincidem.</p>
+      <p><strong>Quando vale:</strong> para inteiros m &gt; k ≥ 1, sempre. Sem a condição de fator comum e paridade a terna ainda é pitagórica, apenas deixa de ser primitiva.</p>
+
+      <p class="hint secret"><strong>Segredo de mestre:</strong> a fração fabricada pelos ímpares desaba: 11,5% até hipotenusa 100, 2,4% até 1.000, 0,6% até 10.000. A família é infinita — e mesmo assim quase toda terna escapa dela.</p>
+    </section>
+
+    <section id="challenge" class="challenge-card" hidden aria-labelledby="challenge-title">
+      <p class="box-label">Qual não pertence?</p>
+      <h2 id="challenge-title">Qual destas ternas NÃO sai da fábrica dos ímpares?</h2>
+      <p>Você não precisa testar a fórmula inteira — a assinatura da fábrica está na diferença entre hipotenusa e cateto maior.</p>
+      <div class="challenge-options" role="group" aria-label="Escolha a terna intrusa">
+        <button type="button" data-answer="9-40-41">(9, 40, 41)</button>
+        <button type="button" data-answer="8-15-17">(8, 15, 17)</button>
+        <button type="button" data-answer="13-84-85">(13, 84, 85)</button>
+      </div>
+      <p id="challenge-feedback" class="feedback" aria-live="polite"></p>
+    </section>
+
+    <section id="plimpton" class="challenge-card" hidden aria-labelledby="plimpton-title">
+      <p class="box-label">Curiosidade</p>
+      <h2 id="plimpton-title">Um censo de 3.800 anos</h2>
+      <p>O tablete babilônico <strong>Plimpton 322</strong> (por volta de 1800 a.C.) lista quinze ternas pitagóricas — mais de mil anos antes de Pitágoras. Uma delas é (119, 120, 169): catetos quase gêmeos, diferença 49 entre hipotenusa e cateto maior. Ela mora fundo no interior da nuvem — na fábrica completa, sai dos botões m = 12, k = 5.</p>
+      <p>Ou seja: quem gravou o tablete já explorava a região que a fábrica dos ímpares não alcança.</p>
+      <p><strong>Porta futura:</strong> cada terna primitiva tem um endereço (m, k). O próximo laboratório desenha esse mapa inteiro — e mostra as duas famílias deste capítulo como simples bordas da grade.</p>
+    </section>
+
+    <details>
+      <summary>Oficina — as três provas e o censo como algoritmo</summary>
+      <p><strong>Por que a fábrica do ímpar funciona.</strong> Para n ímpar, n² é ímpar, e as duas metades quase iguais de n² são (n² − 1)/2 e (n² + 1)/2. A diferença dos quadrados delas é [(n² + 1)/2]² − [(n² − 1)/2]² = [(n² + 1) + (n² − 1)]/2 · [(n² + 1) − (n² − 1)]/2 = n² · 1 = n². Logo n² + [(n² − 1)/2]² = [(n² + 1)/2]².</p>
+      <p><strong>Por que "diferem de 1" é a assinatura exata.</strong> Se c = b + 1, então a² = c² − b² = c + b = 2b + 1, que é ímpar — logo a é ímpar, b = (a² − 1)/2 e c = (a² + 1)/2: a terna veio da fábrica. E como b e c são consecutivos, não têm fator comum: toda terna da família é automaticamente primitiva.</p>
+      <p><strong>Por que a fábrica completa alcança todas (esboço).</strong> Numa terna primitiva, exatamente um cateto é par — chame-o de b. De (b/2)² = [(c − a)/2] · [(c + a)/2], com os dois fatores primos entre si, cada fator precisa ser um quadrado perfeito: (c − a)/2 = k² e (c + a)/2 = m². Daí c = m² + k², a = m² − k² e b = 2mk. A prova completa dessa unicidade fica para o mapa do próximo laboratório.</p>
+      <p><strong>O censo como algoritmo.</strong> A busca exaustiva percorre todos os pares a ≤ b e testa se a² + b² é quadrado perfeito. O verificador do módulo (<code>check-math.mjs</code>) refaz o censo por dois caminhos independentes — força bruta e fábrica completa — e exige que as listas coincidam até hipotenusa 500. As contagens citadas na página: 52 ternas até 100 (6 fabricadas), 881 até 1.000 (21 fabricadas), 12.471 até 10.000 (70 fabricadas).</p>
+      <p><strong>Quebre a regra, versão difícil.</strong> Procure uma terna primitiva cuja diferença hipotenusa − cateto maior não seja 1 nem 2. A primeira é (20, 21, 29), com diferença 8 — e as diferenças possíveis para primitivas são sempre 1, 2, 8, 9, 18, 25… Consegue ver o padrão? Ele também vira fórmula no próximo laboratório.</p>
+    </details>
+  </main>
+
+  <footer>
+    <p>MATHeu$ · Temporada 02, Laboratório 01 · HTML autocontido, SVG calculado e funcionamento offline.</p>
+  </footer>
+
+  <script>
+    (() => {
+      'use strict';
+
+      const NS = 'http://www.w3.org/2000/svg';
+
+      const factoryDrawing = document.getElementById('factory-drawing');
+      const odd = document.getElementById('odd');
+      const oddOutput = document.getElementById('odd-output');
+      const legOdd = document.getElementById('leg-odd');
+      const legBig = document.getElementById('leg-big');
+      const hyp = document.getElementById('hyp');
+      const gap = document.getElementById('gap');
+
+      const censusDrawing = document.getElementById('census-drawing');
+      const ceiling = document.getElementById('ceiling');
+      const ceilingOutput = document.getElementById('ceiling-output');
+      const countTotal = document.getElementById('count-total');
+      const countRule = document.getElementById('count-rule');
+      const countEscape = document.getElementById('count-escape');
+      const countFraction = document.getElementById('count-fraction');
+
+      const reveal = document.getElementById('reveal');
+      const revealStatus = document.getElementById('reveal-status');
+      const formulaCard = document.getElementById('formula-card');
+      const challenge = document.getElementById('challenge');
+      const plimpton = document.getElementById('plimpton');
+      const predictionFeedback = document.getElementById('prediction-feedback');
+      const challengeFeedback = document.getElementById('challenge-feedback');
+
+      const mDial = document.getElementById('m-dial');
+      const kDial = document.getElementById('k-dial');
+      const mOutput = document.getElementById('m-output');
+      const kOutput = document.getElementById('k-output');
+      const machineResult = document.getElementById('machine-result');
+
+      let predicted = false;
+      let censusMoved = false;
+      const initialCeiling = Number(ceiling.value);
+
+      const fmtInt = value => new Intl.NumberFormat('pt-BR').format(value);
+      const fmtPct = value => new Intl.NumberFormat('pt-BR', {
+        minimumFractionDigits: 1,
+        maximumFractionDigits: 1
+      }).format(value) + '%';
+
+      function el(name, attrs = {}, text = '') {
+        const node = document.createElementNS(NS, name);
+        for (const [key, value] of Object.entries(attrs)) node.setAttribute(key, value);
+        if (text) node.textContent = text;
+        return node;
+      }
+
+      function addLabel(target, x, y, text, anchor = 'start', size = 18) {
+        target.appendChild(el('text', {
+          x, y,
+          'text-anchor': anchor,
+          'font-family': 'ui-sans-serif, system-ui, sans-serif',
+          'font-size': String(size),
+          'font-weight': '750',
+          fill: 'currentColor'
+        }, text));
+      }
+
+      // ---------- fábrica dos ímpares ----------
+
+      function renderFactory() {
+        const n = Number(odd.value);
+        const b = (n * n - 1) / 2;
+        const c = (n * n + 1) / 2;
+
+        oddOutput.value = String(n);
+        oddOutput.textContent = String(n);
+        legOdd.textContent = fmtInt(n);
+        legBig.textContent = fmtInt(b);
+        hyp.textContent = fmtInt(c);
+        gap.textContent = fmtInt(c - b);
+
+        factoryDrawing.replaceChildren();
+
+        const pad = 70;
+        const availW = 640 - 2 * pad;
+        const availH = 520 - 2 * pad - 30;
+        const scale = Math.min(availW / b, availH / n);
+        const w = b * scale;
+        const h = n * scale;
+        const x0 = (640 - w) / 2;
+        const y0 = (520 - 30 + h) / 2;
+
+        const A = [x0, y0];
+        const B = [x0 + w, y0];
+        const C = [x0, y0 - h];
+
+        factoryDrawing.appendChild(el('polygon', {
+          points: [A, B, C].map(point => point.join(',')).join(' '),
+          fill: 'color-mix(in srgb, var(--accent) 10%, transparent)',
+          stroke: 'var(--accent)',
+          'stroke-width': '4',
+          'stroke-linejoin': 'round'
+        }));
+
+        if (h > 26) {
+          factoryDrawing.appendChild(el('path', {
+            d: `M ${x0 + 16} ${y0} L ${x0 + 16} ${y0 - 16} L ${x0} ${y0 - 16}`,
+            fill: 'none',
+            stroke: 'var(--circle)',
+            'stroke-width': '2.5'
+          }));
+        }
+
+        factoryDrawing.appendChild(el('line', {
+          x1: C[0], y1: C[1], x2: B[0], y2: B[1],
+          stroke: 'var(--accent-2)', 'stroke-width': '5'
+        }));
+
+        addLabel(factoryDrawing, x0 - 12, y0 - h / 2 + 6, `${n}`, 'end');
+        addLabel(factoryDrawing, x0 + w / 2, y0 + 30, `${fmtInt(b)}`, 'middle');
+        addLabel(factoryDrawing, x0 + w / 2 + 8, y0 - h / 2 - 14, `${fmtInt(c)}`, 'middle');
+
+        addLabel(factoryDrawing, 320, 40, `n = ${n} (ímpar)`, 'middle');
+        addLabel(
+          factoryDrawing, 320, 500,
+          `${n}² + ${fmtInt(b)}² = ${fmtInt(n * n)} + ${fmtInt(b * b)} = ${fmtInt(c * c)} = ${fmtInt(c)}²`,
+          'middle'
+        );
+      }
+
+      // ---------- censo das ternas ----------
+
+      const MAX_CEILING = 500;
+      const triples = [];
+      for (let a = 3; a <= MAX_CEILING; a += 1) {
+        for (let b = a; b <= MAX_CEILING; b += 1) {
+          const c2 = a * a + b * b;
+          const c = Math.round(Math.sqrt(c2));
+          if (c * c === c2 && c <= MAX_CEILING) triples.push({ a, b, c });
+        }
+      }
+
+      function renderCensus() {
+        const N = Number(ceiling.value);
+        const visible = triples.filter(t => t.c <= N);
+        const rule = visible.filter(t => t.c - t.b === 1);
+        const total = visible.length;
+
+        ceilingOutput.value = String(N);
+        ceilingOutput.textContent = String(N);
+        countTotal.textContent = fmtInt(total);
+        countRule.textContent = fmtInt(rule.length);
+        countEscape.textContent = fmtInt(total - rule.length);
+        countFraction.textContent = total ? fmtPct((rule.length / total) * 100) : '—';
+
+        censusDrawing.replaceChildren();
+
+        const left = 60;
+        const right = 620;
+        const top = 20;
+        const bottom = 510;
+        const x = b => left + (b / N) * (right - left);
+        const y = c => bottom - (c / N) * (bottom - top);
+
+        censusDrawing.appendChild(el('line', {
+          x1: left, y1: bottom, x2: right, y2: bottom,
+          stroke: 'var(--circle)', 'stroke-width': '2'
+        }));
+        censusDrawing.appendChild(el('line', {
+          x1: left, y1: top, x2: left, y2: bottom,
+          stroke: 'var(--circle)', 'stroke-width': '2'
+        }));
+
+        for (const tick of [Math.round(N / 2), N]) {
+          addLabel(censusDrawing, x(tick), bottom + 24, fmtInt(tick), 'middle', 15);
+          addLabel(censusDrawing, left - 8, y(tick) + 5, fmtInt(tick), 'end', 15);
+        }
+        addLabel(censusDrawing, left - 8, bottom + 24, '0', 'end', 15);
+
+        addLabel(censusDrawing, (left + right) / 2, 550, 'cateto maior →', 'middle', 15);
+        const yCaption = el('text', {
+          x: 22, y: (top + bottom) / 2,
+          'text-anchor': 'middle',
+          'font-family': 'ui-sans-serif, system-ui, sans-serif',
+          'font-size': '15',
+          'font-weight': '750',
+          fill: 'currentColor',
+          transform: `rotate(-90 22 ${(top + bottom) / 2})`
+        }, 'hipotenusa →');
+        censusDrawing.appendChild(yCaption);
+
+        censusDrawing.appendChild(el('line', {
+          x1: x(0), y1: y(1), x2: x(N - 1), y2: y(N),
+          stroke: 'var(--accent)',
+          'stroke-width': '2.5',
+          'stroke-dasharray': '10 7'
+        }));
+
+        const radius = N > 250 ? 3.2 : 4.5;
+        for (const t of visible) {
+          const onRule = t.c - t.b === 1;
+          censusDrawing.appendChild(el('circle', {
+            cx: x(t.b), cy: y(t.c), r: radius,
+            fill: onRule ? 'var(--accent)' : 'var(--accent-2)',
+            'fill-opacity': onRule ? '1' : '.75'
+          }));
+        }
+
+        const legendY = 46;
+        censusDrawing.appendChild(el('circle', { cx: left + 22, cy: legendY, r: 6, fill: 'var(--accent)' }));
+        addLabel(censusDrawing, left + 36, legendY + 5, 'diferem de 1 — fábrica dos ímpares', 'start', 15);
+        censusDrawing.appendChild(el('circle', { cx: left + 22, cy: legendY + 26, r: 6, fill: 'var(--accent-2)' }));
+        addLabel(censusDrawing, left + 36, legendY + 31, 'escapam da regra', 'start', 15);
+      }
+
+      // ---------- gate de revelação ----------
+
+      function updateReadiness() {
+        const ready = predicted && censusMoved;
+        reveal.disabled = !ready;
+        revealStatus.textContent = ready
+          ? 'Agora a resposta pode aparecer sem cair do céu.'
+          : 'Faça a aposta e mexa no teto do censo.';
+      }
+
+      document.querySelectorAll('[data-prediction]').forEach(button => {
+        button.addEventListener('click', () => {
+          document.querySelectorAll('[data-prediction]').forEach(item => item.setAttribute('aria-pressed', 'false'));
+          button.setAttribute('aria-pressed', 'true');
+          predicted = true;
+          const correct = button.dataset.prediction === 'few';
+          predictionFeedback.textContent = correct
+            ? 'Boa aposta. Suba o teto do censo e veja a proporção desabar.'
+            : 'Aposta registrada. Suba o teto do censo e acompanhe a fração fabricada.';
+          updateReadiness();
+        });
+      });
+
+      odd.addEventListener('input', renderFactory);
+      document.querySelectorAll('[data-odd]').forEach(button => {
+        button.addEventListener('click', () => {
+          odd.value = button.dataset.odd;
+          renderFactory();
+        });
+      });
+
+      ceiling.addEventListener('input', () => {
+        censusMoved = censusMoved || Number(ceiling.value) !== initialCeiling;
+        renderCensus();
+        updateReadiness();
+      });
+
+      document.querySelectorAll('[data-ceiling]').forEach(button => {
+        button.addEventListener('click', () => {
+          ceiling.value = button.dataset.ceiling;
+          censusMoved = censusMoved || Number(ceiling.value) !== initialCeiling;
+          renderCensus();
+          updateReadiness();
+        });
+      });
+
+      reveal.addEventListener('click', () => {
+        formulaCard.hidden = false;
+        challenge.hidden = false;
+        reveal.textContent = 'Resposta revelada';
+        reveal.disabled = true;
+        formulaCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+
+      // ---------- a fábrica completa (m, k) ----------
+
+      function renderMachine() {
+        let m = Number(mDial.value);
+        kDial.max = String(m - 1);
+        if (Number(kDial.value) > m - 1) kDial.value = String(m - 1);
+        const k = Number(kDial.value);
+
+        mOutput.textContent = String(m);
+        kOutput.textContent = String(k);
+
+        const legA = m * m - k * k;
+        const legB = 2 * m * k;
+        const c = m * m + k * k;
+        const small = Math.min(legA, legB);
+        const big = Math.max(legA, legB);
+        const gcd = (p, q) => (q ? gcd(q, p % q) : p);
+        const primitive = gcd(m, k) === 1 && (m + k) % 2 === 1;
+
+        machineResult.textContent =
+          `terna: (${fmtInt(small)}, ${fmtInt(big)}, ${fmtInt(c)})` +
+          ` · hipotenusa − cateto maior = ${fmtInt(c - big)}` +
+          ` · ${primitive ? 'primitiva' : 'não primitiva — múltiplo de uma terna menor'}`;
+      }
+
+      mDial.addEventListener('input', renderMachine);
+      kDial.addEventListener('input', renderMachine);
+
+      // ---------- desafio ----------
+
+      document.querySelectorAll('[data-answer]').forEach(button => {
+        button.addEventListener('click', () => {
+          const answer = button.dataset.answer;
+          if (answer === '8-15-17') {
+            challengeFeedback.textContent =
+              'Isso. 17 − 15 = 2: essa terna nunca sai da fábrica dos ímpares. Ela é a família do par com n = 8 — ou, na fábrica completa, os botões m = 4, k = 1.';
+            if (plimpton.hidden) plimpton.hidden = false;
+          } else if (answer === '9-40-41') {
+            challengeFeedback.textContent =
+              '41 − 40 = 1 — essa sai da fábrica: é o ímpar n = 9. Procure a terna cuja diferença não é 1.';
+          } else {
+            challengeFeedback.textContent =
+              '85 − 84 = 1 — essa sai da fábrica: é o ímpar n = 13. Procure a terna cuja diferença não é 1.';
+          }
+        });
+      });
+
+      renderFactory();
+      renderCensus();
+      renderMachine();
+      updateReadiness();
+    })();
+  </script>
+</body>
+</html>
