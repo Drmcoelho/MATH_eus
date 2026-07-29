@@ -44,13 +44,18 @@ A raiz contém `index.html`, `.nojekyll` e `404.html`; não há build de publica
 
 ## Segunda temporada
 
-**Números que constroem formas** — plano completo em [docs/SEASON-02.md](docs/SEASON-02.md).
+**Números que constroem formas** — dez laboratórios sobre uma única configuração aritmética, a² + b² = c² com lados inteiros. Plano completo em [docs/SEASON-02.md](docs/SEASON-02.md).
 
 1. [A fábrica dos ímpares](modules/s02-01-ternas-pitagoricas/index.html) — fatia vertical disponível
 2. O mapa de todas as ternas
 3. Que números entram em ternas?
-4. Ternas viram círculos
-5. Do esquadro ao tijolo
+4. A diferença esconde um padrão
+5. Quantas ternas existem até N?
+6. Do esquadro ao tijolo
+7. Ternas viram pontos no círculo
+8. Acumular quadrados
+9. Quando o expoente sobe
+10. A grade e o círculo são o mesmo desenho
 
 ## Verificação dos laboratórios
 
