@@ -1,0 +1,172 @@
+# AGENTS.md — MATHeu$
+
+## Laboratório visual de intuição matemática
+
+> Não construir um tratado.
+> Construir algo que Matheus efetivamente abra, manipule, leia, questione e termine.
+
+---
+
+## 0. Autoridade e finalidade
+
+Este arquivo rege todos os agentes que planejam, escrevem, desenham, programam, auditam ou revisam o **MATHeu$**.
+
+Nome público: `MATHeu$`.
+
+Nome técnico do repositório: `MATH_eus`.
+
+O caractere `$` integra a marca pública, mas não o nome do repositório. Ele significa **valor observável entregue**:
+
+- figura que explica;
+- manipulação que responde;
+- exercício que força uma decisão;
+- fórmula que nasce de um objeto;
+- prova que fecha o que realmente precisa ser fechado.
+
+Em caso de conflito entre uma decisão tecnicamente sofisticada e a experiência real do leitor primário, prevalece a experiência do leitor, desde que a correção matemática seja preservada.
+
+A medida de sucesso não é quantidade de teoremas, páginas, telas, claims, agentes ou referências.
+
+A medida de sucesso é:
+
+> O leitor pensou antes de receber a resposta?
+
+---
+
+# 1. Definição do produto
+
+MATHeu$ é um **livro-laboratório matemático, visual, interativo, autocontido e pessoal**.
+
+Não é:
+
+- tratado;
+- enciclopédia;
+- currículo completo;
+- curso universitário convencional;
+- coleção de demonstrações formais;
+- vitrine de equações;
+- versão simplificada do MATH3us;
+- sistema de governança com uma aula ocasional anexada.
+
+É uma sequência de **laboratórios conectados**.
+
+Cada laboratório parte de uma pergunta genuína, preferencialmente nascida de:
+
+- uma intuição do leitor primário;
+- uma inversão de pergunta;
+- um padrão percebido;
+- uma imagem mental;
+- uma aparente contradição;
+- uma tentativa de generalização;
+- uma aplicação concreta.
+
+A unidade editorial é o **laboratório**.
+
+Um laboratório deve poder ser explorado em aproximadamente 10 a 30 minutos no caminho principal, podendo conter oficinas opcionais mais longas.
+
+Um laboratório não precisa encerrar toda a teoria relacionada. Precisa produzir uma transformação cognitiva identificável.
+
+Exemplo:
+
+- antes: “dois círculos não parecem determinar um polígono”;
+- depois: “a razão entre os raios restringe discretamente o número de lados e a precisão da medida limita a decisão”.
+
+---
+
+# 2. Relação com o MATH3us
+
+O repositório `MATH3us` permanece preservado como:
+
+- arquivo da reconstrução formal;
+- fonte de demonstrações;
+- banco de claims;
+- registro de erros, autópsias e auditorias;
+- mina de componentes visuais e algoritmos.
+
+O MATHeu$ não herda automaticamente:
+
+- capítulos;
+- numeração;
+- volumes;
+- gates;
+- tags;
+- claims;
+- contratos editoriais;
+- arquitetura de tratado.
+
+Nada é migrado por prestígio documental.
+
+Um elemento do MATH3us só entra no MATHeu$ se passar pelo teste:
+
+> Isso melhora a experiência de observar, manipular, deduzir ou transferir uma ideia?
+
+Migração é seletiva e explícita.
+
+---
+
+# 3. Modelo do leitor primário
+
+O leitor primário é Matheus.
+
+Características relevantes:
+
+- forte percepção de padrões;
+- raciocínio intuitivo, associativo e inversivo;
+- tendência a buscar estruturas ocultas;
+- boa memória visual;
+- formação científica avançada;
+- baixa tolerância a formalismo anterior à necessidade;
+- baixa probabilidade de ler longas exposições lineares apenas porque são rigorosas;
+- alta probabilidade de explorar uma interface responsiva às próprias perguntas;
+- capacidade de compreender uma ideia difícil antes de dominar a notação convencional.
+
+O agente não deve confundir falta de familiaridade notacional com limitação intelectual.
+
+A notação deve chegar **depois da ideia**, como compressão útil daquilo que já foi compreendido.
+
+---
+
+# 4. Primeira lei pedagógica
+
+## Não partir da premissa. Chegar à premissa.
+
+É proibido iniciar um laboratório com:
+
+- teorema;
+- definição abstrata;
+- fórmula não motivada;
+- lista de propriedades;
+- revisão histórica;
+- objetivos curriculares;
+- notação que o leitor ainda não sabe ler.
+
+Sequência preferencial:
+
+```text
+provocação
+→ desenho
+→ palpite
+→ manipulação
+→ comparação
+→ padrão
+→ pergunta inevitável
+→ nome
+→ fórmula
+→ explicação
+→ teste adversarial
+→ aplicação
+→ desafio
+```
+
+A definição entra quando o leitor já encontrou o objeto.
+
+A fórmula entra quando a linguagem comum ficou longa ou imprecisa demais.
+
+O teorema entra quando existe uma afirmação que merece garantia.
+
+A demonstração entra quando o leitor já entende o que está sendo demonstrado e por que isso importa.
+
+---
+
+# 5. As três camadas
+
