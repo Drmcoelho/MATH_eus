@@ -14,7 +14,7 @@ Não é tratado, currículo ou enciclopédia.
 
 **O cerco do círculo**
 
-1. Duas circunferências, um polígono
+1. [Duas circunferências, um polígono](modules/01-duas-circunferencias/index.html) — primeira fatia vertical disponível
 2. Quanto mede o contorno?
 3. O que acontece com as áreas?
 4. O erro também tem forma
@@ -24,6 +24,16 @@ Não é tratado, currículo ou enciclopédia.
 8. Acumular é integrar
 9. Mudar é derivar
 10. Derivar e integrar são movimentos inversos
+
+## Verificação do Laboratório 01
+
+O módulo possui um verificador matemático independente, sem dependências externas:
+
+```bash
+node modules/01-duas-circunferencias/check-math.mjs
+```
+
+Ele confere 118 valores de `n`, a identidade pitagórica, a monotonicidade de `r/R`, a construção pelo ponto médio e a inferência inversa de `n`.
 
 ## Princípios
 
