@@ -316,6 +316,17 @@
       * { transition: none !important; }
     }
 
+    .hint-ladder { margin-top: 20px; }
+
+    .hint-ladder details {
+      margin-top: 10px;
+      padding: 14px 18px;
+      border-radius: 14px;
+      box-shadow: none;
+    }
+
+    .hint-ladder summary { font-size: 1rem; }
+
     .lab-nav {
       margin-top: 48px;
       display: grid;
@@ -455,6 +466,24 @@
       <h2 id="pairs-title">Quatro séries, apenas duas constantes</h2>
       <p>Troque a série no laboratório e olhe onde n² × erro estabiliza. As quatro séries se acomodam em só dois valores: ≈ 10,335 para <em>contorno de dentro</em> e <em>área de fora</em>; ≈ 20,671 — exatamente o dobro — para <em>contorno de fora</em> e <em>área de dentro</em>.</p>
       <p>Não é coincidência nova: são os mesmos parentescos dos Laboratórios 02 e 03 — a razão dos erros do cerco descendo para 2 e o empate do circunscrito — agora vistos pelo lado das constantes.</p>
+
+      <div id="exercise-estimate" class="challenge-card" style="margin-top:26px; padding:0; border:0; box-shadow:none; background:transparent;">
+        <p class="box-label">Agora use a fórmula</p>
+        <h3>Sem calcular tangente nenhuma, estime o erro da área de fora em n = 50.</h3>
+        <p>Use erro ≈ C / n² com a constante certa da série.</p>
+        <div class="challenge-options" role="group" aria-label="Escolha a estimativa">
+          <button type="button" data-ex-estimate="right">≈ 0,0041</button>
+          <button type="button" data-ex-estimate="wrong-c">≈ 0,0083</button>
+          <button type="button" data-ex-estimate="wrong-power">≈ 0,2067</button>
+        </div>
+        <p id="estimate-feedback" class="feedback" aria-live="polite"></p>
+        <div class="hint-ladder">
+          <details><summary>Primeira pista</summary><p>Área de fora compartilha constante com qual outra série? Olhe o parágrafo acima: só há dois valores possíveis, ≈10,335 e ≈20,671.</p></details>
+          <details><summary>Pista visual</summary><p>Área de fora está emparelhada com contorno de dentro: constante ≈ 10,335 = π³/3. Divida por n².</p></details>
+          <details><summary>Solução comentada</summary><p>10,335 / 50² = 10,335 / 2500 ≈ 0,00413. Troque a série para "área de fora" no laboratório e dobre até n = 50 (ou perto disso): o valor real bate em ≈ 0,00414 — a diferença é só porque a fórmula é assintótica, cada vez mais exata quanto maior o n. Usar a constante errada (20,671) dobraria a estimativa; usar C/n em vez de C/n² erraria por um fator de 50.</p></details>
+        </div>
+      </div>
+
       <p class="hint secret"><strong>Segredo de mestre:</strong> agora que o erro tem forma, ele virou promessa: escolha qualquer tolerância — 0,001? 0,000001? — e a forma quadrática entrega um n que garante erro menor. Transformar essa promessa em garantia formal é a pergunta que abre o <a href="../05-limite/index.html">Laboratório 05</a>.</p>
     </section>
 
@@ -692,6 +721,20 @@
             challengeFeedback.textContent = 'Dobrar divide o erro por 4, não por 100. Quantas dobras seriam necessárias — e existe caminho mais direto?';
           } else {
             challengeFeedback.textContent = 'Com a forma quadrática, 100 vezes mais lados dariam erro 10.000 vezes menor — muito além do pedido.';
+          }
+        });
+      });
+
+      const estimateFeedback = document.getElementById('estimate-feedback');
+      document.querySelectorAll('[data-ex-estimate]').forEach(button => {
+        button.addEventListener('click', () => {
+          const value = button.dataset.exEstimate;
+          if (value === 'right') {
+            estimateFeedback.textContent = 'Exato: 10,335 / 2500 ≈ 0,00413 — quase o valor real, ≈ 0,00414. Confira trocando a série no painel.';
+          } else if (value === 'wrong-c') {
+            estimateFeedback.textContent = 'Essa é a constante da OUTRA dupla (contorno de fora / área de dentro), ≈ 20,671. Área de fora usa ≈ 10,335.';
+          } else {
+            estimateFeedback.textContent = 'Isso seria C/n, não C/n². A forma é quadrática — divida por n², não por n.';
           }
         });
       });

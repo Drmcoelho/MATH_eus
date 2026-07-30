@@ -174,4 +174,11 @@ for (const expected of [1, 2, 8, 9, 18, 25]) {
 }
 assert.ok(!primitiveGaps.has(3) && !primitiveGaps.has(4), 'diferenças 3 e 4 não ocorrem em primitivas');
 
-console.log('T02 Lab 01: fábrica dos ímpares, censo duplo até 500, contagens 52/6, 881/21 e 12.471/70, diagonal k = m − 1 e exemplos citados verificados sem divergência.');
+// 12. Exercício "agora use a fórmula": n = 11 e os dois distratores por deslocamento de 1.
+assert.equal((11 * 11 - 1) / 2, 60, 'cateto maior citado no exercício (n=11)');
+assert.equal((11 * 11 + 1) / 2, 61, 'hipotenusa citada no exercício (n=11)');
+assert.equal(11 * 11 + 60 * 60, 61 * 61, 'a terna do exercício fecha o quadrado');
+assert.notEqual(11 * 11 + 59 * 59, 60 * 60, 'distrator (11,59,60) não deve fechar o quadrado');
+assert.notEqual(11 * 11 + 61 * 61, 62 * 62, 'distrator (11,61,62) não deve fechar o quadrado');
+
+console.log('T02 Lab 01: fábrica dos ímpares, censo duplo até 500, contagens 52/6, 881/21 e 12.471/70, diagonal k = m − 1, exemplos citados e o exercício de n=11 verificados sem divergência.');

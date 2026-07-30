@@ -81,4 +81,11 @@ assert.ok(oneDouble > 0.24 && oneDouble < 0.26, 'n=192 divide o erro por ~4');
 const overkill = errIn(9600) / errIn(96);
 assert.ok(overkill > 1 / 10500 && overkill < 1 / 9500, 'n=9600 divide o erro por ~10000');
 
-console.log('Lab 04: quatro séries até n=3072, contração rumo a 1/4, constantes π³/3 e 2π³/3 e o desafio dos 100× verificados sem divergência.');
+// exercício "agora use a fórmula": estimar erro da área de fora em n=50 via C/n²
+const areaOutErrorAt50 = SERIES.areaOut.error(50);
+const estimate50 = (Math.PI ** 3 / 3) / (50 * 50);
+close(estimate50, 0.00413, 5e-5, 'estimativa C/n² citada no exercício (n=50)');
+close(areaOutErrorAt50, 0.00414, 5e-5, 'valor real citado no exercício (n=50)');
+assert.ok(Math.abs(estimate50 - areaOutErrorAt50) < 0.0001, 'estimativa deve ficar próxima do valor real em n=50');
+
+console.log('Lab 04: quatro séries até n=3072, contração rumo a 1/4, constantes π³/3 e 2π³/3, o desafio dos 100× e a estimativa C/n² em n=50 verificados sem divergência.');
