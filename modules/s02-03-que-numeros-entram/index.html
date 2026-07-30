@@ -1,0 +1,880 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Laboratório 03 da Temporada 02 do MATHeu$: o problema inverso — dado um número inteiro, encontrar todas as ternas pitagóricas que o contêm.">
+  <title>T02 · Lab 03 — Que números entram em ternas? · MATHeu$</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --bg: #f4f1e8;
+      --ink: #171713;
+      --muted: #666258;
+      --paper: rgba(255, 255, 255, .66);
+      --line: rgba(23, 23, 19, .15);
+      --accent: #246b52;
+      --accent-2: #9b3f31;
+      --circle: #252520;
+      --focus: #d4872d;
+      --shadow: 0 18px 60px rgba(48, 43, 31, .09);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #11130f;
+        --ink: #f0eee7;
+        --muted: #b8b3a8;
+        --paper: rgba(255, 255, 255, .055);
+        --line: rgba(255, 255, 255, .14);
+        --accent: #7bc5a3;
+        --accent-2: #ef9788;
+        --circle: #f0eee7;
+        --focus: #ffc267;
+        --shadow: none;
+      }
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font: 18px/1.55 ui-serif, Georgia, Cambria, "Times New Roman", serif;
+    }
+
+    button, input { font: inherit; }
+
+    a { color: var(--accent); }
+
+    :focus-visible {
+      outline: 3px solid var(--focus);
+      outline-offset: 3px;
+    }
+
+    .skip-link {
+      position: absolute;
+      left: 12px;
+      top: -80px;
+      padding: 10px 14px;
+      background: var(--ink);
+      color: var(--bg);
+      z-index: 20;
+    }
+
+    .skip-link:focus { top: 12px; }
+
+    header, main, footer {
+      width: min(1120px, calc(100% - 32px));
+      margin-inline: auto;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      padding: 22px 0;
+      border-bottom: 1px solid var(--line);
+      font-family: ui-sans-serif, system-ui, sans-serif;
+      font-size: .86rem;
+    }
+
+    header a { text-decoration: none; }
+
+    .brand { font-weight: 800; letter-spacing: -.02em; }
+
+    main { padding: 58px 0 88px; }
+
+    .eyebrow {
+      margin: 0 0 12px;
+      color: var(--accent);
+      font: 800 .76rem/1.2 ui-sans-serif, system-ui, sans-serif;
+      letter-spacing: .15em;
+      text-transform: uppercase;
+    }
+
+    h1, h2, h3 { line-height: 1.08; letter-spacing: -.035em; }
+
+    h1 {
+      max-width: 940px;
+      margin: 0;
+      font-size: clamp(2.7rem, 7.4vw, 6rem);
+    }
+
+    h2 { font-size: clamp(2rem, 5vw, 3.5rem); margin-top: 0; }
+
+    h3 { font-size: 1.25rem; }
+
+    .lead {
+      max-width: 800px;
+      margin: 24px 0 0;
+      color: var(--muted);
+      font-size: clamp(1.18rem, 2.8vw, 1.65rem);
+    }
+
+    .question-card, .lab-card, .formula-card, .challenge-card, details {
+      margin-top: 38px;
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      background: var(--paper);
+      box-shadow: var(--shadow);
+    }
+
+    .question-card, .formula-card, .challenge-card, details { padding: clamp(22px, 4vw, 38px); }
+
+    .question-card strong, .box-label {
+      display: block;
+      color: var(--accent);
+      font: 800 .76rem/1.2 ui-sans-serif, system-ui, sans-serif;
+      letter-spacing: .13em;
+      text-transform: uppercase;
+    }
+
+    .question-card p {
+      max-width: 850px;
+      margin: 12px 0 22px;
+      font-size: clamp(1.45rem, 4vw, 2.45rem);
+      line-height: 1.18;
+    }
+
+    .answer-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    button {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 12px 16px;
+      background: transparent;
+      color: var(--ink);
+      cursor: pointer;
+    }
+
+    button:hover { border-color: var(--accent); }
+
+    button[aria-pressed="true"], .primary {
+      border-color: var(--accent);
+      background: var(--accent);
+      color: var(--bg);
+    }
+
+    button:disabled { opacity: .45; cursor: not-allowed; }
+
+    .feedback {
+      min-height: 1.6em;
+      margin: 16px 0 0;
+      color: var(--muted);
+      font-family: ui-sans-serif, system-ui, sans-serif;
+    }
+
+    .lab-card { overflow: hidden; }
+
+    .lab-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.35fr) minmax(280px, .65fr);
+    }
+
+    .visual-panel {
+      min-height: 560px;
+      padding: 18px;
+      background:
+        linear-gradient(var(--line) 1px, transparent 1px),
+        linear-gradient(90deg, var(--line) 1px, transparent 1px);
+      background-size: 28px 28px;
+    }
+
+    svg { width: 100%; height: 100%; min-height: 520px; display: block; }
+
+    .control-panel {
+      padding: clamp(22px, 4vw, 34px);
+      border-left: 1px solid var(--line);
+    }
+
+    .control-panel h2 { font-size: 1.9rem; }
+
+    .control-panel label {
+      display: block;
+      margin-top: 26px;
+      font: 700 .86rem/1.3 ui-sans-serif, system-ui, sans-serif;
+    }
+
+    input[type="range"] { width: 100%; margin: 14px 0; accent-color: var(--accent); }
+
+    .quick-values {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .quick-values button { padding: 8px 12px; font-size: .88rem; }
+
+    .measurements {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin: 26px 0;
+    }
+
+    .measurement {
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+    }
+
+    .measurement dt {
+      color: var(--muted);
+      font: 700 .73rem/1.2 ui-sans-serif, system-ui, sans-serif;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+    }
+
+    .measurement dd { margin: 5px 0 0; font-size: 1.32rem; font-variant-numeric: tabular-nums; }
+
+    .measurement.inside dd { color: var(--accent); }
+
+    .measurement.outside dd { color: var(--accent-2); }
+
+    .measurement.wide { grid-column: 1 / -1; }
+
+    .measurement.wide dd { font-size: 1rem; line-height: 1.6; }
+
+    .hint {
+      padding: 16px;
+      border-left: 4px solid var(--accent);
+      background: color-mix(in srgb, var(--accent) 9%, transparent);
+      color: var(--muted);
+    }
+
+    .reveal-row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-top: 22px; }
+
+    .hint.secret { margin-top: 24px; }
+
+    .formula-card[hidden], .challenge-card[hidden] { display: none; }
+
+    .formula {
+      margin: 22px 0;
+      padding: 22px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      text-align: center;
+      font-size: clamp(1.25rem, 3.4vw, 2rem);
+      font-variant-numeric: lining-nums;
+      overflow-x: auto;
+    }
+
+    .derivation {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      counter-reset: step;
+    }
+
+    .step {
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+    }
+
+    .step::before {
+      counter-increment: step;
+      content: counter(step);
+      display: grid;
+      place-items: center;
+      width: 28px;
+      height: 28px;
+      margin-bottom: 12px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: var(--bg);
+      font: 800 .82rem/1 ui-sans-serif, system-ui, sans-serif;
+    }
+
+    .step p { margin: 0; }
+
+    .dictionary {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .dictionary div { padding: 14px; border-top: 1px solid var(--line); }
+
+    .examples-table {
+      width: 100%;
+      margin-top: 22px;
+      border-collapse: collapse;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .examples-table th, .examples-table td {
+      padding: 10px 12px;
+      border-top: 1px solid var(--line);
+      text-align: left;
+    }
+
+    .examples-table th {
+      color: var(--muted);
+      font: 700 .73rem/1.2 ui-sans-serif, system-ui, sans-serif;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+    }
+
+    .examples-table .family td { color: var(--accent); font-weight: 700; }
+
+    .challenge-options { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+
+    details summary {
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 1.25rem;
+    }
+
+    details p, details li { color: var(--muted); }
+
+    footer { padding: 28px 0 56px; border-top: 1px solid var(--line); color: var(--muted); }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    @media (max-width: 820px) {
+      .answer-grid, .derivation, .dictionary { grid-template-columns: 1fr; }
+      .lab-grid { grid-template-columns: 1fr; }
+      .control-panel { border-left: 0; border-top: 1px solid var(--line); }
+      .visual-panel { min-height: 440px; }
+      svg { min-height: 400px; }
+    }
+
+    @media (max-width: 480px) {
+      header { align-items: flex-start; flex-direction: column; }
+      main { padding-top: 38px; }
+      .measurements { grid-template-columns: 1fr; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      * { transition: none !important; }
+    }
+
+    .hint-ladder { margin-top: 20px; }
+
+    .hint-ladder details {
+      margin-top: 10px;
+      padding: 14px 18px;
+      border-radius: 14px;
+      box-shadow: none;
+    }
+
+    .hint-ladder summary { font-size: 1rem; }
+
+    .lab-nav {
+      margin-top: 48px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
+      font-family: ui-sans-serif, system-ui, sans-serif;
+    }
+
+    .lab-nav a, .lab-nav .soon {
+      display: block;
+      padding: 16px 18px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: var(--paper);
+      color: var(--ink);
+      text-decoration: none;
+    }
+
+    .lab-nav a:hover { border-color: var(--accent); }
+
+    .lab-nav small {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--accent);
+      font: 800 .7rem/1.2 ui-sans-serif, system-ui, sans-serif;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+    }
+
+    .lab-nav .soon { color: var(--muted); }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#conteudo">Pular para o laboratório</a>
+  <header>
+    <a class="brand" href="../../index.html">MATHeu$</a>
+    <span>Temporada 02 · Laboratório 03</span>
+  </header>
+
+  <main id="conteudo">
+    <p class="eyebrow">Números que constroem formas</p>
+    <h1>Escolha um número qualquer. Ele mora em algum triângulo?</h1>
+    <p class="lead">Nos Laboratórios 01 e 02, as fábricas cuspiam ternas e você olhava o que saía. Agora a direção inverte: <em>você</em> escolhe o número — e o laboratório caça todas as ternas em que ele entra como cateto.</p>
+
+    <section class="question-card" aria-labelledby="aposta-titulo">
+      <strong id="aposta-titulo">Pare e aposte</strong>
+      <p>Existe algum número inteiro que não entra em nenhuma terna pitagórica?</p>
+      <div class="answer-grid" role="group" aria-label="Escolha sua previsão">
+        <button type="button" data-prediction="many" aria-pressed="false">vários ficam de fora</button>
+        <button type="button" data-prediction="primes" aria-pressed="false">os primos ficam de fora</button>
+        <button type="button" data-prediction="all" aria-pressed="false">todos a partir de 3 entram</button>
+      </div>
+      <p id="prediction-feedback" class="feedback" aria-live="polite">Aposte antes de caçar. O buscador vai dar o veredito.</p>
+    </section>
+
+    <section class="lab-card" aria-labelledby="finder-title">
+      <div class="lab-grid">
+        <div class="visual-panel">
+          <svg id="finder-svg" viewBox="0 0 640 560" role="img" aria-labelledby="finder-svg-title finder-svg-desc">
+            <title id="finder-svg-title">Leque de triângulos retângulos que compartilham o mesmo cateto</title>
+            <desc id="finder-svg-desc">O cateto escolhido fica na vertical, à esquerda. Cada terna que o contém desenha um triângulo com o outro cateto no chão; as hipotenusas formam um leque. Verde: ternas das famílias do Lab 01; vermelho: as demais.</desc>
+            <g id="finder-drawing"></g>
+          </svg>
+        </div>
+
+        <div class="control-panel">
+          <p class="box-label">Brinque</p>
+          <h2 id="finder-title">O buscador de moradas</h2>
+          <p>Escolha um número <strong>n</strong>. O buscador encontra todas as ternas com n como cateto — cada uma fecha um triângulo do leque.</p>
+
+          <label for="number">Número escolhido: <output id="number-output" for="number">12</output></label>
+          <input id="number" type="range" min="3" max="100" step="1" value="12">
+
+          <div class="quick-values" aria-label="Valores rápidos do buscador">
+            <button type="button" data-number="12">12</button>
+            <button type="button" data-number="15">15</button>
+            <button type="button" data-number="60">60</button>
+            <button type="button" data-number="97">97</button>
+          </div>
+
+          <dl class="measurements" aria-label="Resultado da busca">
+            <div class="measurement inside"><dt>ternas encontradas</dt><dd id="count">4</dd></div>
+            <div class="measurement"><dt>primitivas</dt><dd id="prim-count">2</dd></div>
+            <div class="measurement"><dt>menor hipotenusa</dt><dd id="min-hyp">13</dd></div>
+            <div class="measurement outside"><dt>maior hipotenusa</dt><dd id="max-hyp">37</dd></div>
+            <div class="measurement wide"><dt>as moradas</dt><dd id="triple-list">(5, 12, 13) · (9, 12, 15) · (12, 16, 20) · (12, 35, 37)</dd></div>
+          </dl>
+
+          <p class="hint"><strong>Olhe de novo:</strong> nenhum número devolve zero — e a terna mais esticada do leque é sempre uma velha conhecida: a fábrica do ímpar ou a família do par, do Laboratório 01.</p>
+
+          <div class="reveal-row">
+            <button id="reveal" type="button" class="primary" disabled>Revelar de onde vêm as moradas</button>
+            <span id="reveal-status" class="feedback" aria-live="polite">Faça a aposta e experimente outros números.</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="lab-card" aria-labelledby="ranking-title">
+      <div class="lab-grid">
+        <div class="visual-panel">
+          <svg id="ranking-svg" viewBox="0 0 640 560" role="img" aria-labelledby="ranking-svg-title ranking-svg-desc">
+            <title id="ranking-svg-title">Ranking dos números que moram em mais ternas</title>
+            <desc id="ranking-svg-desc">Barras horizontais com os dez números que aparecem em mais ternas pitagóricas como cateto, até o teto escolhido.</desc>
+            <g id="ranking-drawing"></g>
+          </svg>
+        </div>
+
+        <div class="control-panel">
+          <p class="box-label">Brinque</p>
+          <h2 id="ranking-title">Os campeões de morada</h2>
+          <p>Alguns números moram em uma terna só; outros colecionam dezenas. Suba o teto e veja quem assume o topo.</p>
+
+          <label for="ceiling">Teto do ranking: <output id="ceiling-output" for="ceiling">100</output></label>
+          <input id="ceiling" type="range" min="50" max="300" step="10" value="100">
+
+          <div class="quick-values" aria-label="Valores rápidos do teto">
+            <button type="button" data-ceiling="100">100</button>
+            <button type="button" data-ceiling="200">200</button>
+            <button type="button" data-ceiling="300">300</button>
+          </div>
+
+          <dl class="measurements" aria-label="Resumo do ranking">
+            <div class="measurement inside"><dt>campeão atual</dt><dd id="champion">60</dd></div>
+            <div class="measurement outside"><dt>ternas do campeão</dt><dd id="champion-count">13</dd></div>
+          </dl>
+
+          <p class="hint"><strong>Olhe de novo:</strong> os campeões não são os maiores números — são os mais <em>divisíveis</em>: 12, 60, 240… O pódio cheira a fatoração.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="formula-card" class="formula-card" hidden aria-labelledby="formula-title">
+      <p class="box-label">Entenda</p>
+      <h2 id="formula-title">Caçar moradas é fatorar uma diferença de quadrados</h2>
+
+      <div class="derivation">
+        <div class="step"><p><strong>Quer n como cateto?</strong> Então n² = c² − b² — e diferença de quadrados fatora: n² = (c − b)(c + b).</p></div>
+        <div class="step"><p><strong>Cada fatoração fecha um triângulo.</strong> Escreva n² = d · e com d &lt; e e mesma paridade: b = (e − d)/2 e c = (e + d)/2 saem inteiros.</p></div>
+        <div class="step"><p><strong>Contar ternas é contar fatorações.</strong> E a fatoração d = 1 (ímpares) ou d = 2 (pares) sempre existe — por isso todo número a partir de 3 entra.</p></div>
+      </div>
+
+      <div class="formula" aria-label="ternas com cateto n é igual a divisores de n ao quadrado menos um, dividido por dois">
+        ternas com cateto n = (divisores(n²) − 1) / 2 &nbsp;&nbsp;<span style="color:var(--muted)">(n ímpar; para n par, use (n/2)² no lugar de n²)</span>
+      </div>
+
+      <div class="dictionary" aria-label="Dicionário da fórmula">
+        <div><strong>divisores(x)</strong><br>quantos inteiros dividem x — pura fatoração</div>
+        <div><strong>− 1</strong><br>descarta d = e, que faria b = 0 (triângulo degenerado)</div>
+        <div><strong>/ 2</strong><br>cada par d · e conta uma vez só, não nas duas ordens</div>
+      </div>
+
+      <p><strong>Exemplo por inspeção:</strong> 15² = 225 tem 9 divisores → (9 − 1)/2 = 4 ternas. O buscador confirma.</p>
+
+      <p>A tabela do 12 mostra a máquina inteira funcionando (12 é par, então fatoramos 144 em pares d · e com d e e pares):</p>
+
+      <table class="examples-table">
+        <caption class="sr-only">Fatorações de 144 e as ternas do número 12</caption>
+        <thead>
+          <tr><th scope="col">144 = d · e</th><th scope="col">b = (e − d)/2</th><th scope="col">c = (e + d)/2</th><th scope="col">terna</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>2 · 72</td><td>35</td><td>37</td><td>(12, 35, 37) — família do par</td></tr>
+          <tr><td>4 · 36</td><td>16</td><td>20</td><td>(12, 16, 20)</td></tr>
+          <tr><td>6 · 24</td><td>9</td><td>15</td><td>(9, 12, 15)</td></tr>
+          <tr><td>8 · 18</td><td>5</td><td>13</td><td>(5, 12, 13)</td></tr>
+        </tbody>
+      </table>
+
+      <p><strong>O que a fórmula mede:</strong> uma contagem — adimensional. Vale para todo n ≥ 3, contando as ternas em que n entra como cateto (entrar como hipotenusa é outra história).</p>
+      <p><strong>Os únicos excluídos:</strong> 1 e 2. Para eles, a única fatoração possível é d = e — que força b = 0. Nenhum outro número fica de fora.</p>
+
+      <div id="exercise-parity" class="challenge-card" style="margin-top:26px; padding:0; border:0; box-shadow:none; background:transparent;">
+        <p class="box-label">Agora use a fórmula</p>
+        <h3>20 é par. Em quantas ternas ele mora como cateto?</h3>
+        <p>Número par: a fórmula troca n² por (n/2)². Não use o buscador — calcule.</p>
+        <div class="challenge-options" role="group" aria-label="Escolha a contagem">
+          <button type="button" data-ex-parity="4">4 ternas</button>
+          <button type="button" data-ex-parity="7">7 ternas</button>
+          <button type="button" data-ex-parity="9">9 ternas</button>
+        </div>
+        <p id="parity-feedback" class="feedback" aria-live="polite"></p>
+        <div class="hint-ladder">
+          <details><summary>Primeira pista</summary><p>20 é par — não fatore 20² = 400. Fatore (20/2)² = 100.</p></details>
+          <details><summary>Pista visual</summary><p>100 = 2² · 5². Quantos divisores tem 100? Depois aplique (divisores − 1)/2.</p></details>
+          <details><summary>Solução comentada</summary><p>divisores(100) = (2+1)(2+1) = 9; ternas = (9 − 1)/2 = 4. Confira no buscador: 20 mora em (15,20,25), (20,21,29), (20,48,52) e (20,99,101) — 4 ternas. Usar n² = 400 em vez de (n/2)² = 100 dá 15 divisores e 7 ternas — a armadilha exata que a paridade da Oficina avisa. E 9 é a contagem de divisores de 100 sem terminar a fórmula, o mesmo erro do desafio do 15 lá em cima.</p></details>
+        </div>
+      </div>
+
+      <p class="hint secret"><strong>Segredo de mestre:</strong> até 300, o campeão é o 240, morando em 31 ternas — e o pódio é ocupado por números atulhados de divisores. Já entrar como <em>hipotenusa</em> é um clube bem mais seletivo: 5, 13 e 17 entram; 3, 4 e 6 nunca. Essa porta abre no Laboratório 08.</p>
+    </section>
+
+    <section id="challenge" class="challenge-card" hidden aria-labelledby="challenge-title">
+      <p class="box-label">Agora use a fórmula</p>
+      <h2 id="challenge-title">Em quantas ternas mora o número 15?</h2>
+      <p>15 é ímpar e 15² = 225 = 3² · 5². Conte os divisores de 225 e aplique a fórmula — sem buscador.</p>
+      <div class="challenge-options" role="group" aria-label="Escolha a contagem">
+        <button type="button" data-answer="3">3 ternas</button>
+        <button type="button" data-answer="4">4 ternas</button>
+        <button type="button" data-answer="9">9 ternas</button>
+      </div>
+      <p id="challenge-feedback" class="feedback" aria-live="polite"></p>
+    </section>
+
+    <section id="tie" class="challenge-card" hidden aria-labelledby="tie-title">
+      <p class="box-label">Curiosidade</p>
+      <h2 id="tie-title">O empate triplo e o eremita</h2>
+      <p>Até 100, o pódio das moradas termina empatado: <strong>60, 84 e 96</strong> moram em 13 ternas cada — três números riquíssimos em divisores. No extremo oposto, o primo <strong>97</strong> é um eremita: mora numa única terna, (97, 4704, 4705), a da fábrica dos ímpares. Para um primo ímpar, 97² só fatora como 1 · 97² — a fórmula dá exatamente (3 − 1)/2 = 1.</p>
+      <p><strong>Porta futura:</strong> a contagem deste laboratório olhou um número por vez. O Laboratório 05 conta todas as ternas de uma vez — e uma constante inesperada aparece na reta.</p>
+    </section>
+
+    <details>
+      <summary>Oficina — paridade, primitivas e o censo do buscador</summary>
+      <p><strong>Por que d e e precisam ter a mesma paridade.</strong> De d = c − b e e = c + b vem c = (e + d)/2 e b = (e − d)/2: soma e diferença precisam ser pares, o que exige d e e ambos ímpares ou ambos pares. Para n ímpar, n² é ímpar e toda fatoração serve; para n par, só servem as fatorações com os dois fatores pares — por isso a fórmula troca n² por (n/2)².</p>
+      <p><strong>Quais moradas são primitivas.</strong> Para n ímpar, são as fatorações com d e e primos entre si (um fator comum ímpar dividiria b, c e n). Para n par, quem decide são as metades d/2 e e/2: a morada é primitiva quando elas são coprimas <em>e</em> de paridades opostas. No 12: 8 · 18 tem metades 4 e 9 — coprimas, uma par e uma ímpar — e dá a primitiva (5, 12, 13); já 6 · 24 tem metades 3 e 12 e dá (9, 12, 15) = 3 × (3, 4, 5).</p>
+      <p><strong>Por que 1 e 2 ficam de fora até como hipotenusa.</strong> Uma hipotenusa c pede a² + b² = c² com a, b ≥ 1, logo c² ≥ 2 — e c = 1 ou 2 não comporta dois quadrados positivos. Como cateto, a fatoração degenera. São os dois únicos inteiros positivos sem morada nenhuma.</p>
+      <p><strong>O que o verificador confere.</strong> A contagem por fatoração coincide com a busca por força bruta para todo n de 3 a 300; nenhum número devolve zero; 1 e 2 devolvem zero; a terna mais esticada de cada n é a da fábrica do ímpar ou da família do par; e todos os números citados na página (12, 15, 60, 84, 96, 97, 240) têm as contagens e ternas conferidas.</p>
+    </details>
+
+    <nav class="lab-nav" aria-label="Continuar no MATHeu$">
+      <a href="../s02-02-mapa-das-ternas/index.html"><small>Anterior</small>T02 Lab 02 — O mapa de todas as ternas</a>
+      <a href="../../index.html#temporada-02"><small>Índice</small>Todos os laboratórios</a>
+      <a href="../s02-04-diferencas/index.html"><small>Próximo</small>T02 Lab 04 — A diferença esconde um padrão</a>
+    </nav>
+  </main>
+
+  <footer>
+    <p>MATHeu$ · Temporada 02, Laboratório 03 · HTML autocontido, SVG calculado e funcionamento offline.</p>
+  </footer>
+
+  <script>
+    (() => {
+      'use strict';
+
+      const NS = 'http://www.w3.org/2000/svg';
+
+      const finderDrawing = document.getElementById('finder-drawing');
+      const number = document.getElementById('number');
+      const numberOutput = document.getElementById('number-output');
+      const countOut = document.getElementById('count');
+      const primOut = document.getElementById('prim-count');
+      const minHypOut = document.getElementById('min-hyp');
+      const maxHypOut = document.getElementById('max-hyp');
+      const tripleList = document.getElementById('triple-list');
+
+      const rankingDrawing = document.getElementById('ranking-drawing');
+      const ceiling = document.getElementById('ceiling');
+      const ceilingOutput = document.getElementById('ceiling-output');
+      const championOut = document.getElementById('champion');
+      const championCountOut = document.getElementById('champion-count');
+
+      const reveal = document.getElementById('reveal');
+      const revealStatus = document.getElementById('reveal-status');
+      const formulaCard = document.getElementById('formula-card');
+      const challenge = document.getElementById('challenge');
+      const tie = document.getElementById('tie');
+      const predictionFeedback = document.getElementById('prediction-feedback');
+      const challengeFeedback = document.getElementById('challenge-feedback');
+
+      let predicted = false;
+      let moved = false;
+      const initialN = Number(number.value);
+
+      const fmtInt = value => new Intl.NumberFormat('pt-BR').format(value);
+      const gcd = (a, b) => (b ? gcd(b, a % b) : a);
+
+      function el(name, attrs = {}, text = '') {
+        const node = document.createElementNS(NS, name);
+        for (const [key, value] of Object.entries(attrs)) node.setAttribute(key, value);
+        if (text) node.textContent = text;
+        return node;
+      }
+
+      function addLabel(target, x, y, text, anchor = 'start', size = 15) {
+        target.appendChild(el('text', {
+          x, y,
+          'text-anchor': anchor,
+          'font-family': 'ui-sans-serif, system-ui, sans-serif',
+          'font-size': String(size),
+          'font-weight': '750',
+          fill: 'currentColor'
+        }, text));
+      }
+
+      // fatorações de n² = d · e (mesma paridade, d < e) → ternas com cateto n
+      function findTriples(n) {
+        const sq = n * n;
+        const triples = [];
+        for (let d = 1; d * d < sq; d += 1) {
+          if (sq % d !== 0) continue;
+          const e = sq / d;
+          if ((e - d) % 2 !== 0 || d % 2 !== e % 2) continue;
+          const b = (e - d) / 2;
+          const c = (e + d) / 2;
+          if (b < 1) continue;
+          triples.push({ other: b, c, primitive: gcd(n, gcd(b, c)) === 1 });
+        }
+        return triples.sort((p, q) => p.other - q.other);
+      }
+
+      function countTriples(n) {
+        const sq = n % 2 === 1 ? n * n : (n / 2) * (n / 2);
+        let tau = 0;
+        for (let d = 1; d * d <= sq; d += 1) {
+          if (sq % d === 0) tau += d * d === sq ? 1 : 2;
+        }
+        return (tau - 1) / 2;
+      }
+
+      function renderFinder() {
+        const n = Number(number.value);
+        const triples = findTriples(n);
+
+        numberOutput.value = String(n);
+        numberOutput.textContent = String(n);
+        countOut.textContent = fmtInt(triples.length);
+        primOut.textContent = fmtInt(triples.filter(t => t.primitive).length);
+        minHypOut.textContent = fmtInt(triples[0] ? Math.min(...triples.map(t => t.c)) : 0);
+        maxHypOut.textContent = fmtInt(triples[0] ? Math.max(...triples.map(t => t.c)) : 0);
+        tripleList.textContent = triples
+          .map(t => `(${fmtInt(Math.min(n, t.other))}, ${fmtInt(Math.max(n, t.other))}, ${fmtInt(t.c)})`)
+          .join(' · ');
+
+        finderDrawing.replaceChildren();
+
+        const bMax = Math.max(...triples.map(t => t.other));
+        const x0 = 90;
+        const y0 = 480;
+        const scale = Math.min(500 / bMax, 380 / n);
+        const top = [x0, y0 - n * scale];
+
+        finderDrawing.appendChild(el('line', {
+          x1: x0, y1: y0, x2: x0 + Math.max(bMax * scale, 40), y2: y0,
+          stroke: 'var(--line)', 'stroke-width': '2'
+        }));
+
+        for (const t of triples) {
+          const foot = [x0 + t.other * scale, y0];
+          const family = t.c - Math.max(n, t.other) <= 2;
+          finderDrawing.appendChild(el('line', {
+            x1: top[0], y1: top[1], x2: foot[0], y2: foot[1],
+            stroke: family ? 'var(--accent)' : 'var(--accent-2)',
+            'stroke-width': '3.5'
+          }));
+          finderDrawing.appendChild(el('circle', {
+            cx: foot[0], cy: foot[1], r: 5,
+            fill: family ? 'var(--accent)' : 'var(--accent-2)'
+          }));
+          if (triples.length <= 5) {
+            addLabel(finderDrawing, foot[0], y0 + 24, fmtInt(t.other), 'middle');
+          }
+        }
+
+        finderDrawing.appendChild(el('line', {
+          x1: x0, y1: y0, x2: top[0], y2: top[1],
+          stroke: 'var(--circle)', 'stroke-width': '6'
+        }));
+        finderDrawing.appendChild(el('circle', { cx: top[0], cy: top[1], r: 6, fill: 'var(--ink)' }));
+
+        addLabel(finderDrawing, x0 - 14, y0 - (n * scale) / 2 + 5, fmtInt(n), 'end', 18);
+        if (triples.length > 5) {
+          addLabel(finderDrawing, x0 + bMax * scale, y0 + 24, fmtInt(bMax), 'middle');
+        }
+
+        addLabel(finderDrawing, 320, 36, `${fmtInt(n)} mora em ${fmtInt(triples.length)} ${triples.length === 1 ? 'terna' : 'ternas'}`, 'middle', 18);
+        addLabel(
+          finderDrawing, 320, 540,
+          `${fmtInt(n)}² = ${fmtInt(n * n)} · cada fatoração d · e de mesma paridade fecha um triângulo`,
+          'middle', 14
+        );
+      }
+
+      function renderRanking() {
+        const N = Number(ceiling.value);
+        const rows = [];
+        for (let n = 3; n <= N; n += 1) rows.push([n, countTriples(n)]);
+        rows.sort((p, q) => q[1] - p[1] || p[0] - q[0]);
+        const top10 = rows.slice(0, 10);
+
+        ceilingOutput.value = String(N);
+        ceilingOutput.textContent = String(N);
+        championOut.textContent = fmtInt(top10[0][0]);
+        championCountOut.textContent = fmtInt(top10[0][1]);
+
+        rankingDrawing.replaceChildren();
+
+        const maxCount = top10[0][1];
+        const barLeft = 120;
+        const barMax = 430;
+        const rowH = 48;
+        const topY = 60;
+
+        addLabel(rankingDrawing, 320, 28, `top 10 de moradas, números até ${fmtInt(N)}`, 'middle', 16);
+
+        top10.forEach(([n, c], i) => {
+          const y = topY + i * rowH;
+          const w = Math.max(6, (c / maxCount) * barMax);
+          addLabel(rankingDrawing, barLeft - 12, y + 21, fmtInt(n), 'end', 16);
+          rankingDrawing.appendChild(el('rect', {
+            x: barLeft, y, width: w, height: 30, rx: 6,
+            fill: i === 0 ? 'var(--accent)' : 'color-mix(in srgb, var(--accent) 55%, transparent)'
+          }));
+          addLabel(rankingDrawing, barLeft + w + 10, y + 21, fmtInt(c), 'start', 15);
+        });
+      }
+
+      function updateReadiness() {
+        const ready = predicted && moved;
+        reveal.disabled = !ready;
+        revealStatus.textContent = ready
+          ? 'Agora a origem das moradas pode aparecer.'
+          : 'Faça a aposta e experimente outros números.';
+      }
+
+      document.querySelectorAll('[data-prediction]').forEach(button => {
+        button.addEventListener('click', () => {
+          document.querySelectorAll('[data-prediction]').forEach(item => item.setAttribute('aria-pressed', 'false'));
+          button.setAttribute('aria-pressed', 'true');
+          predicted = true;
+          const correct = button.dataset.prediction === 'all';
+          predictionFeedback.textContent = correct
+            ? 'Boa aposta. Agora tente achar um contraexemplo no buscador — vale qualquer número.'
+            : 'Aposta registrada. Procure um contraexemplo no buscador — vale qualquer número.';
+          updateReadiness();
+        });
+      });
+
+      number.addEventListener('input', () => {
+        moved = moved || Number(number.value) !== initialN;
+        renderFinder();
+        updateReadiness();
+      });
+
+      document.querySelectorAll('[data-number]').forEach(button => {
+        button.addEventListener('click', () => {
+          number.value = button.dataset.number;
+          moved = moved || Number(number.value) !== initialN;
+          renderFinder();
+          updateReadiness();
+        });
+      });
+
+      ceiling.addEventListener('input', renderRanking);
+      document.querySelectorAll('[data-ceiling]').forEach(button => {
+        button.addEventListener('click', () => {
+          ceiling.value = button.dataset.ceiling;
+          renderRanking();
+        });
+      });
+
+      reveal.addEventListener('click', () => {
+        formulaCard.hidden = false;
+        challenge.hidden = false;
+        reveal.textContent = 'Origem revelada';
+        reveal.disabled = true;
+        formulaCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+
+      document.querySelectorAll('[data-answer]').forEach(button => {
+        button.addEventListener('click', () => {
+          const answer = button.dataset.answer;
+          if (answer === '4') {
+            challengeFeedback.textContent =
+              'Exato: 225 tem 9 divisores, (9 − 1)/2 = 4. São elas: (8, 15, 17), (15, 20, 25), (15, 36, 39) e (15, 112, 113).';
+            if (tie.hidden) tie.hidden = false;
+          } else if (answer === '9') {
+            challengeFeedback.textContent =
+              '9 é o número de divisores de 225 — mas ainda falta descartar d = e e não contar cada par duas vezes. Aplique o resto da fórmula.';
+          } else {
+            challengeFeedback.textContent =
+              'Quase. Conte de novo os divisores de 225 = 3² · 5²: são (2+1) × (2+1) = 9. Agora termine a fórmula.';
+          }
+        });
+      });
+
+      const parityFeedback = document.getElementById('parity-feedback');
+      document.querySelectorAll('[data-ex-parity]').forEach(button => {
+        button.addEventListener('click', () => {
+          const value = button.dataset.exParity;
+          if (value === '4') {
+            parityFeedback.textContent = 'Exato: divisores(100) = 9, ternas = (9 − 1)/2 = 4. Confira no buscador com o número 20.';
+          } else if (value === '7') {
+            parityFeedback.textContent = 'Isso sai de fatorar 400 = 20² em vez de 100 = (20/2)². Para n par, use a metade ao quadrado.';
+          } else {
+            parityFeedback.textContent = 'Esse é o número de divisores de 100 — falta descartar d = e e dividir por 2.';
+          }
+        });
+      });
+
+      renderFinder();
+      renderRanking();
+      updateReadiness();
+    })();
+  </script>
+</body>
+</html>

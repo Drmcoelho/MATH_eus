@@ -26,6 +26,10 @@ Publicação esperada:
 - Laboratório 08: `https://drmcoelho.github.io/MATH_eus/modules/08-integral/`
 - Laboratório 09: `https://drmcoelho.github.io/MATH_eus/modules/09-derivada/`
 - Laboratório 10: `https://drmcoelho.github.io/MATH_eus/modules/10-reciprocidade/`
+- Temporada 02, Laboratório 01: `https://drmcoelho.github.io/MATH_eus/modules/s02-01-ternas-pitagoricas/`
+- Temporada 02, Laboratório 02: `https://drmcoelho.github.io/MATH_eus/modules/s02-02-mapa-das-ternas/`
+- Temporada 02, Laboratório 03: `https://drmcoelho.github.io/MATH_eus/modules/s02-03-que-numeros-entram/`
+- Temporada 02, Laboratório 04: `https://drmcoelho.github.io/MATH_eus/modules/s02-04-diferencas/`
 
 O repositório é um site estático puro. A fonte do GitHub Pages deve ser configurada como:
 
@@ -58,6 +62,21 @@ forma → medida → comparação → erro → garantia → limite
 → espaço → acumulação → variação → reciprocidade
 ```
 
+## Segunda temporada
+
+**Números que constroem formas** — dez laboratórios sobre uma única configuração aritmética, a² + b² = c² com lados inteiros. Plano completo em [docs/SEASON-02.md](docs/SEASON-02.md).
+
+1. [A fábrica dos ímpares](modules/s02-01-ternas-pitagoricas/index.html) — fatia vertical disponível
+2. [O mapa de todas as ternas](modules/s02-02-mapa-das-ternas/index.html) — fatia vertical disponível
+3. [Que números entram em ternas?](modules/s02-03-que-numeros-entram/index.html) — fatia vertical disponível
+4. [A diferença esconde um padrão](modules/s02-04-diferencas/index.html) — fatia vertical disponível
+5. Quantas ternas existem até N?
+6. Do esquadro ao tijolo
+7. Ternas viram pontos no círculo
+8. Acumular quadrados
+9. Quando o expoente sobe
+10. A grade e o círculo são o mesmo desenho
+
 ## Verificação dos laboratórios
 
 Cada módulo possui um verificador matemático independente, sem dependências externas:
@@ -66,13 +85,7 @@ Cada módulo possui um verificador matemático independente, sem dependências e
 for checker in modules/*/check-math.mjs; do node "$checker"; done
 ```
 
-Os Labs 06–10 acrescentam verificações de:
-
-- cerco espacial entre prismas e cilindro, extrusão e leis de escala `λ`, `λ²` e `λ³`;
-- volumes de cilindro, cone e esfera, fração angular e escala cúbica;
-- soma de discos para a esfera, erro exato `2πR³/(3N²)` e contração por `1/4`;
-- identidade da coroa, aproximação linear, resto quadrático e `dA/dr = 2πr`;
-- somas interna, média e externa das coroas, cerco final e reciprocidade derivada–integral.
+O do Lab 01 confere a identidade pitagórica, a monotonicidade de `r/R`, a construção pelo ponto médio, a inferência inversa de `n` e, para a parte de ruído, os intervalos de compatibilidade e o alcance do instrumento em cada tolerância. O do Interlúdio 01·B constrói o polígono escondido por coordenadas e confere o circunraio `r`, a semelhança `L'/L = r/R`, o raio e o giro após `k` repetições, a identidade da coroa `π(R² − r²) = π(L/2)²`, a tabela de repetições até a metade e o produto de Kepler–Bouwkamp. O do Lab 02 confere o cerco (interno < círculo < externo), as monotonicidades, a razão dos erros descendo para 2, o desafio da barreira de 6,2 e as cotas de Arquimedes com n = 96. O do Lab 03 confere a fórmula do leque (exata para os dois polígonos), o empate exato entre os excessos de área e de contorno do circunscrito, a razão dos erros relativos internos subindo para 4 e os valores citados na página. O do Lab 04 confere, para as quatro séries de erro, a convergência de `n² × erro` às constantes `π³/3` e `2π³/3`, a contração rumo a 1/4 ao dobrar `n` e o desafio dos cem vezes menos. O do Lab 05 confere as monotonias do cerco até `n = 5000`, o menor `N` de cada tolerância (sem recaída em 3000 valores seguintes) e a previsão `N ≈ √(π³/ε)` acertando o `N` exato. O do Lab 06 confere o cerco espacial entre os prismas inscrito e circunscrito e o cilindro, a extrusão da área para o volume, a independência do volume em relação à altura na razão dos cercos e as leis de escala `λ`, `λ²` e `λ³` ao redimensionar o prisma. O do Lab 07 confere os volumes de cilindro, cone e esfera por revolução, a fração angular do volume conforme o ângulo de giro e a escala cúbica ao redimensionar o sólido. O do Lab 08 confere a soma de discos que aproxima o volume da esfera, o erro exato `2πR³/(3N²)` do ponto médio, a contração do erro por `1/4` ao dobrar `N` e o menor `N` que cruza cada tolerância. O do Lab 09 confere a identidade exata da coroa `ΔA = 2πrΔr + π(Δr)²`, a aproximação linear, o resto quadrático e a derivada `dA/dr = 2πr`. O do Lab 10 confere as somas interna, média e externa das coroas em fórmula fechada, o cerco de largura `2πR²/N`, a exatidão do ponto médio para qualquer `N` e a reciprocidade entre derivada e integral. O do T02 Lab 01 confere a fábrica dos ímpares (identidade, diferença 1 e primitividade), refaz o censo das ternas por dois caminhos independentes — força bruta e fórmula de Euclides — exigindo listas idênticas até hipotenusa 500, e valida as contagens citadas na página (52/6 até 100, 881/21 até 1.000, 12.471/70 até 10.000). O do T02 Lab 02 confere que as casas válidas da grade fabricam primitivas sem repetição, que a volta m² = (c + cateto ímpar)/2, k² = (c − cateto ímpar)/2 recupera o endereço das 158 primitivas com hipotenusa até 1.000, as bordas (diagonal com diferença 1, coluna do par com diferença 2) e as contagens 190/86 do mapa. O do T02 Lab 03 confere que a contagem de moradas por fórmula, por fatoração e por força bruta coincide para todo n de 3 a 300, que nenhum número a partir de 3 fica de fora (e que 1 e 2 ficam), que a terna mais esticada de cada número é a da fábrica do ímpar ou da família do par, e as contagens citadas (12 e 15 com 4 moradas, empate triplo 60-84-96 com 13, campeão 240 com 31, eremita 97 com 1). O do T02 Lab 04 confere que toda primitiva com hipotenusa até 5.000 tem falta (m − k)² ou 2k² conforme o cateto maior, que as nove faltas presentes até 50 não mudam entre os tetos 500 e 2.000 e nenhuma proibida aparece, as primeiras ocorrências citadas (8, 18, 25, 49), o preenchimento total pelas cópias (3v, 4v, 5v) e os catetos gêmeos de Pell até (696, 697, 985) com a razão 3 + 2√2.
 
 ## Princípios
 

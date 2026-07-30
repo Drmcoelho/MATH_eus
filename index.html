@@ -7,24 +7,48 @@
   <meta name="pages-build-trigger" content="2026-07-29T20:51-03:00">
   <title>MATHeu$ — Laboratório visual de intuição matemática</title>
   <style>
-    :root { color-scheme:light dark; --bg:#f5f2ea; --ink:#151515; --muted:#615f59; --panel:rgba(255,255,255,.58); --line:rgba(20,20,20,.14); --accent:#246b52; }
-    @media (prefers-color-scheme:dark){:root{--bg:#111310;--ink:#f0eee8;--muted:#b7b3aa;--panel:rgba(255,255,255,.05);--line:rgba(255,255,255,.13);--accent:#77c6a2}}
-    *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--ink);font:18px/1.55 ui-serif,Georgia,serif}
-    main{width:min(1060px,calc(100% - 32px));margin:auto;padding:64px 0 96px}
-    .eyebrow{font:700 .75rem/1.2 ui-sans-serif,system-ui;letter-spacing:.15em;text-transform:uppercase;color:var(--accent)}
-    h1{font-size:clamp(3rem,10vw,7rem);line-height:.9;margin:.2em 0;letter-spacing:-.05em}
-    .lead{font-size:clamp(1.2rem,3vw,1.75rem);max-width:800px;color:var(--muted)}
-    .question{margin:48px 0;padding:32px;border:1px solid var(--line);border-radius:24px;background:var(--panel)}
-    .question strong{display:block;font:700 .75rem/1.2 ui-sans-serif,system-ui;text-transform:uppercase;letter-spacing:.12em;color:var(--accent)}
-    .question p{font-size:clamp(1.5rem,4vw,2.6rem);line-height:1.15;margin:.5em 0 0}
-    .season{margin:42px 0 18px;font:800 .78rem/1.2 ui-sans-serif,system-ui;letter-spacing:.12em;text-transform:uppercase;color:var(--accent)}
-    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
-    article{padding:24px;border:1px solid var(--line);border-radius:20px;background:var(--panel)}
-    article small{color:var(--accent);font:700 .72rem/1 ui-sans-serif,system-ui;letter-spacing:.1em}
-    article h2{margin:.5rem 0;font-size:1.35rem} article p{margin:0;color:var(--muted)}
-    article a{color:inherit;text-decoration:none}.available{border-color:var(--accent)}.available:hover{transform:translateY(-2px)}
-    .status{display:inline-block;margin-top:16px;color:var(--accent);font:700 .78rem/1.2 ui-sans-serif,system-ui}
-    footer{margin-top:56px;padding-top:24px;border-top:1px solid var(--line);color:var(--muted)}
+    :root {
+      color-scheme: light dark;
+      --bg: #f5f2ea;
+      --ink: #151515;
+      --muted: #615f59;
+      --panel: rgba(255,255,255,.58);
+      --line: rgba(20,20,20,.14);
+      --accent: #246b52;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg:#111310; --ink:#f0eee8; --muted:#b7b3aa;
+        --panel:rgba(255,255,255,.05); --line:rgba(255,255,255,.13);
+        --accent:#77c6a2;
+      }
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin:0; background:var(--bg); color:var(--ink);
+      font: 18px/1.55 ui-serif, Georgia, serif;
+    }
+    main { width:min(980px, calc(100% - 32px)); margin:auto; padding:64px 0 96px; }
+    .eyebrow { font: 700 .75rem/1.2 ui-sans-serif, system-ui; letter-spacing:.15em; text-transform:uppercase; color:var(--accent); }
+    h1 { font-size:clamp(3rem, 10vw, 7rem); line-height:.9; margin:.2em 0; letter-spacing:-.05em; }
+    .lead { font-size:clamp(1.2rem, 3vw, 1.75rem); max-width:760px; color:var(--muted); }
+    .question {
+      margin:48px 0; padding:32px; border:1px solid var(--line);
+      border-radius:24px; background:var(--panel);
+    }
+    .question strong { display:block; font:700 .75rem/1.2 ui-sans-serif,system-ui; text-transform:uppercase; letter-spacing:.12em; color:var(--accent); }
+    .question p { font-size:clamp(1.5rem,4vw,2.6rem); line-height:1.15; margin:.5em 0 0; }
+    .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:16px; }
+    article { padding:24px; border:1px solid var(--line); border-radius:20px; background:var(--panel); }
+    article small { color:var(--accent); font:700 .72rem/1 ui-sans-serif,system-ui; letter-spacing:.1em; }
+    article h3 { margin:.5rem 0; font-size:1.35rem; }
+    .season { margin:56px 0 14px; font:800 .78rem/1.2 ui-sans-serif,system-ui; letter-spacing:.13em; text-transform:uppercase; color:var(--muted); }
+    article p { margin:0; color:var(--muted); }
+    article a { color:inherit; text-decoration:none; }
+    article.available { border-color:var(--accent); }
+    article.available:hover { transform:translateY(-2px); }
+    .status { display:inline-block; margin-top:16px; color:var(--accent); font:700 .78rem/1.2 ui-sans-serif,system-ui; }
+    footer { margin-top:56px; padding-top:24px; border-top:1px solid var(--line); color:var(--muted); }
   </style>
 </head>
 <body>
@@ -36,21 +60,35 @@
     <strong>Pergunta de abertura</strong>
     <p>Quanto de geometria e cálculo pode nascer de um polígono preso entre duas circunferências?</p>
   </section>
-  <p class="season">Temporada 01 · O cerco do círculo · completa</p>
-  <section class="grid" aria-label="Primeira temporada">
-    <article class="available"><a href="modules/01-duas-circunferencias/index.html"><small>LAB 01</small><h2>Duas circunferências</h2><p>Inferir a forma a partir da razão entre os raios.</p><span class="status">Abrir laboratório →</span></a></article>
-    <article class="available"><a href="modules/01b-poligono-escondido/index.html"><small>LAB 01·B</small><h2>O polígono escondido</h2><p>Ligar os pontos de tangência e descer a espiral autossimilar.</p><span class="status">Abrir interlúdio →</span></a></article>
-    <article class="available"><a href="modules/02-perimetros/index.html"><small>LAB 02</small><h2>Quanto mede o contorno?</h2><p>Construir os perímetros por dentro e por fora.</p><span class="status">Abrir laboratório →</span></a></article>
-    <article class="available"><a href="modules/03-areas/index.html"><small>LAB 03</small><h2>O que acontece com as áreas?</h2><p>Transformar lados em triângulos e triângulos em área.</p><span class="status">Abrir laboratório →</span></a></article>
-    <article class="available"><a href="modules/04-erro/index.html"><small>LAB 04</small><h2>O erro também tem forma</h2><p>Observar a ordem quadrática dos quatro erros do cerco.</p><span class="status">Abrir laboratório →</span></a></article>
-    <article class="available"><a href="modules/05-limite/index.html"><small>LAB 05</small><h2>Quando nasce o limite?</h2><p>Trocar “parece próximo” por uma garantia de tolerância.</p><span class="status">Abrir laboratório →</span></a></article>
-    <article class="available"><a href="modules/06-prismas/index.html"><small>LAB 06</small><h2>Do polígono ao prisma</h2><p>Perímetro vira parede; área vira volume.</p><span class="status">Abrir laboratório →</span></a></article>
-    <article class="available"><a href="modules/07-rotacao/index.html"><small>LAB 07</small><h2>Girar cria espaço</h2><p>Perfis planos se tornam cilindro, cone e esfera.</p><span class="status">Abrir laboratório →</span></a></article>
-    <article class="available"><a href="modules/08-integral/index.html"><small>LAB 08</small><h2>Acumular é integrar</h2><p>Reconstruir a esfera por uma soma refinável de discos.</p><span class="status">Abrir laboratório →</span></a></article>
-    <article class="available"><a href="modules/09-derivada/index.html"><small>LAB 09</small><h2>Mudar é derivar</h2><p>Ler a taxa local na coroa acrescentada ao círculo.</p><span class="status">Abrir laboratório →</span></a></article>
-    <article class="available"><a href="modules/10-reciprocidade/index.html"><small>LAB 10</small><h2>Derivar e integrar são inversos</h2><p>Desmontar a área pela borda e reconstruí-la acumulando bordas.</p><span class="status">Abrir final da temporada →</span></a></article>
+
+  <h2 class="season" id="temporada-01">Temporada 01 — O cerco do círculo</h2>
+  <section class="grid" aria-labelledby="temporada-01">
+    <article class="available"><a href="modules/01-duas-circunferencias/index.html"><small>LAB 01</small><h3>Duas circunferências</h3><p>Inferir a forma a partir da razão entre os raios.</p><span class="status">Abrir laboratório →</span></a></article>
+    <article class="available"><a href="modules/01b-poligono-escondido/index.html"><small>LAB 01·B</small><h3>O polígono escondido</h3><p>Ligar os pontos de tangência e descer a espiral autossimilar.</p><span class="status">Abrir interlúdio →</span></a></article>
+    <article class="available"><a href="modules/02-perimetros/index.html"><small>LAB 02</small><h3>Quanto mede o contorno?</h3><p>Construir os perímetros por dentro e por fora.</p><span class="status">Abrir laboratório →</span></a></article>
+    <article class="available"><a href="modules/03-areas/index.html"><small>LAB 03</small><h3>O que acontece com as áreas?</h3><p>Transformar lados em triângulos e triângulos em área.</p><span class="status">Abrir laboratório →</span></a></article>
+    <article class="available"><a href="modules/04-erro/index.html"><small>LAB 04</small><h3>O erro também tem forma</h3><p>Observar como o erro muda quando o número de lados dobra.</p><span class="status">Abrir laboratório →</span></a></article>
+    <article class="available"><a href="modules/05-limite/index.html"><small>LAB 05</small><h3>Quando nasce o limite?</h3><p>Trocar “parece próximo” por uma garantia de tolerância.</p><span class="status">Abrir laboratório →</span></a></article>
+    <article class="available"><a href="modules/06-prismas/index.html"><small>LAB 06</small><h3>Do polígono ao prisma</h3><p>Perímetro vira parede; área vira volume.</p><span class="status">Abrir laboratório →</span></a></article>
+    <article class="available"><a href="modules/07-rotacao/index.html"><small>LAB 07</small><h3>Girar cria espaço</h3><p>Perfis planos se tornam cilindro, cone e esfera.</p><span class="status">Abrir laboratório →</span></a></article>
+    <article class="available"><a href="modules/08-integral/index.html"><small>LAB 08</small><h3>Acumular é integrar</h3><p>Reconstruir a esfera por uma soma refinável de discos.</p><span class="status">Abrir laboratório →</span></a></article>
+    <article class="available"><a href="modules/09-derivada/index.html"><small>LAB 09</small><h3>Mudar é derivar</h3><p>Ler a taxa local na coroa acrescentada ao círculo.</p><span class="status">Abrir laboratório →</span></a></article>
+    <article class="available"><a href="modules/10-reciprocidade/index.html"><small>LAB 10</small><h3>Derivar e integrar são inversos</h3><p>Desmontar a área pela borda e reconstruí-la acumulando bordas.</p><span class="status">Abrir final da temporada →</span></a></article>
   </section>
-  <footer><p>Dez laboratórios e um interlúdio disponíveis. Forma → medida → erro → garantia → limite → espaço → acumulação → variação → reciprocidade.</p></footer>
+
+  <h2 class="season" id="temporada-02">Temporada 02 — Números que constroem formas</h2>
+  <section class="grid" aria-labelledby="temporada-02">
+    <article class="available"><a href="modules/s02-01-ternas-pitagoricas/index.html"><small>T02 · LAB 01</small><h3>A fábrica dos ímpares</h3><p>Todo ímpar gera uma terna pitagórica — e o censo revela quantas escapam da regra.</p><span class="status">Abrir laboratório →</span></a></article>
+    <article class="available"><a href="modules/s02-02-mapa-das-ternas/index.html"><small>T02 · LAB 02</small><h3>O mapa de todas as ternas</h3><p>Dois botões, m e k, varrem uma grade que fabrica qualquer terna.</p><span class="status">Abrir laboratório →</span></a></article>
+    <article class="available"><a href="modules/s02-03-que-numeros-entram/index.html"><small>T02 · LAB 03</small><h3>Que números entram?</h3><p>O problema inverso: dado um lado inteiro, achar as ternas que o contêm.</p><span class="status">Abrir laboratório →</span></a></article>
+    <article class="available"><a href="modules/s02-04-diferencas/index.html"><small>T02 · LAB 04</small><h3>A diferença esconde um padrão</h3><p>Hipotenusa menos cateto maior: só quadrados e dobros de quadrados.</p><span class="status">Abrir laboratório →</span></a></article>
+    <article><small>T02 · LAB 05</small><h3>Quantas ternas até N?</h3><p>O censo vira lei de crescimento — e π aparece onde só havia inteiros.</p></article>
+    <article><small>T02 · LAB 06–10</small><h3>Do tijolo à reciprocidade</h3><p>Quadruplas na caixa, pontos no círculo, acumulação, Fermat e o desenho único.</p></article>
+  </section>
+
+  <footer>
+    <p>Catorze laboratórios e um interlúdio disponíveis em duas temporadas: a primeira completa, a segunda em andamento; previsão antes da manipulação, figura calculada e fórmulas reveladas por último.</p>
+  </footer>
 </main>
 </body>
 </html>

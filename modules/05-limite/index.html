@@ -291,6 +291,48 @@
       html { scroll-behavior: auto; }
       * { transition: none !important; }
     }
+
+    .hint-ladder { margin-top: 20px; }
+
+    .hint-ladder details {
+      margin-top: 10px;
+      padding: 14px 18px;
+      border-radius: 14px;
+      box-shadow: none;
+    }
+
+    .hint-ladder summary { font-size: 1rem; }
+
+    .lab-nav {
+      margin-top: 48px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
+      font-family: ui-sans-serif, system-ui, sans-serif;
+    }
+
+    .lab-nav a, .lab-nav .soon {
+      display: block;
+      padding: 16px 18px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: var(--paper);
+      color: var(--ink);
+      text-decoration: none;
+    }
+
+    .lab-nav a:hover { border-color: var(--accent); }
+
+    .lab-nav small {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--accent);
+      font: 800 .7rem/1.2 ui-sans-serif, system-ui, sans-serif;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+    }
+
+    .lab-nav .soon { color: var(--muted); }
   </style>
 </head>
 <body>
@@ -391,6 +433,24 @@
       <h2 id="limit-title">O limite é o único sobrevivente do cerco</h2>
       <p>Cada cerco é um intervalo que contém 2π. Conforme n cresce, os intervalos encaixam uns nos outros e a largura vence toda tolerância. Pergunta decisiva: <strong>que números sobrevivem dentro de todos os cercos?</strong> Só um. Qualquer outro número fica a uma distância fixa de 2π — e algum cerco, cedo ou tarde, fica mais estreito que essa distância e o expulsa.</p>
       <p>Por isso o limite não é um "quase": é o único número que o cerco infinito não consegue expulsar. Foi assim que, sem medir círculo nenhum, encurralamos 2π.</p>
+
+      <div id="exercise-scaling" class="challenge-card" style="margin-top:26px; padding:0; border:0; box-shadow:none; background:transparent;">
+        <p class="box-label">Encontre o erro</p>
+        <h3>"Se eu quiser um N dez vezes maior, basta pedir uma tolerância ε dez vezes menor."</h3>
+        <p>Essa frase parece razoável — mas a tabela do painel já teve tudo que você precisa para julgá-la.</p>
+        <div class="challenge-options" role="group" aria-label="Julgue a afirmação">
+          <button type="button" data-ex-scaling="right">está certo</button>
+          <button type="button" data-ex-scaling="hundred">errado: precisaria de ε cem vezes menor</button>
+          <button type="button" data-ex-scaling="ten">errado: N não depende de ε assim</button>
+        </div>
+        <p id="scaling-feedback" class="feedback" aria-live="polite"></p>
+        <div class="hint-ladder">
+          <details><summary>Primeira pista</summary><p>N ≈ √(π³/ε). Não é uma proporção direta com ε — é uma raiz quadrada.</p></details>
+          <details><summary>Pista visual</summary><p>Compare no painel: ε = 0,01 dá N = 56; ε = 0,0001 (cem vezes menor) dá N = 557 — cerca de dez vezes maior. E ε = 0,001 (só dez vezes menor) dá N = 177, menos de quatro vezes maior.</p></details>
+          <details><summary>Solução comentada</summary><p>Errado: para multiplicar N por dez é preciso dividir ε por <strong>cem</strong>, não por dez. Vem direto da fórmula: N ∝ 1/√ε, então N₂/N₁ = √(ε₁/ε₂). Para N₂/N₁ = 10, é preciso ε₁/ε₂ = 100. A armadilha é tratar uma relação de raiz quadrada como se fosse linear — o mesmo tipo de erro que apareceu no Laboratório 04 ao confundir "dobrar n" com "dobrar a precisão". Essa raiz quadrada vai reaparecer sempre que uma garantia depender de uma forma quadrática.</p></details>
+        </div>
+      </div>
+
       <p class="hint secret"><strong>Segredo de mestre:</strong> a previsão N ≈ √(31/ε) acertou a resposta exata da máquina em todas as tolerâncias do painel. Conhecer a forma do erro transforma busca em cálculo — guarde isso: vai voltar quando formos fatiar áreas e volumes.</p>
       <p><strong>Porta futura:</strong> com o limite no bolso, o plano ficou pequeno. No Laboratório 06, ainda em construção, o polígono ganha altura e vira prisma — e o cerco inteiro vai junto.</p>
     </section>
@@ -402,6 +462,12 @@
       <p><strong>De onde vem a previsão.</strong> A largura do cerco é a soma dos dois erros de contorno, e o Lab 04 deu as constantes deles: π³/3 + 2π³/3 = π³ ≈ 31,006. Logo largura ≈ π³/n², e exigir π³/n² &lt; ε dá n &gt; √(π³/ε) — a conta de cabeça N ≈ √(31/ε) do desafio.</p>
       <p><strong>Finitos testes não provam.</strong> A varredura "sem recaída até N + 3000" é evidência; a garantia para todo n é a monotonia acima, que uma demonstração completa fecha com as desigualdades de sen e tg do intervalo (0, π/3].</p>
     </details>
+
+    <nav class="lab-nav" aria-label="Continuar no MATHeu$">
+      <a href="../04-erro/index.html"><small>Anterior</small>Lab 04 — O erro também tem forma</a>
+      <a href="../../index.html"><small>Índice</small>Todos os laboratórios</a>
+      <a href="../06-prismas/index.html"><small>Próximo</small>Lab 06 — Do polígono ao prisma</a>
+    </nav>
   </main>
 
   <footer>
@@ -609,6 +675,20 @@
             challengeFeedback.textContent = 'Com n = 100, a forma dá 31 / 100² ≈ 0,0031 — cem vezes maior que o pedido.';
           } else {
             challengeFeedback.textContent = 'Com n = 31 000, o cerco ficaria quase mil vezes mais estreito que o pedido — garantia com desperdício.';
+          }
+        });
+      });
+
+      const scalingFeedback = document.getElementById('scaling-feedback');
+      document.querySelectorAll('[data-ex-scaling]').forEach(button => {
+        button.addEventListener('click', () => {
+          const value = button.dataset.exScaling;
+          if (value === 'hundred') {
+            scalingFeedback.textContent = 'Exato. N ∝ 1/√ε: dividir ε por 100 multiplica N por √100 = 10. Confira no painel: ε = 0,01 → N = 56; ε = 0,0001 → N = 557.';
+          } else if (value === 'right') {
+            scalingFeedback.textContent = 'Compare ε = 0,01 (N=56) com ε = 0,001, dez vezes menor: N = 177, menos de 4× maior — não 10×.';
+          } else {
+            scalingFeedback.textContent = 'N depende de ε, sim — mas não linearmente. A relação é N ≈ √(π³/ε), uma raiz quadrada.';
           }
         });
       });
