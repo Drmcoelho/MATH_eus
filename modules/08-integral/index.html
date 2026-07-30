@@ -1,0 +1,1156 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Laboratório 08 do MATHeu$: a integral nasce como máquina de acumulação — anéis, setores e discos somados com cortes cada vez mais finos.">
+  <title>Lab 08 — Acumular é integrar · MATHeu$</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --bg: #f4f1e8;
+      --ink: #171713;
+      --muted: #666258;
+      --paper: rgba(255, 255, 255, .66);
+      --line: rgba(23, 23, 19, .15);
+      --accent: #246b52;
+      --accent-2: #9b3f31;
+      --circle: #252520;
+      --focus: #d4872d;
+      --shadow: 0 18px 60px rgba(48, 43, 31, .09);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #11130f;
+        --ink: #f0eee7;
+        --muted: #b8b3a8;
+        --paper: rgba(255, 255, 255, .055);
+        --line: rgba(255, 255, 255, .14);
+        --accent: #7bc5a3;
+        --accent-2: #ef9788;
+        --circle: #f0eee7;
+        --focus: #ffc267;
+        --shadow: none;
+      }
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font: 18px/1.55 ui-serif, Georgia, Cambria, "Times New Roman", serif;
+    }
+
+    button, input { font: inherit; }
+
+    a { color: var(--accent); }
+
+    :focus-visible {
+      outline: 3px solid var(--focus);
+      outline-offset: 3px;
+    }
+
+    .skip-link {
+      position: absolute;
+      left: 12px;
+      top: -80px;
+      padding: 10px 14px;
+      background: var(--ink);
+      color: var(--bg);
+      z-index: 20;
+    }
+
+    .skip-link:focus { top: 12px; }
+
+    header, main, footer {
+      width: min(1120px, calc(100% - 32px));
+      margin-inline: auto;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      padding: 22px 0;
+      border-bottom: 1px solid var(--line);
+      font-family: ui-sans-serif, system-ui, sans-serif;
+      font-size: .86rem;
+    }
+
+    header a { text-decoration: none; }
+
+    .brand { font-weight: 800; letter-spacing: -.02em; }
+
+    main { padding: 58px 0 88px; }
+
+    .eyebrow {
+      margin: 0 0 12px;
+      color: var(--accent);
+      font: 800 .76rem/1.2 ui-sans-serif, system-ui, sans-serif;
+      letter-spacing: .15em;
+      text-transform: uppercase;
+    }
+
+    h1, h2, h3 { line-height: 1.08; letter-spacing: -.035em; }
+
+    h1 {
+      max-width: 900px;
+      margin: 0;
+      font-size: clamp(2.9rem, 8vw, 6.6rem);
+    }
+
+    h2 { font-size: clamp(2rem, 5vw, 3.5rem); margin-top: 0; }
+
+    h3 { font-size: 1.35rem; margin: 0 0 8px; }
+
+    .lead {
+      max-width: 780px;
+      margin: 24px 0 0;
+      color: var(--muted);
+      font-size: clamp(1.18rem, 2.8vw, 1.65rem);
+    }
+
+    .question-card, .lab-card, .formula-card, .challenge-card, details.oficina {
+      margin-top: 38px;
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      background: var(--paper);
+      box-shadow: var(--shadow);
+    }
+
+    .question-card, .formula-card, .challenge-card, details.oficina { padding: clamp(22px, 4vw, 38px); }
+
+    .question-card strong, .box-label {
+      display: block;
+      color: var(--accent);
+      font: 800 .76rem/1.2 ui-sans-serif, system-ui, sans-serif;
+      letter-spacing: .13em;
+      text-transform: uppercase;
+    }
+
+    .box-label.warn { color: var(--accent-2); }
+
+    .question-card p {
+      max-width: 850px;
+      margin: 12px 0 22px;
+      font-size: clamp(1.45rem, 4vw, 2.45rem);
+      line-height: 1.18;
+    }
+
+    .answer-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    button {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 12px 16px;
+      background: transparent;
+      color: var(--ink);
+      cursor: pointer;
+    }
+
+    button:hover { border-color: var(--accent); }
+
+    button[aria-pressed="true"], .primary {
+      border-color: var(--accent);
+      background: var(--accent);
+      color: var(--bg);
+    }
+
+    button:disabled { opacity: .45; cursor: not-allowed; }
+
+    .feedback {
+      min-height: 1.6em;
+      margin: 16px 0 0;
+      color: var(--muted);
+      font-family: ui-sans-serif, system-ui, sans-serif;
+    }
+
+    .lab-card { overflow: hidden; }
+
+    .lab-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.35fr) minmax(280px, .65fr);
+    }
+
+    .viz-panel { padding: clamp(18px, 3vw, 30px); }
+
+    .viz-panel svg { width: 100%; height: auto; display: block; }
+
+    #decomp {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background:
+        linear-gradient(var(--line) 1px, transparent 1px),
+        linear-gradient(90deg, var(--line) 1px, transparent 1px);
+      background-size: 28px 28px;
+    }
+
+    #chart { margin-top: 22px; }
+
+    .control-panel {
+      padding: clamp(22px, 4vw, 34px);
+      border-left: 1px solid var(--line);
+    }
+
+    .control-panel h2 { font-size: 1.9rem; }
+
+    .control-label {
+      display: block;
+      margin-top: 26px;
+      margin-bottom: 8px;
+      font: 700 .86rem/1.3 ui-sans-serif, system-ui, sans-serif;
+    }
+
+    .quick-values {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .quick-values button { padding: 8px 12px; font-size: .88rem; }
+
+    .measurements {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin: 26px 0;
+    }
+
+    .measurement {
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+    }
+
+    .measurement dt {
+      color: var(--muted);
+      font: 700 .73rem/1.2 ui-sans-serif, system-ui, sans-serif;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+    }
+
+    .measurement dd { margin: 5px 0 0; font-size: 1.32rem; font-variant-numeric: tabular-nums; }
+
+    .measurement.sum dd { color: var(--accent); }
+
+    .hint {
+      padding: 16px;
+      border-left: 4px solid var(--accent);
+      background: color-mix(in srgb, var(--accent) 9%, transparent);
+      color: var(--muted);
+    }
+
+    .hint.secret { margin-top: 24px; }
+
+    .reveal-row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-top: 22px; }
+
+    .formula-card[hidden], .challenge-card[hidden] { display: none; }
+
+    .formula {
+      margin: 22px 0;
+      padding: 22px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      text-align: center;
+      font-size: clamp(1.5rem, 4.4vw, 2.6rem);
+      font-variant-numeric: lining-nums;
+      overflow-x: auto;
+    }
+
+    .formula sub, .formula sup { font-size: .45em; }
+
+    .reading {
+      max-width: 820px;
+      margin: 18px auto 0;
+      padding: 16px 18px;
+      border-left: 4px solid var(--focus);
+      background: color-mix(in srgb, var(--focus) 8%, transparent);
+      font-size: 1.08rem;
+    }
+
+    .reading strong { font-family: ui-sans-serif, system-ui, sans-serif; font-size: .8rem; letter-spacing: .1em; text-transform: uppercase; color: var(--focus); display: block; margin-bottom: 6px; }
+
+    .derivation {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      counter-reset: step;
+    }
+
+    .step {
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+    }
+
+    .step::before {
+      counter-increment: step;
+      content: counter(step);
+      display: grid;
+      place-items: center;
+      width: 28px;
+      height: 28px;
+      margin-bottom: 12px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: var(--bg);
+      font: 800 .82rem/1 ui-sans-serif, system-ui, sans-serif;
+    }
+
+    .step p { margin: 0; }
+
+    .dictionary {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .dictionary div { padding: 14px; border-top: 1px solid var(--line); }
+
+    .table-wrap { margin-top: 20px; overflow-x: auto; }
+
+    table.doubling {
+      width: 100%;
+      margin-top: 0;
+      border-collapse: collapse;
+      font-variant-numeric: tabular-nums;
+      font-family: ui-sans-serif, system-ui, sans-serif;
+      font-size: .93rem;
+    }
+
+    table.doubling th, table.doubling td {
+      padding: 9px 12px;
+      border-top: 1px solid var(--line);
+      text-align: right;
+    }
+
+    table.doubling th {
+      font: 700 .72rem/1.2 ui-sans-serif, system-ui, sans-serif;
+      text-transform: uppercase;
+      letter-spacing: .07em;
+      color: var(--muted);
+    }
+
+    table.doubling td:first-child, table.doubling th:first-child { text-align: left; }
+
+    .exercise { margin-top: 30px; padding-top: 26px; border-top: 1px solid var(--line); }
+
+    .exercise:first-of-type { margin-top: 8px; padding-top: 0; border-top: 0; }
+
+    .exercise[hidden] { display: none; }
+
+    .challenge-options { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+
+    .challenge-options button { text-align: left; border-radius: 18px; }
+
+    details.solution {
+      margin-top: 16px;
+      padding: 16px 18px;
+      border: 1px dashed var(--line);
+      border-radius: 14px;
+    }
+
+    details.solution summary {
+      cursor: pointer;
+      font: 700 .9rem/1.3 ui-sans-serif, system-ui, sans-serif;
+      color: var(--accent);
+    }
+
+    details.solution dl { margin: 14px 0 0; }
+
+    details.solution dt {
+      font: 800 .72rem/1.2 ui-sans-serif, system-ui, sans-serif;
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      color: var(--accent);
+      margin-top: 12px;
+    }
+
+    details.solution dd { margin: 4px 0 0; color: var(--muted); }
+
+    details.oficina summary {
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 1.25rem;
+    }
+
+    details.oficina p, details.oficina li { color: var(--muted); }
+
+    footer { padding: 28px 0 56px; border-top: 1px solid var(--line); color: var(--muted); }
+
+    @media (max-width: 820px) {
+      .answer-grid, .derivation, .dictionary { grid-template-columns: 1fr; }
+      .lab-grid { grid-template-columns: minmax(0, 1fr); }
+      .control-panel { border-left: 0; border-top: 1px solid var(--line); }
+    }
+
+    @media (max-width: 480px) {
+      header { align-items: flex-start; flex-direction: column; }
+      main { padding-top: 38px; }
+      .measurements { grid-template-columns: 1fr; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      * { transition: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#conteudo">Pular para o laboratório</a>
+  <header>
+    <a class="brand" href="../../index.html">MATHeu$</a>
+    <span>Temporada 01 · Laboratório 08</span>
+  </header>
+
+  <main id="conteudo">
+    <p class="eyebrow">Acumular é integrar</p>
+    <h1>Fatie, some, afine. Quando a soma fecha?</h1>
+    <p class="lead">O Lab 06 empilhou fatias iguais; o Lab 07 girou perfis e criou sólidos. Agora a última pergunta da série ganha corpo: somar pedaços cada vez mais finos leva exatamente aonde? Aqui a soma vira máquina de acumulação — e, só no fim, a máquina ganha nome e assinatura.</p>
+
+    <section class="question-card" aria-labelledby="aposta-titulo">
+      <strong id="aposta-titulo">Pare e aposte</strong>
+      <p>Um círculo feito de anéis concêntricos finos, como um alvo. Desenrole cada anel numa tira reta e empilhe as tiras, da mais comprida para a mais curta. Que figura aparece?</p>
+      <div class="answer-grid" role="group" aria-label="Escolha sua previsão">
+        <button type="button" data-prediction="retangulo" aria-pressed="false">um retângulo — as tiras se emparelham</button>
+        <button type="button" data-prediction="triangulo" aria-pressed="false">um triângulo</button>
+        <button type="button" data-prediction="escada" aria-pressed="false">uma escada que nunca alisa</button>
+      </div>
+      <p id="prediction-feedback" class="feedback" aria-live="polite">Aposte antes de desenrolar — o painel abaixo só desenrola depois da aposta.</p>
+    </section>
+
+    <section class="lab-card" aria-labelledby="lab-title">
+      <div class="lab-grid">
+        <div class="viz-panel">
+          <svg id="decomp" viewBox="0 0 640 640" role="img" aria-labelledby="decomp-title decomp-desc">
+            <title id="decomp-title">Decomposição do objeto no modo escolhido: anéis concêntricos, leque de setores ou pilha de discos</title>
+            <desc id="decomp-desc">No modo anéis, um círculo colorido por anéis concêntricos e, abaixo, as tiras desenroladas empilhadas contra um triângulo tracejado de base 2 pi R e altura R. Nos outros modos, o leque de setores ou o perfil da esfera preenchido por discos inscritos.</desc>
+            <g id="decomp-drawing"></g>
+          </svg>
+          <div class="table-wrap">
+            <table class="doubling" aria-label="Tabela de refinamento dos cortes">
+              <thead>
+                <tr><th scope="col">n cortes</th><th scope="col">soma</th><th scope="col">erro</th><th scope="col">erro ÷ anterior</th><th scope="col" id="col-scaled">n × erro</th></tr>
+              </thead>
+              <tbody id="rows"></tbody>
+            </table>
+          </div>
+          <svg id="chart" viewBox="0 0 640 300" aria-hidden="true"><g id="chart-drawing"></g></svg>
+        </div>
+
+        <div class="control-panel">
+          <p class="box-label">Brinque</p>
+          <h2 id="lab-title">A máquina de acumular</h2>
+          <p>Círculo e esfera de raio <strong>R = 1</strong>. Escolha como fatiar, dobre os cortes e vigie a soma perseguindo o alvo.</p>
+
+          <span class="control-label" id="mode-label">Modo de fatiar</span>
+          <div class="quick-values" role="group" aria-labelledby="mode-label">
+            <button type="button" data-mode="aneis" aria-pressed="true">anéis do círculo</button>
+            <button type="button" data-mode="setores" aria-pressed="false">setores do círculo</button>
+            <button type="button" data-mode="discos" aria-pressed="false">discos da esfera</button>
+          </div>
+
+          <div class="reveal-row">
+            <button id="double" type="button" class="primary">Dobrar os cortes</button>
+            <span id="double-status" class="feedback" aria-live="polite">n = 4 cortes · nenhuma dobra ainda</span>
+          </div>
+
+          <dl class="measurements" aria-label="Última medição">
+            <div class="measurement sum"><dt>soma acumulada</dt><dd id="sum-value">2,3562</dd></div>
+            <div class="measurement"><dt id="exact-label">alvo exato: área πR²</dt><dd id="exact-value">3,1416</dd></div>
+            <div class="measurement"><dt>erro</dt><dd id="errpct-value">25,00%</dd></div>
+            <div class="measurement"><dt id="scaled-label">n × erro</dt><dd id="scaled-value">3,1416</dd></div>
+          </dl>
+
+          <p class="hint"><strong>Olhe de novo:</strong> depois de algumas dobras, troque de modo. No gráfico, os setores despencam numa ladeira mais íngreme (cada dobra ÷ 4) do que anéis e discos (cada dobra ÷ 2). A última coluna da tabela é o medidor de ordem do Lab 04: cada jeito de cortar tem a sua forma de erro.</p>
+
+          <div class="reveal-row">
+            <button id="reveal" type="button" class="primary" disabled>Dar nome à máquina</button>
+            <span id="reveal-status" class="feedback" aria-live="polite">Aposte e dobre os cortes pelo menos três vezes.</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="challenge-card" aria-labelledby="fertile-title">
+      <p class="box-label warn">Erro fértil</p>
+      <h2 id="fertile-title">"A área é a soma dos contornos"</h2>
+      <p>Um raciocínio sedutor: <em>"cada raio r tem seu contorno 2πr; a área do círculo é a soma dos contornos de todos os raios, de 0 até R."</em> Parece a máquina desta página — e explode.</p>
+      <details class="solution">
+        <summary>Onde o raciocínio quebra</summary>
+        <dl>
+          <dt>O ponto cego</dt>
+          <dd>Sem espessura, a soma não estaciona: com 8 cortes, a soma dos contornos já vale ≈ 22,0; com 16, ≈ 47,1 — dobre os cortes e ela quase dobra, passando de qualquer teto. Parcelas de comprimento, empilhadas sem espessura, nunca cobrem uma área.</dd>
+          <dt>O conserto</dt>
+          <dd>A contribuição de um anel não é o contorno: é <strong>contorno × espessura</strong>, 2πr·Δr. Afinando os cortes, cada parcela encolhe para zero enquanto o número de parcelas cresce sem parar — e o produto equilibra. A integral é exatamente esse equilíbrio: soma de contribuição × espessura, nunca soma de valores soltos.</dd>
+          <dt>Verificação</dt>
+          <dd>No painel, com a espessura no lugar, a soma estaciona em π. O verificador do módulo confere os dois destinos: com Δr, a soma converge; sem Δr, ela vale π·(n − 1) e cresce sem teto.</dd>
+        </dl>
+      </details>
+    </section>
+
+    <section id="formula-card" class="formula-card" hidden aria-labelledby="formula-title">
+      <p class="box-label">Entenda</p>
+      <h2 id="formula-title">A soma ganha nome: integral</h2>
+
+      <div class="derivation">
+        <div class="step"><p><strong>Cada anel contribui</strong> contorno × espessura: 2πr·Δr. O contorno do Lab 02 virou o peso da acumulação.</p></div>
+        <div class="step"><p><strong>A tabela mostrou o destino:</strong> a soma estaciona em πR² e o erro encolhe junto com a espessura dos cortes.</p></div>
+        <div class="step"><p><strong>Escrever tudo isso por extenso ficou comprido.</strong> A frase inteira, comprimida numa linha:</p></div>
+      </div>
+
+      <div class="formula" aria-label="integral de 0 até R de 2 pi r d r é igual a pi R ao quadrado">
+        ∫<sub>0</sub><sup>R</sup> 2πr&thinsp;dr = πR²
+      </div>
+
+      <div class="reading">
+        <strong>Leia em voz alta, letra a letra</strong>
+        "<em>Some</em> (∫) as contribuições <em>2πr vezes a espessura dr</em>, <em>de r = 0 até r = R</em> — o acumulado é <em>πR²</em>."
+      </div>
+
+      <div class="dictionary" aria-label="Dicionário de símbolos da integral">
+        <div><strong>∫</strong><br>um S alongado: a inicial de <em>soma</em>, esticada. Não é símbolo misterioso — é a coluna "soma" da tabela numa letra só.</div>
+        <div><strong>0 e R</strong><br>onde a acumulação começa e onde termina: r percorre de 0 até R.</div>
+        <div><strong>2πr</strong><br>a contribuição no raio r: o contorno daquele anel (Lab 02).</div>
+        <div><strong>dr</strong><br>a espessura do anel, já no limite de afinar — o Δr que a máquina de dobrar espremeu.</div>
+        <div><strong>2πr·dr</strong><br>contorno × espessura = a área de um anel fino. Comprimento × comprimento: unidade de área (R²).</div>
+        <div><strong>πR²</strong><br>o acumulado: a área do círculo (Lab 03), agora reconstruída anel por anel.</div>
+      </div>
+
+      <p><strong>O triângulo confirma a aposta:</strong> desenrolados, os anéis empilham num triângulo de base 2πR e altura R — a escada é o que a soma finita faz, o triângulo é o que ela persegue. E a área dele fecha a conta por inspeção: 2πR × R ÷ 2 = πR², sem limite nenhum.</p>
+
+      <p><strong>A garantia do Lab 05:</strong> escolha qualquer tolerância. 10⁻³? Bastam 3 142 anéis. 10⁻⁴? 31 416 — e, uma vez vencida, a tolerância nunca mais é perdida: o verificador varre os cortes seguintes e confere a ausência de recaída.</p>
+
+      <p><strong>Quando vale:</strong> quando cada contribuição é a medida certa (contorno × espessura para área; área da fatia × espessura para volume) e a espessura afina de verdade. Outros limites, outra pergunta: de a até b, a mesma integral acumula a coroa π(b² − a²).</p>
+
+      <div class="formula" aria-label="integral de menos R até R de pi vezes abre parênteses R ao quadrado menos z ao quadrado fecha parênteses d z é igual a quatro terços de pi R ao cubo">
+        ∫<sub>−R</sub><sup>R</sup> π(R² − z²)&thinsp;dz = <sup>4</sup>⁄<sub>3</sub>πR³
+      </div>
+
+      <div class="reading">
+        <strong>A mesma máquina, outro perfil</strong>
+        "Some as áreas das fatias <em>π(R² − z²) vezes a espessura dz</em>, <em>da altura z = −R até z = R</em> — o acumulado é o volume da esfera." É a pilha de discos do terceiro modo, lida em voz alta.
+      </div>
+    </section>
+
+    <section id="exercises" class="challenge-card" hidden aria-labelledby="exercises-title">
+      <p class="box-label">Agora use a máquina</p>
+      <h2 id="exercises-title">Três exercícios, três direções</h2>
+
+      <div class="exercise" id="exA">
+        <h3>A — Leia em voz alta</h3>
+        <p>Um cilindro de raio 1, fatiado em discos. Leia: <span aria-label="integral de 0 até 2 de pi d z">∫<sub>0</sub><sup>2</sup> π&thinsp;dz</span>. O que essa acumulação entrega?</p>
+        <div class="challenge-options" role="group" aria-label="Escolha o que a integral acumula">
+          <button type="button" data-ex="A" data-option="volume">discos de área π e espessura dz, empilhados de z = 0 a 2: o volume 2π do cilindro</button>
+          <button type="button" data-ex="A" data-option="area">a área do círculo, π — o 0 e o 2 são só decoração</button>
+          <button type="button" data-ex="A" data-option="parede">os contornos 2π·1 somados de 0 a 2: a parede lateral</button>
+        </div>
+        <div class="reveal-row">
+          <button type="button" class="hint-button" data-hints="A">Pedir uma pista</button>
+          <span id="feedback-A" class="feedback" aria-live="polite"></span>
+        </div>
+        <details class="solution">
+          <summary>Solução comentada (gabarito)</summary>
+          <dl>
+            <dt>Primeiro passo</dt>
+            <dd>Leia letra a letra: "some as contribuições π vezes a espessura dz, de z = 0 até z = 2". Contribuição = área da fatia; espessura = dz; limites = de onde até onde.</dd>
+            <dt>Intuição útil</dt>
+            <dd>Integrando constante é empilhar fatias iguais — o prisma do Lab 06. A integral degenera na multiplicação: área × altura.</dd>
+            <dt>Armadilha provável</dt>
+            <dd>Ignorar o dz (sem espessura não há empilhamento — o Erro fértil de novo) ou trocar a área da fatia pelo contorno: contornos seriam ∫ 2π dz = 4π ≈ 12,57, outra pergunta.</dd>
+            <dt>Verificação</dt>
+            <dd>π × 2 = 2π ≈ 6,2832 — exatamente πR²·h com R = 1 e h = 2. ✓</dd>
+            <dt>Onde reaparece</dt>
+            <dd>Sempre que o perfil é constante, a integral vira multiplicação: as fórmulas do Lab 06 eram integrais disfarçadas.</dd>
+          </dl>
+        </details>
+      </div>
+
+      <div class="exercise" id="exB" hidden>
+        <h3>B — Monte a acumulação</h3>
+        <p>Um cone apoiado na base: raio R = 1, altura h = 3. Na altura z, a fatia é um disco de raio 1 − z/3. Qual acumulação entrega o <em>volume</em>?</p>
+        <div class="challenge-options" role="group" aria-label="Escolha a acumulação correta">
+          <button type="button" data-ex="B" data-option="discos">some discos π(1 − z/3)², espessura dz, de z = 0 até 3</button>
+          <button type="button" data-ex="B" data-option="contornos">some contornos 2π(1 − z/3), espessura dz, de z = 0 até 3</button>
+          <button type="button" data-ex="B" data-option="limites">some discos π(1 − z/3)², espessura dz, de z = 0 até 1</button>
+        </div>
+        <div class="reveal-row">
+          <button type="button" class="hint-button" data-hints="B">Pedir uma pista</button>
+          <span id="feedback-B" class="feedback" aria-live="polite"></span>
+        </div>
+        <details class="solution">
+          <summary>Solução comentada (gabarito)</summary>
+          <dl>
+            <dt>Primeiro passo</dt>
+            <dd>Fatie e pergunte o que cada fatia vale: disco de raio 1 − z/3, logo área π(1 − z/3)². A contribuição de volume é essa área vezes a espessura dz.</dd>
+            <dt>Intuição útil</dt>
+            <dd>A receita é sempre a mesma: contribuição certa × espessura, do começo ao fim do objeto. Para volume, a contribuição é a área da fatia — nunca o contorno.</dd>
+            <dt>Armadilha provável</dt>
+            <dd>Contornos × dz somam áreas (o total 3π ≈ 9,42 tem unidade de área — não pode ser volume). E parar em z = 1 empilha só o tronco de baixo: ≈ 2,21, cone incompleto.</dd>
+            <dt>Verificação</dt>
+            <dd>A soma converge a π ≈ 3,1416 — e a fórmula conhecida do cone confere: πR²h ÷ 3 = π·1·3 ÷ 3 = π. ✓</dd>
+            <dt>Onde reaparece</dt>
+            <dd>Todo sólido do Lab 07 vira ∫ área do perfil dz: girar cria o perfil, acumular enche o sólido.</dd>
+          </dl>
+        </details>
+      </div>
+
+      <div class="exercise" id="exC" hidden>
+        <h3>C — Encontre o erro</h3>
+        <p>Para o <em>volume</em> da esfera de raio 1, alguém propõe: "some 2πr·Δr, de r = 0 até 1, com cortes bem finos". Obtém ≈ 3,14 e anuncia o volume. Por que a acumulação falha?</p>
+        <div class="challenge-options" role="group" aria-label="Escolha o diagnóstico">
+          <button type="button" data-ex="C" data-option="dimensao">cada parcela 2πr·Δr é uma área; somar áreas de um mesmo plano nunca enche volume — falta uma dimensão</button>
+          <button type="button" data-ex="C" data-option="espessura">o Δr estava grosso demais; com cortes mais finos a mesma soma chega a 4π/3</button>
+          <button type="button" data-ex="C" data-option="altura">acumular ao longo do raio nunca dá volume — esfera só se soma por fatias de altura</button>
+        </div>
+        <div class="reveal-row">
+          <button type="button" class="hint-button" data-hints="C">Pedir uma pista</button>
+          <span id="feedback-C" class="feedback" aria-live="polite"></span>
+        </div>
+        <details class="solution">
+          <summary>Solução comentada (gabarito)</summary>
+          <dl>
+            <dt>Primeiro passo</dt>
+            <dd>Leia a proposta em voz alta: "some contornos 2πr vezes a espessura dr". Cada parcela é comprimento × comprimento = área. A soma toda só pode ser uma área.</dd>
+            <dt>Intuição útil</dt>
+            <dd>Confira unidades antes de somar: para acumular volume, cada contribuição precisa ser um pedacinho de volume — fatia (área × espessura) ou casca (superfície × espessura).</dd>
+            <dt>Armadilha provável</dt>
+            <dd>Achar que refinar conserta: o erro não é de espessura, é de dimensão. Refinada, a soma converge — para π ≈ 3,14, a <em>área do círculo</em>, não para o volume 4π/3 ≈ 4,19.</dd>
+            <dt>Verificação</dt>
+            <dd>A receita certa pelo raio existe: cascas esféricas 4πr²·dr, de 0 a 1, acumulam exatamente 4π/3. ✓ Acumular pelo raio funciona — desde que a contribuição seja um volume.</dd>
+            <dt>Onde reaparece</dt>
+            <dd>O peso da casca, 4πr², é a superfície da esfera — o contorno 2πr desta página em versão espacial. O Lab 09 mostra que isso não é coincidência.</dd>
+          </dl>
+        </details>
+      </div>
+    </section>
+
+    <section id="insights" class="formula-card" hidden aria-labelledby="insights-title">
+      <p class="box-label">Colheita</p>
+      <h2 id="insights-title">O que a acumulação contou</h2>
+
+      <p class="hint"><strong>Curiosidade — os barris de Kepler:</strong> em 1615, Kepler publicou a <em>Nova stereometria doliorum vinariorum</em> — "nova geometria dos barris de vinho". Para medir o vinho de Linz, fatiava mentalmente cada barril em discos finos e somava, exatamente a máquina desta página, meio século antes de Newton e Leibniz darem gramática ao cálculo.</p>
+
+      <p class="hint"><strong>Aplicação real — tomografia e impressão 3D:</strong> um tomógrafo mede o corpo em cortes de espessura fixa, e o volume de um órgão sai somando área do corte × espessura — contribuição × espessura ao pé da letra. A impressora 3D percorre o caminho contrário: recebe o sólido e o executa camada a camada. Nos dois casos, corte mais fino = erro menor, como a tabela mediu.</p>
+
+      <p class="hint secret"><strong>Segredo de mestre:</strong> repare no que a acumulação fez com as fórmulas: o contorno 2πr virou a área πr², e a superfície 4πr² virou o volume 4πr³/3 (exercício C). Acumular <em>sobe um degrau</em> — guarde isso: o Lab 09 desce o mesmo degrau no sentido contrário, e o degrau é o mesmo.</p>
+
+      <p><strong>Porta futura:</strong> esta máquina soma contribuições até fechar o objeto. A próxima pergunta inverte a manivela: quanto o objeto <em>cresce</em> quando o raio engorda um fio? <a href="../09-derivada/index.html">Laboratório 09</a> — mudar é derivar.</p>
+    </section>
+
+    <details class="oficina">
+      <summary>Oficina — a soma com Σ, a ordem de cada corte e os barris</summary>
+      <p><strong>A coluna "soma" numa letra.</strong> A tabela sempre somou n parcelas: contribuição × espessura em cada corte. Com nome e sobrenome, essa soma se escreve S<sub>n</sub> = Σ 2π·r<sub>i</sub>·Δr, com Δr = R/n e r<sub>i</sub> = i·Δr para i de 0 até n − 1 — o Σ (sigma, S grego) é a coluna "soma" abreviada, assim como ∫ é o seu limite. É a chamada <em>soma de Riemann</em>. Dizer ∫<sub>0</sub><sup>R</sup> 2πr dr = πR² é dizer: S<sub>n</sub> chega tão perto de πR² quanto se exija, desde que os cortes afinem o bastante. A página mostra a <em>evidência</em> (a tabela estaciona); o <em>fecho</em> é o contrato ε–N do Lab 05: para cada tolerância existe um número de cortes que basta e não recai. O verificador executa o contrato para 10⁻³ (3 142 anéis) e 10⁻⁴ (31 416), com varredura de recaída.</p>
+      <p><strong>A ordem de cada corte, medida.</strong> Anéis pela borda interna: erro = πR²/n <em>exato</em> — a conta fecha porque Σ i = n(n − 1)/2, e por isso n × erro crava π já no primeiro n. Anéis pelo raio médio: erro zero! A coroa entre r e r + Δr tem área exatamente 2π(r + Δr/2)·Δr — é por isso que as tiras desenroladas pelo raio médio ladrilham o triângulo sem sobra nem falta. Nos discos da esfera o perfil é curvo e o ponto médio deixa de ser exato: sobra 2π/(3n²) (n² × erro = 2π/3 ≈ 2,094, verificado numericamente), enquanto a pilha inscrita erra na ordem 2π/n. Os setores herdam a ordem quadrática do Lab 04: n² × erro → 2π³/3 ≈ 20,671 — e 144 setores já bastam para tolerância 10⁻³.</p>
+      <p><strong>Nota histórica.</strong> Arquimedes já cercava áreas por somas por dentro e por fora — o método de exaustão, que é o cerco dos Labs 02–05. Kepler (1615) somou fatias para barris de vinho; Cavalieri (1635) sistematizou os "indivisíveis" — o baralho empurrado do Lab 06 é o exemplo dele. Newton e Leibniz deram a gramática; o ∫ é o S de <em>summa</em> que Leibniz esticou num manuscrito de 1675.</p>
+    </details>
+  </main>
+
+  <footer>
+    <p>MATHeu$ · Laboratório 08 · HTML autocontido, SVG calculado e funcionamento offline.</p>
+  </footer>
+
+  <script>
+    (() => {
+      'use strict';
+
+      const NS = 'http://www.w3.org/2000/svg';
+      const PI = Math.PI;
+      const N_START = 4;
+      const N_MAX = 512;
+
+      const MODES = {
+        aneis: {
+          short: 'anéis',
+          exact: PI,
+          exactLabel: 'alvo exato: área πR²',
+          scaledLabel: 'n × erro',
+          scaled: (n, err) => n * err,
+          sum(n) {
+            let s = 0;
+            for (let i = 0; i < n; i += 1) s += 2 * PI * (i / n) * (1 / n);
+            return s;
+          }
+        },
+        setores: {
+          short: 'setores',
+          exact: PI,
+          exactLabel: 'alvo exato: área πR²',
+          scaledLabel: 'n² × erro',
+          scaled: (n, err) => n * n * err,
+          sum(n) {
+            let s = 0;
+            for (let i = 0; i < n; i += 1) s += 0.5 * Math.sin(2 * PI / n);
+            return s;
+          }
+        },
+        discos: {
+          short: 'discos',
+          exact: 4 * PI / 3,
+          exactLabel: 'alvo exato: volume ⁴⁄₃πR³',
+          scaledLabel: 'n × erro',
+          scaled: (n, err) => n * err,
+          sum(n) {
+            const h = 2 / n;
+            let s = 0;
+            for (let i = 0; i < n; i += 1) {
+              const a = -1 + i * h;
+              const b = a + h;
+              s += h * PI * (1 - Math.max(a * a, b * b));
+            }
+            return s;
+          }
+        }
+      };
+
+      const decompDrawing = document.getElementById('decomp-drawing');
+      const chartDrawing = document.getElementById('chart-drawing');
+      const rowsBody = document.getElementById('rows');
+      const colScaled = document.getElementById('col-scaled');
+      const doubleButton = document.getElementById('double');
+      const doubleStatus = document.getElementById('double-status');
+      const sumValue = document.getElementById('sum-value');
+      const exactLabel = document.getElementById('exact-label');
+      const exactValue = document.getElementById('exact-value');
+      const errpctValue = document.getElementById('errpct-value');
+      const scaledLabel = document.getElementById('scaled-label');
+      const scaledValue = document.getElementById('scaled-value');
+      const reveal = document.getElementById('reveal');
+      const revealStatus = document.getElementById('reveal-status');
+      const formulaCard = document.getElementById('formula-card');
+      const exercises = document.getElementById('exercises');
+      const insights = document.getElementById('insights');
+      const predictionFeedback = document.getElementById('prediction-feedback');
+
+      let modeKey = 'aneis';
+      let ns = [N_START];
+      let doublings = 0;
+      let predicted = false;
+
+      function fmt(value, digits = 4) {
+        return new Intl.NumberFormat('pt-BR', {
+          minimumFractionDigits: digits,
+          maximumFractionDigits: digits
+        }).format(value);
+      }
+
+      function el(name, attrs = {}, text = '') {
+        const node = document.createElementNS(NS, name);
+        for (const [key, value] of Object.entries(attrs)) node.setAttribute(key, value);
+        if (text) node.textContent = text;
+        return node;
+      }
+
+      function ink(weight) {
+        const pct = Math.round(16 + 66 * Math.min(1, Math.max(0, weight)));
+        return `color-mix(in srgb, var(--accent) ${pct}%, var(--bg))`;
+      }
+
+      function decompLabel(x, y, text, anchor = 'middle', size = 17) {
+        decompDrawing.appendChild(el('text', {
+          x, y,
+          'text-anchor': anchor,
+          'font-family': 'ui-sans-serif, system-ui, sans-serif',
+          'font-size': String(size),
+          'font-weight': '700',
+          fill: 'currentColor'
+        }, text));
+      }
+
+      // ---------- decomposição ----------
+
+      function drawAneis(n) {
+        const cx = 320;
+        const cy = 212;
+        const R = 165;
+
+        // anéis: círculos do maior para o menor — cada faixa vira um anel
+        for (let i = n - 1; i >= 0; i -= 1) {
+          decompDrawing.appendChild(el('circle', {
+            cx, cy, r: (R * (i + 1)) / n,
+            fill: ink((i + 0.5) / n),
+            stroke: 'var(--bg)', 'stroke-width': '.8'
+          }));
+        }
+        decompDrawing.appendChild(el('circle', {
+          cx, cy, r: R, fill: 'none', stroke: 'var(--circle)', 'stroke-width': '2'
+        }));
+        decompLabel(cx, 24, `n = ${n} anéis`);
+        decompLabel(cx, 44, 'contribuição de cada um: contorno 2πr × espessura Δr', 'middle', 14);
+
+        if (!predicted) {
+          decompLabel(cx, 555, 'Aposte lá em cima para desenrolar os anéis.', 'middle', 19);
+          return;
+        }
+
+        // tiras desenroladas: anel de raio interno r_i vira tira 2πr_i × Δr
+        const x0 = 42;
+        const yBase = 610;
+        const hgt = 92;
+        const s = hgt; // escala: R = 1 → 92 px; base = 2π·92 ≈ 578 px
+        const strip = hgt / n;
+
+        decompLabel(320, 512, 'desenrolados: a escada abraça um triângulo de base 2πR e altura R', 'middle', 16);
+
+        for (let i = 0; i < n; i += 1) {
+          const width = 2 * PI * (i / n) * s;
+          if (width <= 0) continue;
+          decompDrawing.appendChild(el('rect', {
+            x: x0,
+            y: yBase - (n - i) * strip,
+            width,
+            height: strip,
+            fill: ink((i + 0.5) / n),
+            stroke: 'var(--bg)', 'stroke-width': '.7'
+          }));
+        }
+
+        decompDrawing.appendChild(el('path', {
+          d: `M ${x0} ${yBase} L ${x0 + 2 * PI * s} ${yBase} L ${x0} ${yBase - hgt} Z`,
+          fill: 'none', stroke: 'var(--accent-2)', 'stroke-width': '2.5', 'stroke-dasharray': '9 6', 'stroke-linejoin': 'round'
+        }));
+
+        decompLabel(x0 + PI * s, yBase + 24, 'base = 2πR', 'middle', 15);
+        decompDrawing.appendChild(el('line', {
+          x1: x0 - 12, y1: yBase, x2: x0 - 12, y2: yBase - hgt,
+          stroke: 'var(--focus)', 'stroke-width': '3'
+        }));
+        decompLabel(x0 - 20, yBase - hgt / 2 + 5, 'R', 'end', 15);
+      }
+
+      function drawSetores(n) {
+        const cx = 320;
+        const cy = 330;
+        const R = 225;
+        const start = -PI / 2;
+
+        decompDrawing.appendChild(el('circle', {
+          cx, cy, r: R, fill: 'none', stroke: 'var(--circle)', 'stroke-width': '2.5', 'stroke-dasharray': '3 7'
+        }));
+
+        for (let i = 0; i < n; i += 1) {
+          const a1 = start + (2 * PI * i) / n;
+          const a2 = start + (2 * PI * (i + 1)) / n;
+          const p1 = [cx + R * Math.cos(a1), cy + R * Math.sin(a1)];
+          const p2 = [cx + R * Math.cos(a2), cy + R * Math.sin(a2)];
+          decompDrawing.appendChild(el('polygon', {
+            points: `${cx},${cy} ${p1[0]},${p1[1]} ${p2[0]},${p2[1]}`,
+            fill: ink(i % 2 === 0 ? 0.72 : 0.3),
+            stroke: 'var(--bg)', 'stroke-width': '.8', 'stroke-linejoin': 'round'
+          }));
+        }
+
+        decompLabel(cx, 24, `n = ${n} setores · o leque do Lab 03`);
+        decompLabel(cx, 44, 'cada setor ≈ triângulo de ângulo 2π/n', 'middle', 14);
+        decompLabel(cx, 616, 'faltam as lúnulas entre corda e arco — somem quando o corte afina', 'middle', 14);
+      }
+
+      function drawDiscos(n) {
+        const cx = 320;
+        const cy = 330;
+        const R = 225;
+
+        for (let i = 0; i < n; i += 1) {
+          const a = -1 + (2 * i) / n;
+          const b = a + 2 / n;
+          const w2 = 1 - Math.max(a * a, b * b);
+          if (w2 <= 0) continue;
+          const half = R * Math.sqrt(w2);
+          decompDrawing.appendChild(el('rect', {
+            x: cx - half,
+            y: cy - R * b,
+            width: 2 * half,
+            height: (R * 2) / n,
+            fill: ink(0.15 + 0.85 * w2),
+            stroke: 'var(--bg)', 'stroke-width': '.8'
+          }));
+        }
+
+        decompDrawing.appendChild(el('circle', {
+          cx, cy, r: R, fill: 'none', stroke: 'var(--circle)', 'stroke-width': '2.5', 'stroke-dasharray': '3 7'
+        }));
+
+        decompLabel(cx, 24, `n = ${n} fatias da esfera, vista de perfil`);
+        decompLabel(cx, 44, 'em cada fatia, o disco inscrito — a pilha do Lab 07', 'middle', 14);
+        decompLabel(cx, 616, 'girada, cada fatia é um disco π·(raio)² × espessura Δz', 'middle', 14);
+      }
+
+      const DRAW = { aneis: drawAneis, setores: drawSetores, discos: drawDiscos };
+
+      function renderDecomp() {
+        decompDrawing.replaceChildren();
+        DRAW[modeKey](ns[ns.length - 1]);
+      }
+
+      // ---------- gráfico log-log ----------
+
+      const PLOT = { left: 70, right: 620, top: 18, bottom: 254 };
+
+      function xOf(n) {
+        const t = (Math.log10(n) - Math.log10(N_START)) / (Math.log10(N_MAX) - Math.log10(N_START));
+        return PLOT.left + t * (PLOT.right - PLOT.left);
+      }
+
+      function yOf(error) {
+        const t = (1 - Math.log10(error)) / 6;
+        return PLOT.top + t * (PLOT.bottom - PLOT.top);
+      }
+
+      function chartLabel(cx, cy, text, anchor = 'middle', fill = 'var(--muted)') {
+        chartDrawing.appendChild(el('text', {
+          x: cx, y: cy,
+          'text-anchor': anchor,
+          'font-family': 'ui-sans-serif, system-ui, sans-serif',
+          'font-size': '13',
+          'font-weight': '600',
+          fill
+        }, text));
+      }
+
+      function renderChart() {
+        chartDrawing.replaceChildren();
+
+        for (let exp = 0; exp >= -5; exp -= 1) {
+          const gy = yOf(10 ** exp);
+          chartDrawing.appendChild(el('line', {
+            x1: PLOT.left, y1: gy, x2: PLOT.right, y2: gy,
+            stroke: 'var(--line)', 'stroke-width': exp % 2 === 0 ? '1.4' : '.7'
+          }));
+          if (exp % 2 === 0) {
+            chartLabel(PLOT.left - 8, gy + 4, exp === 0 ? '1' : exp === -2 ? '10⁻²' : '10⁻⁴', 'end');
+          }
+        }
+
+        for (const gn of [4, 16, 64, 256]) {
+          const gx = xOf(gn);
+          chartDrawing.appendChild(el('line', {
+            x1: gx, y1: PLOT.top, x2: gx, y2: PLOT.bottom,
+            stroke: 'var(--line)', 'stroke-width': '.7'
+          }));
+          chartLabel(gx, PLOT.bottom + 20, String(gn));
+        }
+
+        chartLabel((PLOT.left + PLOT.right) / 2, PLOT.bottom + 40, 'n — número de cortes (escala log)');
+        chartLabel(8, PLOT.top - 4, 'erro (escala log)', 'start');
+
+        // fantasmas: os outros modos, para comparar as ladeiras
+        for (const key of Object.keys(MODES)) {
+          if (key === modeKey || ns.length < 2) continue;
+          const mode = MODES[key];
+          const pts = ns.map(n => [xOf(n), yOf(Math.abs(mode.exact - mode.sum(n)))]);
+          chartDrawing.appendChild(el('polyline', {
+            points: pts.map(point => point.join(',')).join(' '),
+            fill: 'none', stroke: 'var(--muted)', 'stroke-width': '1.4', 'stroke-dasharray': '4 5', opacity: '.55'
+          }));
+          const [lx, ly] = pts[pts.length - 1];
+          if (lx > 540) chartLabel(lx - 8, ly - 8, mode.short, 'end');
+          else chartLabel(lx + 6, ly + 4, mode.short, 'start');
+        }
+
+        const mode = MODES[modeKey];
+        const points = ns.map(n => [xOf(n), yOf(Math.abs(mode.exact - mode.sum(n)))]);
+
+        if (points.length > 1) {
+          chartDrawing.appendChild(el('polyline', {
+            points: points.map(point => point.join(',')).join(' '),
+            fill: 'none', stroke: 'var(--accent)', 'stroke-width': '2'
+          }));
+        }
+
+        for (let i = 0; i < ns.length; i += 1) {
+          const dot = el('circle', {
+            cx: points[i][0], cy: points[i][1], r: 5,
+            fill: 'var(--accent)', stroke: 'var(--bg)', 'stroke-width': '2'
+          });
+          dot.appendChild(el('title', {}, `n = ${ns[i]} · erro = ${fmt(Math.abs(mode.exact - mode.sum(ns[i])), 7)}`));
+          chartDrawing.appendChild(dot);
+        }
+
+        if (ns.length >= 3) {
+          chartLabel(xOf(5), yOf(10 ** -4.4), 'ladeiras retas: cada corte tem sua ordem', 'start');
+        }
+      }
+
+      // ---------- tabela e painel ----------
+
+      function renderTable() {
+        const mode = MODES[modeKey];
+        colScaled.textContent = mode.scaledLabel;
+        rowsBody.replaceChildren();
+
+        for (let i = 0; i < ns.length; i += 1) {
+          const n = ns[i];
+          const err = mode.exact - mode.sum(n);
+          const row = document.createElement('tr');
+          const previous = i === 0 ? null : mode.exact - mode.sum(ns[i - 1]);
+          const contraction = previous === null ? '—' : fmt(err / previous, 4);
+          for (const cell of [String(n), fmt(mode.sum(n), 4), fmt(err, 7), contraction, fmt(mode.scaled(n, err), 4)]) {
+            const td = document.createElement('td');
+            td.textContent = cell;
+            row.appendChild(td);
+          }
+          rowsBody.appendChild(row);
+        }
+
+        const lastN = ns[ns.length - 1];
+        const lastErr = mode.exact - mode.sum(lastN);
+        sumValue.textContent = fmt(mode.sum(lastN), 4);
+        exactLabel.textContent = mode.exactLabel;
+        exactValue.textContent = fmt(mode.exact, 4);
+        errpctValue.textContent = `${fmt((lastErr / mode.exact) * 100, 2)}%`;
+        scaledLabel.textContent = mode.scaledLabel;
+        scaledValue.textContent = fmt(mode.scaled(lastN, lastErr), 4);
+        doubleStatus.textContent = lastN >= N_MAX
+          ? `n = ${lastN} cortes · limite do laboratório`
+          : `n = ${lastN} cortes · ${doublings === 0 ? 'nenhuma dobra ainda' : `${doublings} ${doublings === 1 ? 'dobra' : 'dobras'}`}`;
+        doubleButton.disabled = lastN >= N_MAX;
+      }
+
+      function updateReadiness() {
+        const ready = predicted && doublings >= 3;
+        reveal.disabled = !ready || !formulaCard.hidden;
+        if (formulaCard.hidden) {
+          revealStatus.textContent = ready
+            ? 'A soma já contou o segredo. Falta só o nome.'
+            : 'Aposte e dobre os cortes pelo menos três vezes.';
+        }
+      }
+
+      function renderAll() {
+        renderDecomp();
+        renderTable();
+        renderChart();
+      }
+
+      document.querySelectorAll('[data-prediction]').forEach(button => {
+        button.addEventListener('click', () => {
+          document.querySelectorAll('[data-prediction]').forEach(item => item.setAttribute('aria-pressed', 'false'));
+          button.setAttribute('aria-pressed', 'true');
+          predicted = true;
+          predictionFeedback.textContent = button.dataset.prediction === 'triangulo'
+            ? 'Boa aposta. Os anéis já estão desenrolados no painel — dobre os cortes e veja a escada se decidir.'
+            : 'Aposta registrada. Os anéis foram desenrolados no painel — dobre os cortes e veja a escada se decidir.';
+          renderAll();
+          updateReadiness();
+        });
+      });
+
+      document.querySelectorAll('[data-mode]').forEach(button => {
+        button.addEventListener('click', () => {
+          document.querySelectorAll('[data-mode]').forEach(item => item.setAttribute('aria-pressed', 'false'));
+          button.setAttribute('aria-pressed', 'true');
+          modeKey = button.dataset.mode;
+          renderAll();
+        });
+      });
+
+      doubleButton.addEventListener('click', () => {
+        const lastN = ns[ns.length - 1];
+        if (lastN >= N_MAX) return;
+        ns.push(lastN * 2);
+        doublings += 1;
+        renderAll();
+        updateReadiness();
+      });
+
+      reveal.addEventListener('click', () => {
+        formulaCard.hidden = false;
+        exercises.hidden = false;
+        reveal.textContent = 'Máquina batizada';
+        reveal.disabled = true;
+        formulaCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+
+      // ---------- exercícios: escada de pistas + desbloqueio sequencial ----------
+
+      const EXERCISES = {
+        A: {
+          correct: 'volume',
+          next: 'exB',
+          right: 'Exato: fatias de área π, espessura dz, de 0 a 2 — o volume 2π ≈ 6,2832 do cilindro. Perfil constante: a integral vira multiplicação. Agora monte uma no B.',
+          wrong: {
+            'area': 'O 0 e o 2 não são decoração: são onde a acumulação começa e termina. Sem eles (e sem o dz), não há empilhamento nenhum.',
+            'parede': 'Contornos seriam 2π dentro da integral — e dariam 4π. Aqui a contribuição é π: a área da fatia, não o contorno.'
+          },
+          hints: [
+            'Pista 1 — leia letra a letra, como no dicionário: "some as contribuições … vezes a espessura …, de … até …". O que está no lugar da contribuição?',
+            'Pista visual — π é a área de um disco de raio 1. Empilhar discos de z = 0 até z = 2 monta qual objeto?',
+            'Pista estrutural — contribuição × espessura: área (R²) × comprimento (R) = R³. A unidade já responde o que se acumula.'
+          ]
+        },
+        B: {
+          correct: 'discos',
+          next: 'exC',
+          right: 'Exato: discos π(1 − z/3)² × dz, de 0 a 3, acumulam π ≈ 3,1416 — e πR²h ÷ 3 confere. Falta desmontar uma acumulação errada no C.',
+          wrong: {
+            'contornos': 'Contorno × espessura soma áreas: o total 3π tem unidade de área, não de volume. É o Erro fértil de novo, agora no espaço.',
+            'limites': 'Os limites dizem onde a acumulação começa e termina. Parando em z = 1, você empilhou só o tronco de baixo (≈ 2,21) e deixou o topo do cone de fora.'
+          },
+          hints: [
+            'Pista 1 — pergunte primeiro o que cada fatia vale. Na altura z, a fatia é um disco de raio 1 − z/3: qual é a contribuição de volume dela?',
+            'Pista visual — o cone inteiro vive entre z = 0 (base, raio 1) e z = 3 (vértice, raio 0). A acumulação precisa percorrer tudo isso.',
+            'Pista estrutural — volume pede área da fatia × espessura. Contorno × espessura é área — unidade errada para volume.'
+          ]
+        },
+        C: {
+          correct: 'dimensao',
+          next: 'insights',
+          right: 'Exato: cada parcela 2πr·Δr é uma área — refinada, a soma converge para π, a área do círculo, nunca para um volume. A receita certa pelo raio está no gabarito: cascas 4πr²·dr.',
+          wrong: {
+            'espessura': 'Refinar não conserta: o erro não é de espessura, é de dimensão. A soma refinada converge — para π, a área do círculo, longe dos 4π/3 ≈ 4,19 da esfera.',
+            'altura': 'Acumular pelo raio funciona, sim — com a contribuição certa: cascas esféricas 4πr²·dr acumulam exatamente 4π/3. O problema da proposta está em outro lugar.'
+          },
+          hints: [
+            'Pista 1 — antes de discutir o resultado, leia cada parcela em voz alta e pergunte: isso é comprimento, área ou volume?',
+            'Pista visual — 2πr·Δr é um anel achatado no chão. Pintar anéis, um dentro do outro, preenche um disco — em momento algum a soma sai do plano.',
+            'Pista estrutural — para acumular volume, cada contribuição precisa ser volume: fatia (área × Δz) ou casca (superfície × Δr). Confira as unidades da proposta.'
+          ]
+        }
+      };
+
+      const hintIndex = { A: 0, B: 0, C: 0 };
+
+      document.querySelectorAll('.hint-button').forEach(button => {
+        button.addEventListener('click', () => {
+          const key = button.dataset.hints;
+          const hints = EXERCISES[key].hints;
+          const index = Math.min(hintIndex[key], hints.length - 1);
+          document.getElementById(`feedback-${key}`).textContent = hints[index];
+          hintIndex[key] = index + 1;
+          if (hintIndex[key] >= hints.length) button.textContent = 'Pistas esgotadas — tente, ou abra o gabarito';
+        });
+      });
+
+      document.querySelectorAll('[data-ex]').forEach(button => {
+        button.addEventListener('click', () => {
+          const key = button.dataset.ex;
+          const spec = EXERCISES[key];
+          const option = button.dataset.option;
+          const feedback = document.getElementById(`feedback-${key}`);
+          if (option === spec.correct) {
+            feedback.textContent = spec.right;
+            const next = document.getElementById(spec.next);
+            if (next && next.hidden) next.hidden = false;
+          } else {
+            feedback.textContent = spec.wrong[option];
+          }
+        });
+      });
+
+      renderAll();
+      updateReadiness();
+    })();
+  </script>
+</body>
+</html>
