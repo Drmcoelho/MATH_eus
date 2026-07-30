@@ -1,0 +1,810 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Laboratório 03 do MATHeu$: transforme o polígono em um leque de triângulos e descubra o que acontece com as áreas.">
+  <title>Lab 03 — O que acontece com as áreas? · MATHeu$</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --bg: #f4f1e8;
+      --ink: #171713;
+      --muted: #666258;
+      --paper: rgba(255, 255, 255, .66);
+      --line: rgba(23, 23, 19, .15);
+      --accent: #246b52;
+      --accent-2: #9b3f31;
+      --circle: #252520;
+      --focus: #d4872d;
+      --shadow: 0 18px 60px rgba(48, 43, 31, .09);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #11130f;
+        --ink: #f0eee7;
+        --muted: #b8b3a8;
+        --paper: rgba(255, 255, 255, .055);
+        --line: rgba(255, 255, 255, .14);
+        --accent: #7bc5a3;
+        --accent-2: #ef9788;
+        --circle: #f0eee7;
+        --focus: #ffc267;
+        --shadow: none;
+      }
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font: 18px/1.55 ui-serif, Georgia, Cambria, "Times New Roman", serif;
+    }
+
+    button, input { font: inherit; }
+
+    a { color: var(--accent); }
+
+    :focus-visible {
+      outline: 3px solid var(--focus);
+      outline-offset: 3px;
+    }
+
+    .skip-link {
+      position: absolute;
+      left: 12px;
+      top: -80px;
+      padding: 10px 14px;
+      background: var(--ink);
+      color: var(--bg);
+      z-index: 20;
+    }
+
+    .skip-link:focus { top: 12px; }
+
+    header, main, footer {
+      width: min(1120px, calc(100% - 32px));
+      margin-inline: auto;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      padding: 22px 0;
+      border-bottom: 1px solid var(--line);
+      font-family: ui-sans-serif, system-ui, sans-serif;
+      font-size: .86rem;
+    }
+
+    header a { text-decoration: none; }
+
+    .brand { font-weight: 800; letter-spacing: -.02em; }
+
+    main { padding: 58px 0 88px; }
+
+    .eyebrow {
+      margin: 0 0 12px;
+      color: var(--accent);
+      font: 800 .76rem/1.2 ui-sans-serif, system-ui, sans-serif;
+      letter-spacing: .15em;
+      text-transform: uppercase;
+    }
+
+    h1, h2, h3 { line-height: 1.08; letter-spacing: -.035em; }
+
+    h1 {
+      max-width: 900px;
+      margin: 0;
+      font-size: clamp(2.9rem, 8vw, 6.6rem);
+    }
+
+    h2 { font-size: clamp(2rem, 5vw, 3.5rem); margin-top: 0; }
+
+    h3 { font-size: 1.25rem; }
+
+    .lead {
+      max-width: 780px;
+      margin: 24px 0 0;
+      color: var(--muted);
+      font-size: clamp(1.18rem, 2.8vw, 1.65rem);
+    }
+
+    .question-card, .lab-card, .formula-card, .challenge-card, details {
+      margin-top: 38px;
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      background: var(--paper);
+      box-shadow: var(--shadow);
+    }
+
+    .question-card, .formula-card, .challenge-card, details { padding: clamp(22px, 4vw, 38px); }
+
+    .question-card strong, .box-label {
+      display: block;
+      color: var(--accent);
+      font: 800 .76rem/1.2 ui-sans-serif, system-ui, sans-serif;
+      letter-spacing: .13em;
+      text-transform: uppercase;
+    }
+
+    .question-card p {
+      max-width: 850px;
+      margin: 12px 0 22px;
+      font-size: clamp(1.45rem, 4vw, 2.45rem);
+      line-height: 1.18;
+    }
+
+    .answer-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    button {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 12px 16px;
+      background: transparent;
+      color: var(--ink);
+      cursor: pointer;
+    }
+
+    button:hover { border-color: var(--accent); }
+
+    button[aria-pressed="true"], .primary {
+      border-color: var(--accent);
+      background: var(--accent);
+      color: var(--bg);
+    }
+
+    button:disabled { opacity: .45; cursor: not-allowed; }
+
+    .feedback {
+      min-height: 1.6em;
+      margin: 16px 0 0;
+      color: var(--muted);
+      font-family: ui-sans-serif, system-ui, sans-serif;
+    }
+
+    .lab-card { overflow: hidden; }
+
+    .lab-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.35fr) minmax(280px, .65fr);
+    }
+
+    .visual-panel {
+      min-height: 620px;
+      padding: 18px;
+      background:
+        linear-gradient(var(--line) 1px, transparent 1px),
+        linear-gradient(90deg, var(--line) 1px, transparent 1px);
+      background-size: 28px 28px;
+    }
+
+    svg { width: 100%; height: 100%; min-height: 580px; display: block; }
+
+    .control-panel {
+      padding: clamp(22px, 4vw, 34px);
+      border-left: 1px solid var(--line);
+    }
+
+    .control-panel h2 { font-size: 1.9rem; }
+
+    .control-panel label {
+      display: block;
+      margin-top: 26px;
+      font: 700 .86rem/1.3 ui-sans-serif, system-ui, sans-serif;
+    }
+
+    input[type="range"] { width: 100%; margin: 14px 0; accent-color: var(--accent); }
+
+    .quick-values {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .quick-values button { padding: 8px 12px; font-size: .88rem; }
+
+    .measurements {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin: 26px 0;
+    }
+
+    .measurement {
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+    }
+
+    .measurement dt {
+      color: var(--muted);
+      font: 700 .73rem/1.2 ui-sans-serif, system-ui, sans-serif;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+    }
+
+    .measurement dd { margin: 5px 0 0; font-size: 1.32rem; font-variant-numeric: tabular-nums; }
+
+    .measurement.inside dd { color: var(--accent); }
+
+    .measurement.outside dd { color: var(--accent-2); }
+
+    .hint {
+      padding: 16px;
+      border-left: 4px solid var(--accent);
+      background: color-mix(in srgb, var(--accent) 9%, transparent);
+      color: var(--muted);
+    }
+
+    .chart-card { padding: clamp(18px, 3vw, 30px); }
+
+    .chart-card svg { min-height: 0; height: auto; }
+
+    .chart-card h3 { margin: 6px 0 14px; }
+
+    .reveal-row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-top: 22px; }
+
+    .hint.secret { margin-top: 24px; }
+
+    .formula-card[hidden] { display: none; }
+
+    .formula {
+      margin: 22px 0;
+      padding: 22px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      text-align: center;
+      font-size: clamp(1.5rem, 4.4vw, 2.6rem);
+      font-variant-numeric: lining-nums;
+      overflow-x: auto;
+    }
+
+    .derivation {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      counter-reset: step;
+    }
+
+    .step {
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+    }
+
+    .step::before {
+      counter-increment: step;
+      content: counter(step);
+      display: grid;
+      place-items: center;
+      width: 28px;
+      height: 28px;
+      margin-bottom: 12px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: var(--bg);
+      font: 800 .82rem/1 ui-sans-serif, system-ui, sans-serif;
+    }
+
+    .step p { margin: 0; }
+
+    .dictionary {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .dictionary div { padding: 14px; border-top: 1px solid var(--line); }
+
+    .challenge-options { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+
+    details summary {
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 1.25rem;
+    }
+
+    details p, details li { color: var(--muted); }
+
+    footer { padding: 28px 0 56px; border-top: 1px solid var(--line); color: var(--muted); }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    @media (max-width: 820px) {
+      .answer-grid, .derivation, .dictionary { grid-template-columns: 1fr; }
+      .lab-grid { grid-template-columns: 1fr; }
+      .control-panel { border-left: 0; border-top: 1px solid var(--line); }
+      .visual-panel { min-height: 480px; }
+      svg { min-height: 440px; }
+    }
+
+    @media (max-width: 480px) {
+      header { align-items: flex-start; flex-direction: column; }
+      main { padding-top: 38px; }
+      .measurements { grid-template-columns: 1fr; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      * { transition: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#conteudo">Pular para o laboratório</a>
+  <header>
+    <a class="brand" href="../../index.html">MATHeu$</a>
+    <span>Temporada 01 · Laboratório 03</span>
+  </header>
+
+  <main id="conteudo">
+    <p class="eyebrow">O que acontece com as áreas?</p>
+    <h1>O contorno já quase fechou. A área acompanha?</h1>
+    <p class="lead">No Laboratório 02, os contornos apertaram o círculo depressa. Agora abrimos o polígono como um leque de triângulos e medimos o que ele realmente cobre.</p>
+
+    <section class="question-card" aria-labelledby="aposta-titulo">
+      <strong id="aposta-titulo">Pare e aposte</strong>
+      <p>Com 12 lados, o contorno de dentro cobre 98,9% do contorno do círculo. Da <em>área</em> do círculo, o mesmo polígono cobre…</p>
+      <div class="answer-grid" role="group" aria-label="Escolha sua previsão">
+        <button type="button" data-prediction="more" aria-pressed="false">~99,5%</button>
+        <button type="button" data-prediction="same" aria-pressed="false">os mesmos ~98,9%</button>
+        <button type="button" data-prediction="less" aria-pressed="false">~95,5%</button>
+      </div>
+      <p id="prediction-feedback" class="feedback" aria-live="polite">Escolha antes de mexer no controle. O painel de medidas dará o veredito.</p>
+    </section>
+
+    <section class="lab-card" aria-labelledby="lab-title">
+      <div class="lab-grid">
+        <div class="visual-panel">
+          <svg id="geometry" viewBox="0 0 640 660" role="img" aria-labelledby="svg-title svg-desc">
+            <title id="svg-title">Polígono inscrito aberto em leque de triângulos dentro do círculo, com o circunscrito por fora</title>
+            <desc id="svg-desc">O polígono de dentro é dividido em triângulos iguais que partem do centro. Um triângulo é destacado com sua base, um lado, e sua altura, o apótema. O polígono de fora encosta no círculo.</desc>
+            <g id="drawing"></g>
+          </svg>
+        </div>
+
+        <div class="control-panel">
+          <p class="box-label">Brinque</p>
+          <h2 id="lab-title">Abra o leque</h2>
+          <p>O círculo tem raio fixo <strong>R = 1</strong> e área ≈ 3,1416. Cada lado do polígono fecha um triângulo com o centro.</p>
+
+          <label for="sides">Número de lados: <output id="sides-output" for="sides">12</output></label>
+          <input id="sides" type="range" min="3" max="96" step="1" value="12">
+
+          <div class="quick-values" aria-label="Valores rápidos">
+            <button type="button" data-n="3">3</button>
+            <button type="button" data-n="4">4</button>
+            <button type="button" data-n="6">6</button>
+            <button type="button" data-n="12">12</button>
+            <button type="button" data-n="24">24</button>
+            <button type="button" data-n="96">96</button>
+          </div>
+
+          <dl class="measurements" aria-label="Medidas normalizadas para R igual a 1">
+            <div class="measurement inside"><dt>área de dentro</dt><dd id="a-in">3,0000</dd></div>
+            <div class="measurement outside"><dt>área de fora</dt><dd id="a-out">3,2154</dd></div>
+            <div class="measurement"><dt>área do círculo</dt><dd>3,1416</dd></div>
+            <div class="measurement"><dt>apótema de dentro</dt><dd id="apothem-value">0,9659</dd></div>
+            <div class="measurement inside"><dt>contorno de dentro cobre</dt><dd id="cov-perimeter">98,86%</dd></div>
+            <div class="measurement inside"><dt>área de dentro cobre</dt><dd id="cov-area">95,49%</dd></div>
+            <div class="measurement outside"><dt>excesso do contorno de fora</dt><dd id="exc-perimeter">2,35%</dd></div>
+            <div class="measurement outside"><dt>excesso da área de fora</dt><dd id="exc-area">2,35%</dd></div>
+          </dl>
+
+          <p class="hint"><strong>Olhe de novo:</strong> compare as duas últimas medidas. São iguais — e não é arredondamento. Guarde essa pista.</p>
+
+          <div class="reveal-row">
+            <button id="reveal" type="button" class="primary" disabled>Revelar a fórmula</button>
+            <span id="reveal-status" class="feedback" aria-live="polite">Faça uma previsão e altere o número de lados.</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="lab-card chart-card" aria-labelledby="chart-title">
+      <p class="box-label">Olhe de longe</p>
+      <h3 id="chart-title">As duas áreas apertam o círculo</h3>
+      <svg id="areas-chart" viewBox="0 0 640 300" aria-hidden="true"><g id="areas-chart-drawing"></g></svg>
+      <p id="chart-caption" class="feedback" aria-live="polite"></p>
+    </section>
+
+    <section id="formula-card" class="formula-card" hidden aria-labelledby="formula-title">
+      <p class="box-label">Entenda</p>
+      <h2 id="formula-title">O leque soma triângulos iguais</h2>
+
+      <div class="derivation">
+        <div class="step"><p>O polígono se abre em <strong>n</strong> triângulos iguais, um por lado, todos com o bico no centro.</p></div>
+        <div class="step"><p>Cada triângulo tem base <strong>L</strong> (o lado) e altura <strong>a</strong> (o apótema): área = L · a / 2.</p></div>
+        <div class="step"><p>Somando os n triângulos: n · L é o perímetro inteiro.</p></div>
+      </div>
+
+      <div class="formula" aria-label="área é igual a perímetro vezes apótema dividido por dois">
+        área = perímetro × apótema / 2
+      </div>
+
+      <div class="dictionary" aria-label="Dicionário da fórmula">
+        <div><strong>perímetro</strong><br>comprimento do contorno, n · L</div>
+        <div><strong>a</strong> — apótema<br>distância do centro ao meio do lado</div>
+        <div><strong>n</strong><br>número de lados</div>
+      </div>
+
+      <p><strong>O que ela mede:</strong> uma área, na unidade de R ao quadrado. Vale para qualquer polígono regular — o de dentro (apótema cos(π/n)) e o de fora (apótema exatamente R).</p>
+      <p><strong>Quando vale:</strong> polígonos regulares com n ≥ 3; a divisão em leque exige que o centro enxergue todos os lados.</p>
+    </section>
+
+    <section id="challenge" class="challenge-card" hidden aria-labelledby="challenge-title">
+      <p class="box-label">Agora use a fórmula</p>
+      <h2 id="challenge-title">Um hexágono regular tem perímetro 12 e apótema ≈ 1,732. Qual é a área?</h2>
+      <p>Sem leque novo: a fórmula que você acabou de construir resolve sozinha.</p>
+      <div class="challenge-options" role="group" aria-label="Escolha a área">
+        <button type="button" data-answer="6">≈ 6,0</button>
+        <button type="button" data-answer="10.4">≈ 10,4</button>
+        <button type="button" data-answer="20.8">≈ 20,8</button>
+      </div>
+      <p id="challenge-feedback" class="feedback" aria-live="polite"></p>
+    </section>
+
+    <section id="coincidence" class="formula-card" hidden aria-labelledby="coincidence-title">
+      <p class="box-label">Entenda a pista</p>
+      <h2 id="coincidence-title">Por que o cerco de fora empata os dois excessos</h2>
+      <p>O polígono de fora encosta no círculo pelo meio de cada lado: seu apótema é <em>exatamente</em> R. Pela fórmula do leque, área de fora = contorno de fora × R / 2. Como o excesso vem só do contorno, o excesso percentual da área é <strong>o mesmo</strong> do contorno — igualdade exata, para todo n.</p>
+      <p>O polígono de dentro paga duas vezes: o contorno é curto <em>e</em> o apótema é curto. Em percentual, o apótema sozinho erra cerca de três vezes mais que o contorno; somando as duas dívidas, a área de dentro erra quase <strong>quatro vezes</strong> o que o contorno erra — foi isso que a sua aposta mediu.</p>
+      <p class="hint"><strong>Curiosidade:</strong> com n = 12 a área de dentro vale exatamente 3. Sem arredondamento: 6 · sen(30°) = 3.</p>
+      <p class="hint secret"><strong>Segredo de mestre:</strong> aplique o leque ao próprio círculo, como se ele fosse um polígono de "infinitos lados": área = contorno × raio / 2 = 2πR · R / 2 = πR². A frase "infinitos lados" esconde um salto — domar esse salto é o Laboratório 05.</p>
+      <p><strong>Porta futura:</strong> três laboratórios acumularam números de erro — do contorno, do apótema, da área. Todos encolhem seguindo um mesmo padrão escondido. Medir a <em>forma</em> do erro é a pergunta que abre o <a href="../04-erro/index.html">Laboratório 04</a>.</p>
+    </section>
+
+    <details>
+      <summary>Oficina — o leque em fórmulas e o destino dos erros</summary>
+      <p><strong>Área pelo ângulo central.</strong> Cada triângulo do leque interno tem dois lados R e ângulo central 2π/n; sua área é (1/2)·R²·sen(2π/n). Multiplicando por n: área de dentro = (n/2)·R²·sen(2π/n). A identidade sen(2θ) = 2·sen(θ)·cos(θ) mostra que isso é o mesmo que perímetro × apótema / 2, com perímetro 2nR·sen(π/n) e apótema R·cos(π/n).</p>
+      <p><strong>Área de fora.</strong> Com apótema R e lado 2R·tg(π/n), o leque dá área de fora = n·R²·tg(π/n) — exatamente contorno de fora × R / 2.</p>
+      <p><strong>As três folgas.</strong> Para o ângulo θ = π/n pequeno: o seno fica abaixo de θ por cerca de θ³/6; o cosseno fica abaixo de 1 por cerca de θ²/2; a tangente fica acima de θ por cerca de θ³/3. Em percentual, o contorno de dentro erra ~θ²/6, o apótema ~θ²/2 (o triplo) e a área de dentro soma as duas dívidas: ~2θ²/3, quase quatro vezes o contorno. Do lado de fora, área e contorno erram o mesmo percentual — igualdade exata, não aproximação. O verificador do módulo confere tudo isso numericamente até n = 1000.</p>
+    </details>
+  </main>
+
+  <footer>
+    <p>MATHeu$ · Laboratório 03 · HTML autocontido, SVG calculado e funcionamento offline.</p>
+  </footer>
+
+  <script>
+    (() => {
+      'use strict';
+
+      const NS = 'http://www.w3.org/2000/svg';
+      const cx = 320;
+      const cy = 330;
+      const circleR = 150;
+
+      const drawing = document.getElementById('drawing');
+      const sides = document.getElementById('sides');
+      const sidesOutput = document.getElementById('sides-output');
+      const aIn = document.getElementById('a-in');
+      const aOut = document.getElementById('a-out');
+      const apothemValue = document.getElementById('apothem-value');
+      const covPerimeter = document.getElementById('cov-perimeter');
+      const covArea = document.getElementById('cov-area');
+      const excPerimeter = document.getElementById('exc-perimeter');
+      const excArea = document.getElementById('exc-area');
+      const reveal = document.getElementById('reveal');
+      const revealStatus = document.getElementById('reveal-status');
+      const formulaCard = document.getElementById('formula-card');
+      const challenge = document.getElementById('challenge');
+      const coincidence = document.getElementById('coincidence');
+      const predictionFeedback = document.getElementById('prediction-feedback');
+      const challengeFeedback = document.getElementById('challenge-feedback');
+
+      let predicted = false;
+      let manipulated = false;
+      const initialN = Number(sides.value);
+
+      function fmt(value, digits = 4) {
+        return new Intl.NumberFormat('pt-BR', {
+          minimumFractionDigits: digits,
+          maximumFractionDigits: digits
+        }).format(value);
+      }
+
+      function fmtPct(value) {
+        return `${fmt(value * 100, 2)}%`;
+      }
+
+      function el(name, attrs = {}, text = '') {
+        const node = document.createElementNS(NS, name);
+        for (const [key, value] of Object.entries(attrs)) node.setAttribute(key, value);
+        if (text) node.textContent = text;
+        return node;
+      }
+
+      function polar(radius, angle) {
+        return [cx + radius * Math.cos(angle), cy + radius * Math.sin(angle)];
+      }
+
+      function polygonPoints(radius, n, start) {
+        return Array.from({ length: n }, (_, i) => polar(radius, start + (2 * Math.PI * i) / n));
+      }
+
+      function addLabel(x, y, text, anchor = 'start') {
+        drawing.appendChild(el('text', {
+          x, y,
+          'text-anchor': anchor,
+          'font-family': 'ui-sans-serif, system-ui, sans-serif',
+          'font-size': '18',
+          'font-weight': '750',
+          fill: 'currentColor'
+        }, text));
+      }
+
+      // gráfico "áreas versus n": as duas áreas apertando π, com o aperto
+      // (diferença fora − dentro) legível na legenda dinâmica
+      const chartDrawing = document.getElementById('areas-chart-drawing');
+      const chartCaption = document.getElementById('chart-caption');
+      const CHART = { left: 60, right: 610, top: 32, bottom: 258, nMin: 3, nMax: 96, vMin: 1, vMax: 5.4 };
+
+      function areaInOf(n) { return (n / 2) * Math.sin(2 * Math.PI / n); }
+      function areaOutOf(n) { return n * Math.tan(Math.PI / n); }
+
+      function chartX(n) {
+        return CHART.left + (n - CHART.nMin) / (CHART.nMax - CHART.nMin) * (CHART.right - CHART.left);
+      }
+
+      function chartY(value) {
+        return CHART.bottom - (value - CHART.vMin) / (CHART.vMax - CHART.vMin) * (CHART.bottom - CHART.top);
+      }
+
+      function chartLabel(x, y, text, anchor = 'middle', fill = 'var(--muted)') {
+        chartDrawing.appendChild(el('text', {
+          x, y,
+          'text-anchor': anchor,
+          'font-family': 'ui-sans-serif, system-ui, sans-serif',
+          'font-size': '13',
+          'font-weight': '600',
+          fill
+        }, text));
+      }
+
+      function seriesPath(fn) {
+        const points = [];
+        for (let k = CHART.nMin; k <= CHART.nMax; k += 1) {
+          points.push(`${chartX(k)},${chartY(fn(k))}`);
+        }
+        return points.join(' ');
+      }
+
+      function renderChart(n) {
+        chartDrawing.replaceChildren();
+
+        for (let v = 1; v <= 5; v += 1) {
+          const gy = chartY(v);
+          chartDrawing.appendChild(el('line', {
+            x1: CHART.left, y1: gy, x2: CHART.right, y2: gy,
+            stroke: 'var(--line)', 'stroke-width': '.8'
+          }));
+          chartLabel(CHART.left - 8, gy + 4, String(v), 'end');
+        }
+
+        for (const gn of [3, 12, 24, 48, 96]) {
+          chartLabel(chartX(gn), CHART.bottom + 20, String(gn));
+        }
+        chartLabel((CHART.left + CHART.right) / 2, CHART.bottom + 38, 'n — número de lados');
+
+        chartDrawing.appendChild(el('line', {
+          x1: CHART.left, y1: chartY(Math.PI), x2: CHART.right, y2: chartY(Math.PI),
+          stroke: 'var(--circle)', 'stroke-width': '1.5', 'stroke-dasharray': '3 6'
+        }));
+        chartLabel(CHART.right + 4, chartY(Math.PI) + 4, 'π', 'start');
+
+        chartDrawing.appendChild(el('polyline', {
+          points: seriesPath(areaOutOf),
+          fill: 'none', stroke: 'var(--accent-2)', 'stroke-width': '2', 'stroke-dasharray': '7 5'
+        }));
+        chartDrawing.appendChild(el('polyline', {
+          points: seriesPath(areaInOf),
+          fill: 'none', stroke: 'var(--accent)', 'stroke-width': '2'
+        }));
+
+        chartLabel(chartX(3) + 8, chartY(areaOutOf(3)) + 18, 'fora', 'start');
+        chartLabel(chartX(3) + 8, chartY(areaInOf(3)) - 10, 'dentro', 'start');
+
+        const legend = [
+          ['var(--accent)', '', 'área de dentro'],
+          ['var(--accent-2)', '7 5', 'área de fora'],
+          ['var(--circle)', '3 6', 'círculo (π)']
+        ];
+        legend.forEach(([stroke, dash, label], index) => {
+          const ly = 28 + index * 18;
+          chartDrawing.appendChild(el('line', {
+            x1: 470, y1: ly - 4, x2: 492, y2: ly - 4,
+            stroke, 'stroke-width': '2', ...(dash ? { 'stroke-dasharray': dash } : {})
+          }));
+          chartLabel(498, ly, label, 'start');
+        });
+
+        for (const [fn, color] of [[areaInOf, 'var(--accent)'], [areaOutOf, 'var(--accent-2)']]) {
+          const dot = el('circle', {
+            cx: chartX(n), cy: chartY(fn(n)), r: 5,
+            fill: color, stroke: 'var(--bg)', 'stroke-width': '2'
+          });
+          dot.appendChild(el('title', {}, `n = ${n} · ${fmt(fn(n))}`));
+          chartDrawing.appendChild(dot);
+        }
+
+        chartCaption.textContent = `Com n = ${n}: dentro ${fmt(areaInOf(n))} · fora ${fmt(areaOutOf(n))} · aperto (fora − dentro) = ${fmt(areaOutOf(n) - areaInOf(n))}.`;
+      }
+
+      function updateReadiness() {
+        const ready = predicted && manipulated;
+        reveal.disabled = !ready;
+        revealStatus.textContent = ready
+          ? 'Agora a fórmula pode aparecer sem cair do céu.'
+          : 'Faça uma previsão e altere o número de lados.';
+      }
+
+      function render() {
+        const n = Number(sides.value);
+        const theta = Math.PI / n;
+        const apothem = Math.cos(theta);
+        const areaIn = (n / 2) * Math.sin(2 * theta);
+        const areaOut = n * Math.tan(theta);
+        const perimeterIn = 2 * n * Math.sin(theta);
+        const perimeterOut = 2 * n * Math.tan(theta);
+        const circleArea = Math.PI;
+        const circleLength = 2 * Math.PI;
+
+        sidesOutput.value = String(n);
+        sidesOutput.textContent = String(n);
+        aIn.textContent = fmt(areaIn);
+        aOut.textContent = fmt(areaOut);
+        apothemValue.textContent = fmt(apothem);
+        covPerimeter.textContent = fmtPct(perimeterIn / circleLength);
+        covArea.textContent = fmtPct(areaIn / circleArea);
+        excPerimeter.textContent = fmtPct(perimeterOut / circleLength - 1);
+        excArea.textContent = fmtPct(areaOut / circleArea - 1);
+
+        drawing.replaceChildren();
+
+        const vertexStart = -Math.PI / 2 + theta;
+        const outerR = circleR / Math.cos(theta);
+        const vertices = polygonPoints(circleR, n, vertexStart);
+
+        drawing.appendChild(el('polygon', {
+          points: polygonPoints(outerR, n, vertexStart).map(point => point.join(',')).join(' '),
+          fill: 'none',
+          stroke: 'var(--accent-2)',
+          'stroke-width': '3',
+          'stroke-dasharray': '12 8',
+          'stroke-linejoin': 'round'
+        }));
+
+        drawing.appendChild(el('circle', {
+          cx, cy, r: circleR,
+          fill: 'none',
+          stroke: 'var(--circle)',
+          'stroke-width': '3',
+          'stroke-dasharray': '3 8'
+        }));
+
+        drawing.appendChild(el('polygon', {
+          points: vertices.map(point => point.join(',')).join(' '),
+          fill: 'color-mix(in srgb, var(--accent) 10%, transparent)',
+          stroke: 'var(--accent)',
+          'stroke-width': '4',
+          'stroke-linejoin': 'round'
+        }));
+
+        for (const vertex of vertices) {
+          drawing.appendChild(el('line', {
+            x1: cx, y1: cy, x2: vertex[0], y2: vertex[1],
+            stroke: 'var(--accent)', 'stroke-width': '1.5', opacity: '.55'
+          }));
+        }
+
+        const O = [cx, cy];
+        const V1 = polar(circleR, -Math.PI / 2 - theta);
+        const V2 = polar(circleR, -Math.PI / 2 + theta);
+        const M = polar(circleR * Math.cos(theta), -Math.PI / 2);
+
+        drawing.appendChild(el('polygon', {
+          points: [O, V1, V2].map(point => point.join(',')).join(' '),
+          fill: 'color-mix(in srgb, var(--focus) 22%, transparent)',
+          stroke: 'var(--focus)',
+          'stroke-width': '4',
+          'stroke-linejoin': 'round'
+        }));
+
+        drawing.appendChild(el('line', {
+          x1: O[0], y1: O[1], x2: M[0], y2: M[1],
+          stroke: 'var(--accent-2)', 'stroke-width': '5'
+        }));
+
+        drawing.appendChild(el('circle', { cx: O[0], cy: O[1], r: 6, fill: 'var(--ink)' }));
+        addLabel(O[0] + 11, O[1] + 20, 'O');
+        addLabel(M[0] - 12, (O[1] + M[1]) / 2, 'a', 'end');
+
+        if (n <= 10) {
+          addLabel((V1[0] + V2[0]) / 2, M[1] - 14, 'L', 'middle');
+        }
+
+        addLabel(cx, 34, `n = ${n}`, 'middle');
+        addLabel(cx, 654, `área de dentro cobre ${fmtPct(areaIn / circleArea)} do círculo`, 'middle');
+
+        renderChart(n);
+      }
+
+      document.querySelectorAll('[data-prediction]').forEach(button => {
+        button.addEventListener('click', () => {
+          document.querySelectorAll('[data-prediction]').forEach(item => item.setAttribute('aria-pressed', 'false'));
+          button.setAttribute('aria-pressed', 'true');
+          predicted = true;
+          const correct = button.dataset.prediction === 'less';
+          predictionFeedback.textContent = correct
+            ? 'Boa aposta. Agora abra o leque e confira as duas coberturas no painel.'
+            : 'Aposta registrada. Compare no painel a cobertura do contorno com a da área.';
+          updateReadiness();
+        });
+      });
+
+      sides.addEventListener('input', () => {
+        manipulated = manipulated || Number(sides.value) !== initialN;
+        render();
+        updateReadiness();
+      });
+
+      document.querySelectorAll('[data-n]').forEach(button => {
+        button.addEventListener('click', () => {
+          sides.value = button.dataset.n;
+          manipulated = manipulated || Number(sides.value) !== initialN;
+          render();
+          updateReadiness();
+        });
+      });
+
+      reveal.addEventListener('click', () => {
+        formulaCard.hidden = false;
+        challenge.hidden = false;
+        reveal.textContent = 'Fórmula revelada';
+        reveal.disabled = true;
+        formulaCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+
+      document.querySelectorAll('[data-answer]').forEach(button => {
+        button.addEventListener('click', () => {
+          const answer = button.dataset.answer;
+          if (answer === '10.4') {
+            challengeFeedback.textContent = 'Exato: área = perímetro × apótema / 2 = 12 × 1,732 / 2 ≈ 10,39. E a pista das medidas iguais se explica abaixo.';
+            if (coincidence.hidden) coincidence.hidden = false;
+          } else if (answer === '20.8') {
+            challengeFeedback.textContent = 'Isso é perímetro × apótema sem dividir por 2 — mas cada triângulo do leque tem área base × altura / 2.';
+          } else {
+            challengeFeedback.textContent = 'Pequeno demais. Monte o leque: seis triângulos de base 2 e altura 1,732.';
+          }
+        });
+      });
+
+      render();
+      updateReadiness();
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,621 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Laboratório 05 do MATHeu$: escolha uma tolerância e receba uma garantia — o nascimento do limite.">
+  <title>Lab 05 — Quando “chegar perto” vira limite? · MATHeu$</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --bg: #f4f1e8;
+      --ink: #171713;
+      --muted: #666258;
+      --paper: rgba(255, 255, 255, .66);
+      --line: rgba(23, 23, 19, .15);
+      --accent: #246b52;
+      --accent-2: #9b3f31;
+      --circle: #252520;
+      --focus: #d4872d;
+      --shadow: 0 18px 60px rgba(48, 43, 31, .09);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #11130f;
+        --ink: #f0eee7;
+        --muted: #b8b3a8;
+        --paper: rgba(255, 255, 255, .055);
+        --line: rgba(255, 255, 255, .14);
+        --accent: #7bc5a3;
+        --accent-2: #ef9788;
+        --circle: #f0eee7;
+        --focus: #ffc267;
+        --shadow: none;
+      }
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font: 18px/1.55 ui-serif, Georgia, Cambria, "Times New Roman", serif;
+    }
+
+    button, input { font: inherit; }
+
+    a { color: var(--accent); }
+
+    :focus-visible {
+      outline: 3px solid var(--focus);
+      outline-offset: 3px;
+    }
+
+    .skip-link {
+      position: absolute;
+      left: 12px;
+      top: -80px;
+      padding: 10px 14px;
+      background: var(--ink);
+      color: var(--bg);
+      z-index: 20;
+    }
+
+    .skip-link:focus { top: 12px; }
+
+    header, main, footer {
+      width: min(1120px, calc(100% - 32px));
+      margin-inline: auto;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      padding: 22px 0;
+      border-bottom: 1px solid var(--line);
+      font-family: ui-sans-serif, system-ui, sans-serif;
+      font-size: .86rem;
+    }
+
+    header a { text-decoration: none; }
+
+    .brand { font-weight: 800; letter-spacing: -.02em; }
+
+    main { padding: 58px 0 88px; }
+
+    .eyebrow {
+      margin: 0 0 12px;
+      color: var(--accent);
+      font: 800 .76rem/1.2 ui-sans-serif, system-ui, sans-serif;
+      letter-spacing: .15em;
+      text-transform: uppercase;
+    }
+
+    h1, h2, h3 { line-height: 1.08; letter-spacing: -.035em; }
+
+    h1 {
+      max-width: 900px;
+      margin: 0;
+      font-size: clamp(2.9rem, 8vw, 6.6rem);
+    }
+
+    h2 { font-size: clamp(2rem, 5vw, 3.5rem); margin-top: 0; }
+
+    h3 { font-size: 1.25rem; }
+
+    .lead {
+      max-width: 780px;
+      margin: 24px 0 0;
+      color: var(--muted);
+      font-size: clamp(1.18rem, 2.8vw, 1.65rem);
+    }
+
+    .question-card, .lab-card, .formula-card, .challenge-card, details {
+      margin-top: 38px;
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      background: var(--paper);
+      box-shadow: var(--shadow);
+    }
+
+    .question-card, .formula-card, .challenge-card, details { padding: clamp(22px, 4vw, 38px); }
+
+    .question-card strong, .box-label {
+      display: block;
+      color: var(--accent);
+      font: 800 .76rem/1.2 ui-sans-serif, system-ui, sans-serif;
+      letter-spacing: .13em;
+      text-transform: uppercase;
+    }
+
+    .question-card p {
+      max-width: 850px;
+      margin: 12px 0 22px;
+      font-size: clamp(1.45rem, 4vw, 2.45rem);
+      line-height: 1.18;
+    }
+
+    .answer-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    button {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 12px 16px;
+      background: transparent;
+      color: var(--ink);
+      cursor: pointer;
+    }
+
+    button:hover { border-color: var(--accent); }
+
+    button[aria-pressed="true"], .primary {
+      border-color: var(--accent);
+      background: var(--accent);
+      color: var(--bg);
+    }
+
+    button:disabled { opacity: .45; cursor: not-allowed; }
+
+    .feedback {
+      min-height: 1.6em;
+      margin: 16px 0 0;
+      color: var(--muted);
+      font-family: ui-sans-serif, system-ui, sans-serif;
+    }
+
+    .lab-card { overflow: hidden; }
+
+    .lab-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.35fr) minmax(280px, .65fr);
+    }
+
+    .chart-panel {
+      padding: clamp(18px, 3vw, 30px);
+    }
+
+    .chart-panel svg { width: 100%; height: auto; display: block; }
+
+    .control-panel {
+      padding: clamp(22px, 4vw, 34px);
+      border-left: 1px solid var(--line);
+    }
+
+    .control-panel h2 { font-size: 1.9rem; }
+
+    .control-label {
+      display: block;
+      margin-top: 26px;
+      margin-bottom: 8px;
+      font: 700 .86rem/1.3 ui-sans-serif, system-ui, sans-serif;
+    }
+
+    .quick-values {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .quick-values button { padding: 8px 12px; font-size: .88rem; }
+
+    .measurements {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin: 26px 0;
+    }
+
+    .measurement {
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+    }
+
+    .measurement dt {
+      color: var(--muted);
+      font: 700 .73rem/1.2 ui-sans-serif, system-ui, sans-serif;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+    }
+
+    .measurement dd { margin: 5px 0 0; font-size: 1.32rem; font-variant-numeric: tabular-nums; }
+
+    .hint {
+      padding: 16px;
+      border-left: 4px solid var(--accent);
+      background: color-mix(in srgb, var(--accent) 9%, transparent);
+      color: var(--muted);
+    }
+
+    .reveal-row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-top: 22px; }
+
+    .hint.secret { margin-top: 24px; }
+
+    .formula-card[hidden] { display: none; }
+
+    .formula {
+      margin: 22px 0;
+      padding: 22px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      text-align: center;
+      font-size: clamp(1.4rem, 4vw, 2.3rem);
+      font-variant-numeric: lining-nums;
+      overflow-x: auto;
+    }
+
+    .dictionary {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .dictionary div { padding: 14px; border-top: 1px solid var(--line); }
+
+    .challenge-options { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+
+    details summary {
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 1.25rem;
+    }
+
+    details p, details li { color: var(--muted); }
+
+    footer { padding: 28px 0 56px; border-top: 1px solid var(--line); color: var(--muted); }
+
+    @media (max-width: 820px) {
+      .answer-grid, .dictionary { grid-template-columns: 1fr; }
+      .lab-grid { grid-template-columns: 1fr; }
+      .control-panel { border-left: 0; border-top: 1px solid var(--line); }
+    }
+
+    @media (max-width: 480px) {
+      header { align-items: flex-start; flex-direction: column; }
+      main { padding-top: 38px; }
+      .measurements { grid-template-columns: 1fr; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      * { transition: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#conteudo">Pular para o laboratório</a>
+  <header>
+    <a class="brand" href="../../index.html">MATHeu$</a>
+    <span>Temporada 01 · Laboratório 05</span>
+  </header>
+
+  <main id="conteudo">
+    <p class="eyebrow">Quando “chegar perto” vira limite?</p>
+    <h1>Escolha um erro. Eu te devolvo uma garantia.</h1>
+    <p class="lead">O Laboratório 04 descobriu a forma do erro. Agora ela vira contrato: você escolhe a tolerância, a máquina entrega o número de lados que basta — e promete que, dali em diante, nunca mais falha.</p>
+
+    <section class="question-card" aria-labelledby="aposta-titulo">
+      <strong id="aposta-titulo">Pare e aposte</strong>
+      <p>Existe uma tolerância pequena demais — um ponto em que o cerco empaca e não consegue mais encolher?</p>
+      <div class="answer-grid" role="group" aria-label="Escolha sua previsão">
+        <button type="button" data-prediction="floor" aria-pressed="false">sim, existe um piso</button>
+        <button type="button" data-prediction="always" aria-pressed="false">não: toda tolerância é vencível</button>
+        <button type="button" data-prediction="test" aria-pressed="false">só testando para saber</button>
+      </div>
+      <p id="prediction-feedback" class="feedback" aria-live="polite">Escolha antes de acionar a máquina de garantias.</p>
+    </section>
+
+    <section class="lab-card" aria-labelledby="lab-title">
+      <div class="lab-grid">
+        <div class="chart-panel">
+          <svg id="chart" viewBox="0 0 640 320" aria-hidden="true"><g id="chart-drawing"></g></svg>
+        </div>
+
+        <div class="control-panel">
+          <p class="box-label">Brinque</p>
+          <h2 id="lab-title">A máquina de garantias</h2>
+          <p>O objeto é a <strong>largura do cerco</strong>: contorno de fora menos contorno de dentro. O círculo (2π) vive sempre lá dentro.</p>
+
+          <span class="control-label" id="eps-label">Tolerância ε — o erro máximo que você aceita</span>
+          <div class="quick-values" role="group" aria-labelledby="eps-label">
+            <button type="button" data-eps="0.1" aria-pressed="false">0,1</button>
+            <button type="button" data-eps="0.01" aria-pressed="true">0,01</button>
+            <button type="button" data-eps="0.001" aria-pressed="false">0,001</button>
+            <button type="button" data-eps="0.0001" aria-pressed="false">0,0001</button>
+            <button type="button" data-eps="0.00001" aria-pressed="false">0,00001</button>
+          </div>
+
+          <dl class="measurements" aria-label="Resultado da máquina de garantias">
+            <div class="measurement"><dt>N — o menor n que basta</dt><dd id="n-value">56</dd></div>
+            <div class="measurement"><dt>largura do cerco em N</dt><dd id="w-value">0,0098950</dd></div>
+            <div class="measurement"><dt>largura em N − 1 (ainda falha)</dt><dd id="w-prev-value">0,0102584</dd></div>
+            <div class="measurement"><dt>previsão pela forma do Lab 04</dt><dd id="est-value">56</dd></div>
+          </dl>
+
+          <p id="relapse-status" class="feedback" aria-live="polite">Conferido de n = 56 até 3056: nenhuma recaída acima de ε.</p>
+
+          <p class="hint"><strong>Olhe de novo:</strong> no gráfico, a curva cruza a linha de ε exatamente em N — e nunca mais volta. A zona verde é a promessa cumprida.</p>
+
+          <div class="reveal-row">
+            <button id="reveal" type="button" class="primary" disabled>Dar nome à promessa</button>
+            <span id="reveal-status" class="feedback" aria-live="polite">Aposte e experimente pelo menos duas tolerâncias.</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="formula-card" class="formula-card" hidden aria-labelledby="formula-title">
+      <p class="box-label">Entenda</p>
+      <h2 id="formula-title">Essa promessa tem nome: limite</h2>
+      <p>Você viu o contrato funcionar: qualquer tolerância, por menor que fosse, ganhou um N — e depois de N o cerco nunca mais saiu da faixa. Em linguagem corrida:</p>
+
+      <div class="formula" aria-label="todo epsilon ganha um N, e depois de N o cerco fica para sempre a menos de epsilon do círculo">
+        todo ε ganha um N — e, de N em diante, o cerco fica a menos de ε do círculo, para sempre
+      </div>
+
+      <div class="dictionary" aria-label="Dicionário da promessa">
+        <div><strong>ε</strong><br>a tolerância que <em>você</em> escolhe, sempre por atacar</div>
+        <div><strong>N</strong><br>a resposta da máquina: o ponto da garantia</div>
+        <div><strong>para sempre</strong><br>todo n ≥ N, sem exceção e sem recaída</div>
+      </div>
+
+      <p><strong>Isso é exatamente o que significa dizer</strong> que os cercos têm <em>limite</em> 2π. Limite não é "chegar lá": é vencer todas as tolerâncias, uma a uma, com garantia.</p>
+      <p><strong>Honestidade:</strong> a máquina testa finitos n. A promessa vale para <em>todos</em> porque a largura do cerco só faz descer — a monotonia está verificada numericamente no módulo e demonstrada na Oficina.</p>
+    </section>
+
+    <section id="challenge" class="challenge-card" hidden aria-labelledby="challenge-title">
+      <p class="box-label">Agora use a forma</p>
+      <h2 id="challenge-title">Por volta de qual n o cerco encolhe abaixo de 31 milionésimos (0,000031)?</h2>
+      <p>Sem apertar botão: a forma do Lab 04 — largura ≈ 31 / n² — responde de cabeça.</p>
+      <div class="challenge-options" role="group" aria-label="Escolha a ordem de grandeza">
+        <button type="button" data-answer="100">n ≈ 100</button>
+        <button type="button" data-answer="1000">n ≈ 1000</button>
+        <button type="button" data-answer="31000">n ≈ 31 000</button>
+      </div>
+      <p id="challenge-feedback" class="feedback" aria-live="polite"></p>
+    </section>
+
+    <section id="limit-card" class="formula-card" hidden aria-labelledby="limit-title">
+      <p class="box-label">Entenda até o fim</p>
+      <h2 id="limit-title">O limite é o único sobrevivente do cerco</h2>
+      <p>Cada cerco é um intervalo que contém 2π. Conforme n cresce, os intervalos encaixam uns nos outros e a largura vence toda tolerância. Pergunta decisiva: <strong>que números sobrevivem dentro de todos os cercos?</strong> Só um. Qualquer outro número fica a uma distância fixa de 2π — e algum cerco, cedo ou tarde, fica mais estreito que essa distância e o expulsa.</p>
+      <p>Por isso o limite não é um "quase": é o único número que o cerco infinito não consegue expulsar. Foi assim que, sem medir círculo nenhum, encurralamos 2π.</p>
+      <p class="hint secret"><strong>Segredo de mestre:</strong> a previsão N ≈ √(31/ε) acertou a resposta exata da máquina em todas as tolerâncias do painel. Conhecer a forma do erro transforma busca em cálculo — guarde isso: vai voltar quando formos fatiar áreas e volumes.</p>
+      <p><strong>Porta futura:</strong> com o limite no bolso, o plano ficou pequeno. No Laboratório 06, ainda em construção, o polígono ganha altura e vira prisma — e o cerco inteiro vai junto.</p>
+    </section>
+
+    <details>
+      <summary>Oficina — a frase formal, a monotonia e a estimativa de N</summary>
+      <p><strong>A frase oficial.</strong> "A sequência dos cercos tem limite 2π" escreve-se: para todo ε &gt; 0 existe N tal que, para todo n ≥ N, |cerco(n) − 2π| &lt; ε. É letra por letra o contrato do laboratório: ε é a tolerância escolhida, N é a resposta da máquina, e o "para todo n ≥ N" é a cláusula sem recaída. A notação só comprime a experiência que você acabou de ter.</p>
+      <p><strong>Por que não há recaída.</strong> O contorno de dentro, 2nR·sen(π/n), só cresce com n; o de fora, 2nR·tg(π/n), só decresce. Logo a largura do cerco, a diferença dos dois, é estritamente decrescente: uma vez abaixo de ε, abaixo para sempre. O verificador do módulo confere as três monotonias até n = 5000.</p>
+      <p><strong>De onde vem a previsão.</strong> A largura do cerco é a soma dos dois erros de contorno, e o Lab 04 deu as constantes deles: π³/3 + 2π³/3 = π³ ≈ 31,006. Logo largura ≈ π³/n², e exigir π³/n² &lt; ε dá n &gt; √(π³/ε) — a conta de cabeça N ≈ √(31/ε) do desafio.</p>
+      <p><strong>Finitos testes não provam.</strong> A varredura "sem recaída até N + 3000" é evidência; a garantia para todo n é a monotonia acima, que uma demonstração completa fecha com as desigualdades de sen e tg do intervalo (0, π/3].</p>
+    </details>
+  </main>
+
+  <footer>
+    <p>MATHeu$ · Laboratório 05 · HTML autocontido, SVG calculado e funcionamento offline.</p>
+  </footer>
+
+  <script>
+    (() => {
+      'use strict';
+
+      const NS = 'http://www.w3.org/2000/svg';
+      const N_MAX = 3072;
+
+      function width(n) {
+        return 2 * n * (Math.tan(Math.PI / n) - Math.sin(Math.PI / n));
+      }
+
+      function findN(eps) {
+        let n = 3;
+        while (width(n) >= eps) n += 1;
+        return n;
+      }
+
+      const chartDrawing = document.getElementById('chart-drawing');
+      const nValue = document.getElementById('n-value');
+      const wValue = document.getElementById('w-value');
+      const wPrevValue = document.getElementById('w-prev-value');
+      const estValue = document.getElementById('est-value');
+      const relapseStatus = document.getElementById('relapse-status');
+      const reveal = document.getElementById('reveal');
+      const revealStatus = document.getElementById('reveal-status');
+      const formulaCard = document.getElementById('formula-card');
+      const challenge = document.getElementById('challenge');
+      const limitCard = document.getElementById('limit-card');
+      const predictionFeedback = document.getElementById('prediction-feedback');
+      const challengeFeedback = document.getElementById('challenge-feedback');
+
+      let eps = 0.01;
+      let predicted = false;
+      const epsTried = new Set([eps]);
+
+      function fmt(value, digits = 4) {
+        return new Intl.NumberFormat('pt-BR', {
+          minimumFractionDigits: digits,
+          maximumFractionDigits: digits
+        }).format(value);
+      }
+
+      function el(name, attrs = {}, text = '') {
+        const node = document.createElementNS(NS, name);
+        for (const [key, value] of Object.entries(attrs)) node.setAttribute(key, value);
+        if (text) node.textContent = text;
+        return node;
+      }
+
+      // gráfico log-log: n em [3, 3072], largura em [1e-6, 10]
+      const PLOT = { left: 70, right: 620, top: 20, bottom: 274 };
+
+      function x(n) {
+        const t = (Math.log10(n) - Math.log10(3)) / (Math.log10(N_MAX) - Math.log10(3));
+        return PLOT.left + t * (PLOT.right - PLOT.left);
+      }
+
+      function y(value) {
+        const t = (1 - Math.log10(value)) / 7;
+        return PLOT.top + t * (PLOT.bottom - PLOT.top);
+      }
+
+      function chartLabel(cx, cy, text, anchor = 'middle', fill = 'var(--muted)') {
+        chartDrawing.appendChild(el('text', {
+          x: cx, y: cy,
+          'text-anchor': anchor,
+          'font-family': 'ui-sans-serif, system-ui, sans-serif',
+          'font-size': '13',
+          'font-weight': '600',
+          fill
+        }, text));
+      }
+
+      function renderChart(N) {
+        chartDrawing.replaceChildren();
+
+        for (let exp = 0; exp >= -6; exp -= 1) {
+          const gy = y(10 ** exp);
+          chartDrawing.appendChild(el('line', {
+            x1: PLOT.left, y1: gy, x2: PLOT.right, y2: gy,
+            stroke: 'var(--line)', 'stroke-width': exp % 2 === 0 ? '1.4' : '.7'
+          }));
+          if (exp % 2 === 0) {
+            chartLabel(PLOT.left - 8, gy + 4, exp === 0 ? '1' : `10${exp === -2 ? '⁻²' : exp === -4 ? '⁻⁴' : '⁻⁶'}`, 'end');
+          }
+        }
+
+        for (const gn of [3, 12, 48, 192, 768, 3072]) {
+          chartLabel(x(gn), PLOT.bottom + 20, String(gn));
+        }
+        chartLabel((PLOT.left + PLOT.right) / 2, PLOT.bottom + 40, 'n — número de lados (escala log)');
+        chartLabel(8, PLOT.top - 6, 'largura do cerco (escala log)', 'start');
+
+        // zona da promessa: n ≥ N e largura < ε
+        chartDrawing.appendChild(el('rect', {
+          x: x(N), y: y(eps),
+          width: PLOT.right - x(N), height: PLOT.bottom - y(eps),
+          fill: 'color-mix(in srgb, var(--accent) 10%, transparent)'
+        }));
+
+        chartDrawing.appendChild(el('line', {
+          x1: PLOT.left, y1: y(eps), x2: PLOT.right, y2: y(eps),
+          stroke: 'var(--focus)', 'stroke-width': '2.5', 'stroke-dasharray': '8 6'
+        }));
+        chartLabel(PLOT.right - 4, y(eps) - 8, `ε = ${fmt(eps, eps < 0.001 ? 5 : 3)}`, 'end');
+
+        chartDrawing.appendChild(el('line', {
+          x1: x(N), y1: PLOT.top, x2: x(N), y2: PLOT.bottom,
+          stroke: 'var(--accent-2)', 'stroke-width': '2', 'stroke-dasharray': '4 5'
+        }));
+        chartLabel(x(N), PLOT.top + 12, `N = ${N}`, N > 700 ? 'end' : 'start', 'var(--accent-2)');
+
+        const points = [];
+        for (let n = 3; n <= N_MAX; n = Math.max(n + 1, Math.round(n * 1.04))) {
+          points.push(`${x(n)},${y(width(n))}`);
+        }
+        points.push(`${x(N_MAX)},${y(width(N_MAX))}`);
+        chartDrawing.appendChild(el('polyline', {
+          points: points.join(' '),
+          fill: 'none', stroke: 'var(--accent)', 'stroke-width': '2'
+        }));
+
+        const dot = el('circle', {
+          cx: x(N), cy: y(width(N)), r: 6,
+          fill: 'var(--accent-2)', stroke: 'var(--bg)', 'stroke-width': '2'
+        });
+        dot.appendChild(el('title', {}, `N = ${N} · largura = ${fmt(width(N), 7)}`));
+        chartDrawing.appendChild(dot);
+
+        chartLabel(x(4), y(10 ** -4.6), 'cruzou ε e nunca mais volta', 'start');
+      }
+
+      function render() {
+        const N = findN(eps);
+        const estimate = Math.ceil(Math.sqrt(Math.PI ** 3 / eps));
+
+        nValue.textContent = String(N);
+        wValue.textContent = fmt(width(N), 7);
+        wPrevValue.textContent = fmt(width(N - 1), 7);
+        estValue.textContent = String(estimate);
+
+        let worst = 0;
+        for (let n = N; n <= N + 3000; n += 1) worst = Math.max(worst, width(n));
+        relapseStatus.textContent = worst < eps
+          ? `Conferido de n = ${N} até ${N + 3000}: nenhuma recaída acima de ε.`
+          : 'Recaída detectada — isso não deveria acontecer.';
+
+        renderChart(N);
+      }
+
+      function updateReadiness() {
+        const ready = predicted && epsTried.size >= 2;
+        reveal.disabled = !ready || !formulaCard.hidden;
+        if (formulaCard.hidden) {
+          revealStatus.textContent = ready
+            ? 'A promessa já se cumpriu diante de você.'
+            : 'Aposte e experimente pelo menos duas tolerâncias.';
+        }
+      }
+
+      document.querySelectorAll('[data-prediction]').forEach(button => {
+        button.addEventListener('click', () => {
+          document.querySelectorAll('[data-prediction]').forEach(item => item.setAttribute('aria-pressed', 'false'));
+          button.setAttribute('aria-pressed', 'true');
+          predicted = true;
+          predictionFeedback.textContent = button.dataset.prediction === 'always'
+            ? 'Boa aposta. Agora aperte a máquina: desça a tolerância e veja se algum ε resiste.'
+            : 'Aposta registrada. Desça a tolerância e veja se algum ε resiste à máquina.';
+          updateReadiness();
+        });
+      });
+
+      document.querySelectorAll('[data-eps]').forEach(button => {
+        button.addEventListener('click', () => {
+          document.querySelectorAll('[data-eps]').forEach(item => item.setAttribute('aria-pressed', 'false'));
+          button.setAttribute('aria-pressed', 'true');
+          eps = Number(button.dataset.eps);
+          epsTried.add(eps);
+          render();
+          updateReadiness();
+        });
+      });
+
+      reveal.addEventListener('click', () => {
+        formulaCard.hidden = false;
+        challenge.hidden = false;
+        reveal.textContent = 'Promessa nomeada';
+        reveal.disabled = true;
+        formulaCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+
+      document.querySelectorAll('[data-answer]').forEach(button => {
+        button.addEventListener('click', () => {
+          const answer = button.dataset.answer;
+          if (answer === '1000') {
+            challengeFeedback.textContent = 'Exato: √(31 / 0,000031) = √1 000 000 = 1000. A máquina crava N = 1001 — a previsão de cabeça errou por um.';
+            if (limitCard.hidden) limitCard.hidden = false;
+          } else if (answer === '100') {
+            challengeFeedback.textContent = 'Com n = 100, a forma dá 31 / 100² ≈ 0,0031 — cem vezes maior que o pedido.';
+          } else {
+            challengeFeedback.textContent = 'Com n = 31 000, o cerco ficaria quase mil vezes mais estreito que o pedido — garantia com desperdício.';
+          }
+        });
+      });
+
+      render();
+      updateReadiness();
+    })();
+  </script>
+</body>
+</html>
