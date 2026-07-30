@@ -4,11 +4,15 @@ on:
   pull_request:
     paths:
       - 'modules/**'
+      - 'atlas/**'
+      - 'index.html'
       - '.github/workflows/validate.yml'
   push:
     branches: [main]
     paths:
       - 'modules/**'
+      - 'atlas/**'
+      - 'index.html'
       - '.github/workflows/validate.yml'
   workflow_dispatch:
 
@@ -28,3 +32,6 @@ jobs:
             echo "== $checker"
             node "$checker"
           done
+
+      - name: Verifica o atlas pessoal
+        run: node atlas/check-math.mjs
