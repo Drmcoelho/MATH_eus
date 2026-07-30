@@ -621,7 +621,7 @@
         <summary>Prova completa — para quem quer o alicerce inteiro</summary>
 
         <h3>Teorema 1 (ida). Em todo polígono regular de n ≥ 3 lados, r/R = cos(π/n).</h3>
-        <p><em>Hipóteses:</em> polígono regular de n lados; R é o raio da circunferência pelos vértices, r o raio da circunferência tangente aos lados, ambas com o mesmo centro O (o centro existe e é único porque as rotações de 2π/n que preservam o polígono fixam um único ponto).</p>
+        <p><em>Hipóteses:</em> polígono regular de n lados; R é o raio da circunferência pelos vértices, r o raio da circunferência tangente aos lados, ambas com o mesmo centro O. A existência desse centro comum é tomada como hipótese — parte do que "regular, inscrito e circunscrito" significa nesta temporada; construí-lo a partir da definição de polígono regular é resultado clássico de geometria elementar, externo a esta prova.</p>
         <p><em>Passo 1.</em> Seja A₁A₂ um lado e M o pé da perpendicular de O sobre ele. Os triângulos OMA₁ e OMA₂ são retângulos em M, com OA₁ = OA₂ = R e cateto OM comum; pelo caso hipotenusa–cateto, são congruentes. Logo MA₁ = MA₂: M é o ponto médio, e a distância de O ao lado é OM. Como a circunferência de raio OM centrada em O toca o lado exatamente em M (perpendicularidade = tangência), OM = r.</p>
         <p><em>Passo 2.</em> O ângulo central ∠A₁OA₂ vale 2π/n, pois os n ângulos centrais são congruentes (as rotações levam lado em lado) e somam 2π. A congruência do Passo 1 dá ∠A₁OM = ∠A₂OM, então ∠MOA₂ = π/n.</p>
         <p><em>Passo 3.</em> No triângulo retângulo OMA₂: cos(∠MOA₂) = cateto adjacente / hipotenusa (definição, legítima porque triângulos retângulos com o mesmo ângulo agudo são semelhantes — AA — e a razão independe do tamanho). Portanto cos(π/n) = OM/OA₂ = r/R.</p>
@@ -629,11 +629,11 @@
 
         <h3>Teorema 2 (volta — o que autoriza o jogo deste laboratório). A razão r/R determina n sem ambiguidade.</h3>
         <p><em>Afirmação:</em> se 3 ≤ m &lt; n, então cos(π/m) &lt; cos(π/n). Ou seja, n ↦ r/R é estritamente crescente — dois polígonos regulares diferentes nunca produzem a mesma razão, e uma medida perfeita de r/R aponta um único n.</p>
-        <p><em>Prova.</em> De m &lt; n vem π/m &gt; π/n, com ambos em (0, π/3]. No primeiro quadrante o cosseno é estritamente decrescente: no círculo unitário, andar para cima ao longo do arco só faz a abscissa diminuir — se dois ângulos diferentes tivessem a mesma abscissa, a vertical por ela cortaria o arco do primeiro quadrante duas vezes, o que a monotonia da altura proíbe. Ângulo maior, cosseno menor: cos(π/m) &lt; cos(π/n).</p>
+        <p><em>Prova.</em> De m &lt; n vem α = π/m &gt; β = π/n, com ambos em (0, π/3]. A monotonia fecha sem apelo à intuição, por uma identidade: cos(β) − cos(α) = 2 · sen((α+β)/2) · sen((α−β)/2). Os dois ângulos à direita estão em (0, π/3], onde o seno é positivo — o único fato externo usado é que sen &gt; 0 em (0, π), a altura acima do eixo no círculo unitário. Logo cos(β) − cos(α) &gt; 0: ângulo maior, cosseno menor, cos(π/m) &lt; cos(π/n).</p>
         <p class="qed">∎</p>
 
         <p><strong>E o ruído?</strong> O Teorema 2 garante injetividade, não separação: os valores cos(π/n) são todos distintos, mas se amontoam perto de 1 — é exatamente por isso que a régua com faixa de incerteza, logo abaixo, confunde vizinhos quando δ é grande. A prova e o experimento contam a mesma história por línguas diferentes.</p>
-        <p><strong>O que ficou por conta da trigonometria:</strong> usamos que semelhança AA vale e que a definição de cosseno é consistente — o conteúdo do passo 6 da corrente. Quem quiser descer mais um andar encontra isso em qualquer construção do círculo unitário; a temporada volta ao assunto quando rotação virar protagonista.</p>
+        <p><strong>O que ficou por conta de resultados externos:</strong> a construção do centro comum (geometria elementar), a semelhança AA que legitima a definição de cosseno (passo 6 da corrente), a identidade de diferença de cossenos e a positividade do seno em (0, π). Quem quiser descer mais um andar encontra isso em qualquer construção do círculo unitário; a temporada volta ao assunto quando rotação virar protagonista.</p>
       </details>
     </section>
 
