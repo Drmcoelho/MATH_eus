@@ -8,9 +8,15 @@ const sites = [
   ['closure', '../modules/03-areas/index.html'],
   ['proof', '../modules/04-erro/index.html'],
   ['proof', '../modules/05-limite/index.html'],
+  ['closure', '../modules/06-prisma/index.html'],
+  ['closure', '../modules/07-revolucao/index.html'],
+  ['proof', '../modules/08-integral/index.html'],
+  ['proof', '../modules/09-derivada/index.html'],
+  ['proof', '../modules/10-reciprocidade/index.html'],
   ['family', '../modules/s02-01-ternas-pitagoricas/index.html'],
   ['family', '../modules/s02-02-mapa-das-ternas/index.html'],
   ['family', '../modules/s02-03-que-numeros-entram/index.html'],
+  ['family', '../modules/s02-04-diferencas/index.html'],
 ];
 
 const allowed = new Set(['closure', 'break', 'family', 'proof']);
@@ -26,9 +32,12 @@ for (const token of [
   'quatro movimentos',
   'exercício de transferência',
   'intuição → figura → manipulação',
+  'function breathe()',
+  "card.dataset.locked==='true'",
 ]) assert(html.includes(token), `elemento canônico ausente: ${token}`);
 
-for (const [, href] of sites) assert(html.includes(href), `laboratório não ligado: ${href}`);
+const linkedHrefs = new Set([...html.matchAll(/<a\b[^>]*href="([^"]+)"/g)].map(match => match[1]));
+for (const [, href] of sites) assert(linkedHrefs.has(href), `laboratório não ligado por âncora real: ${href}`);
 
 // Identidades que sustentam os sítios já materializados.
 for (const n of [3, 4, 6, 12, 96, 1000]) {

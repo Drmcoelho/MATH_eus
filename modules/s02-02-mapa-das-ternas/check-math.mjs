@@ -154,4 +154,15 @@ const copy42 = cell(4, 2);
 assert.ok(!copy42.valid && copy42.g === 4, '(4, 2) deve fabricar cópia quádrupla');
 assert.deepEqual([copy42.small / 4, copy42.big / 4, copy42.c / 4], [3, 4, 5], '(4, 2) reduz a (3, 4, 5)');
 
-console.log('T02 Lab 02: casas válidas até m = 50, unicidade até m = 60, a volta nas 158 primitivas até 1.000, bordas, contagens 190/86 e exemplos citados verificados sem divergência.');
+// 7. Exercício "agora use a ideia": (m,k) = (6,1) fabrica (12, 35, 37).
+const forwardCell = cell(6, 1);
+assert.equal(forwardCell.small, 12, 'cateto menor citado no exercício (6,1)');
+assert.equal(forwardCell.big, 35, 'cateto maior citado no exercício (6,1)');
+assert.equal(forwardCell.c, 37, 'hipotenusa citada no exercício (6,1)');
+assert.ok(forwardCell.valid, '(6,1) deve ser casa válida');
+assert.equal(forwardCell.gap, 2, '(6,1) mora na coluna do par, diferença 2');
+// distratores: (5,12,13) é o endereço (3,2), não (6,1); e "esquecer o fator 2" daria (6,35,37), que não fecha Pitágoras.
+assert.deepEqual([cell(3, 2).small, cell(3, 2).big, cell(3, 2).c], [5, 12, 13], 'distrator (5,12,13) é o endereço (3,2)');
+assert.notEqual(6 * 6 + 35 * 35, 37 * 37, 'distrator (6,35,37) não deve fechar Pitágoras');
+
+console.log('T02 Lab 02: casas válidas até m = 50, unicidade até m = 60, a volta nas 158 primitivas até 1.000, bordas, contagens 190/86, exemplos citados e o exercício da casa (6,1) verificados sem divergência.');

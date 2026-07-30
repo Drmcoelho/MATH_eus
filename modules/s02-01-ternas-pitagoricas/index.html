@@ -387,6 +387,17 @@
       * { transition: none !important; }
     }
 
+    .hint-ladder { margin-top: 20px; }
+
+    .hint-ladder details {
+      margin-top: 10px;
+      padding: 14px 18px;
+      border-radius: 14px;
+      box-shadow: none;
+    }
+
+    .hint-ladder summary { font-size: 1rem; }
+
     .lab-nav {
       margin-top: 48px;
       display: grid;
@@ -580,6 +591,23 @@
 
       <p><strong>O que ela produz:</strong> comprimentos inteiros, todos na mesma unidade. Com as condições do dicionário, cada terna primitiva sai <em>exatamente uma vez</em>; multiplicando por 2, 3, 4… aparecem todas as outras. Nenhuma terna fica de fora — o verificador deste módulo compara a fábrica com a busca exaustiva até hipotenusa 500 e as listas coincidem.</p>
       <p><strong>Quando vale:</strong> para inteiros m &gt; k ≥ 1, sempre. Sem a condição de fator comum e paridade a terna ainda é pitagórica, apenas deixa de ser primitiva.</p>
+
+      <div id="exercise-factory" class="challenge-card" style="margin-top:26px; padding:0; border:0; box-shadow:none; background:transparent;">
+        <p class="box-label">Agora use a fórmula</p>
+        <h3>Que terna a fábrica dos ímpares fabrica a partir de n = 11?</h3>
+        <p>Sem abrir o painel: um cateto é o próprio 11; os outros dois saem de 11² repartido em duas metades que diferem de 1.</p>
+        <div class="challenge-options" role="group" aria-label="Escolha a terna">
+          <button type="button" data-ex-factory="11-60-61">(11, 60, 61)</button>
+          <button type="button" data-ex-factory="11-59-60">(11, 59, 60)</button>
+          <button type="button" data-ex-factory="11-61-62">(11, 61, 62)</button>
+        </div>
+        <p id="factory-feedback" class="feedback" aria-live="polite"></p>
+        <div class="hint-ladder">
+          <details><summary>Primeira pista</summary><p>n² = 121. As duas metades quase iguais são (121 − 1)/2 e (121 + 1)/2.</p></details>
+          <details><summary>Pista visual</summary><p>(121 − 1)/2 = 60 e (121 + 1)/2 = 61. Arraste o slider do painel acima até n = 11 e confira.</p></details>
+          <details><summary>Solução comentada</summary><p>(11, 60, 61). Confira por Pitágoras: 11² + 60² = 121 + 3600 = 3721 = 61². A armadilha dos dois distratores é deslocar o par (cateto, hipotenusa) em uma unidade sem checar se a soma dos quadrados ainda fecha — 11² + 59² = 3602 ≠ 3600 = 60², e 11² + 61² = 3842 ≠ 3844 = 62². Só a metade exata (n² ± 1)/2 fecha o quadrado.</p></details>
+        </div>
+      </div>
 
       <p class="hint secret"><strong>Segredo de mestre:</strong> a fração fabricada pelos ímpares desaba: 11,5% até hipotenusa 100, 2,4% até 1.000, 0,6% até 10.000. A família é infinita — e mesmo assim quase toda terna escapa dela.</p>
     </section>
@@ -932,6 +960,18 @@
           } else {
             challengeFeedback.textContent =
               '85 − 84 = 1 — essa sai da fábrica: é o ímpar n = 13. Procure a terna cuja diferença não é 1.';
+          }
+        });
+      });
+
+      const factoryFeedback = document.getElementById('factory-feedback');
+      document.querySelectorAll('[data-ex-factory]').forEach(button => {
+        button.addEventListener('click', () => {
+          const value = button.dataset.exFactory;
+          if (value === '11-60-61') {
+            factoryFeedback.textContent = 'Exato: (11, 60, 61). 121 + 3600 = 3721 = 61². Confira arrastando o slider até n = 11.';
+          } else {
+            factoryFeedback.textContent = 'Quase — mas confira o quadrado: 11² + esse cateto² não bate com esse quadrado da hipotenusa. Recalcule (121 − 1)/2 e (121 + 1)/2.';
           }
         });
       });

@@ -292,6 +292,17 @@
       * { transition: none !important; }
     }
 
+    .hint-ladder { margin-top: 20px; }
+
+    .hint-ladder details {
+      margin-top: 10px;
+      padding: 14px 18px;
+      border-radius: 14px;
+      box-shadow: none;
+    }
+
+    .hint-ladder summary { font-size: 1rem; }
+
     .lab-nav {
       margin-top: 48px;
       display: grid;
@@ -422,8 +433,26 @@
       <h2 id="limit-title">O limite é o único sobrevivente do cerco</h2>
       <p>Cada cerco é um intervalo que contém 2π. Conforme n cresce, os intervalos encaixam uns nos outros e a largura vence toda tolerância. Pergunta decisiva: <strong>que números sobrevivem dentro de todos os cercos?</strong> Só um. Qualquer outro número fica a uma distância fixa de 2π — e algum cerco, cedo ou tarde, fica mais estreito que essa distância e o expulsa.</p>
       <p>Por isso o limite não é um "quase": é o único número que o cerco infinito não consegue expulsar. Foi assim que, sem medir círculo nenhum, encurralamos 2π.</p>
-      <p class="hint secret"><strong>Segredo de mestre:</strong> a previsão N ≈ √(31/ε) acertou a resposta exata da máquina em todas as tolerâncias do painel. Conhecer a forma do erro transforma busca em cálculo — guarde isso: vai voltar quando formos fatiar áreas e volumes.</p>
-      <p><strong>Porta futura:</strong> com o limite no bolso, o plano ficou pequeno. No Laboratório 06, ainda em construção, o polígono ganha altura e vira prisma — e o cerco inteiro vai junto.</p>
+
+      <div id="exercise-scaling" class="challenge-card" style="margin-top:26px; padding:0; border:0; box-shadow:none; background:transparent;">
+        <p class="box-label">Encontre o erro</p>
+        <h3>"Se eu quiser um N dez vezes maior, basta pedir uma tolerância ε dez vezes menor."</h3>
+        <p>Essa frase parece razoável — mas a tabela do painel já teve tudo que você precisa para julgá-la.</p>
+        <div class="challenge-options" role="group" aria-label="Julgue a afirmação">
+          <button type="button" data-ex-scaling="right">está certo</button>
+          <button type="button" data-ex-scaling="hundred">errado: aproximadamente cem vezes menor</button>
+          <button type="button" data-ex-scaling="ten">errado: N não depende de ε assim</button>
+        </div>
+        <p id="scaling-feedback" class="feedback" aria-live="polite"></p>
+        <div class="hint-ladder">
+          <details><summary>Primeira pista</summary><p>N ≈ √(π³/ε). Não é uma proporção direta com ε — é uma raiz quadrada.</p></details>
+          <details><summary>Pista visual</summary><p>Compare no painel: ε = 0,01 dá N = 56; ε = 0,0001 (cem vezes menor) dá N = 557 — cerca de dez vezes maior. E ε = 0,001 (só dez vezes menor) dá N = 177, menos de quatro vezes maior.</p></details>
+          <details><summary>Solução comentada</summary><p>Errado: na escala assintótica, multiplicar N por dez exige dividir ε por aproximadamente <strong>cem</strong>, não por dez. A forma N ≈ √(π³/ε) dá N₂/N₁ ≈ √(ε₁/ε₂); por isso uma redução de 100 vezes em ε produz um N cerca de 10 vezes maior. O menor N é inteiro e a fórmula é assintótica, então não há igualdade exata: 56 vira 557, não 560. A armadilha é tratar uma relação de raiz quadrada como se fosse linear — o mesmo tipo de erro que apareceu no Laboratório 04 ao confundir "dobrar n" com "dobrar a precisão". Essa raiz quadrada vai reaparecer sempre que uma garantia depender de uma forma quadrática.</p></details>
+        </div>
+      </div>
+
+      <p class="hint secret"><strong>Segredo de mestre:</strong> a previsão N ≈ √(31/ε) ficou muito próxima da resposta exata da máquina em todas as tolerâncias do painel. Conhecer a forma do erro transforma busca em cálculo — guarde isso: vai voltar quando formos fatiar áreas e volumes.</p>
+      <p><strong>Porta futura:</strong> com o limite no bolso, o plano ficou pequeno. No <a href="../06-prisma/index.html">Laboratório 06</a>, o polígono ganha altura e vira prisma — e o cerco inteiro vai junto.</p>
     </section>
 
     <details>
@@ -437,7 +466,7 @@
     <nav class="lab-nav" aria-label="Continuar no MATHeu$">
       <a href="../04-erro/index.html"><small>Anterior</small>Lab 04 — O erro também tem forma</a>
       <a href="../../index.html"><small>Índice</small>Todos os laboratórios</a>
-      <span class="soon"><small>Próximo</small>Lab 06 — Do polígono ao prisma (em construção)</span>
+      <a href="../06-prisma/index.html"><small>Próximo</small>Lab 06 — Do polígono ao prisma</a>
     </nav>
   </main>
 
@@ -646,6 +675,20 @@
             challengeFeedback.textContent = 'Com n = 100, a forma dá 31 / 100² ≈ 0,0031 — cem vezes maior que o pedido.';
           } else {
             challengeFeedback.textContent = 'Com n = 31 000, o cerco ficaria quase mil vezes mais estreito que o pedido — garantia com desperdício.';
+          }
+        });
+      });
+
+      const scalingFeedback = document.getElementById('scaling-feedback');
+      document.querySelectorAll('[data-ex-scaling]').forEach(button => {
+        button.addEventListener('click', () => {
+          const value = button.dataset.exScaling;
+          if (value === 'hundred') {
+            scalingFeedback.textContent = 'Exato na ordem de grandeza: como N ≈ constante/√ε, dividir ε por 100 torna N cerca de 10 vezes maior. O inteiro mínimo vai de 56 a 557, não exatamente a 560.';
+          } else if (value === 'right') {
+            scalingFeedback.textContent = 'Compare ε = 0,01 (N=56) com ε = 0,001, dez vezes menor: N = 177, menos de 4× maior — não 10×.';
+          } else {
+            scalingFeedback.textContent = 'N depende de ε, sim — mas não linearmente. A relação é N ≈ √(π³/ε), uma raiz quadrada.';
           }
         });
       });
