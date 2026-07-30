@@ -1,6 +1,10 @@
-# Roadmap — Temporada 01 e revisão arquitetural
+# Roadmap canônico — MATHeu$
 
-## Decisão de escopo
+Fonte única de estado do projeto: o que está completo, o que é gate de
+qualidade, o que é a próxima temporada e onde cada agente deve olhar antes
+de começar a trabalhar. Ver "Coordenação entre agentes paralelos" ao final.
+
+## Decisão de escopo — Temporada 01
 
 O escopo matemático da Temporada 01 está **completo**: os Labs 01–10 e o
 Interlúdio 01·B estão na `main`. Os Labs 06–10 foram incorporados pelo PR
@@ -110,11 +114,13 @@ Interlúdio 01·B):
 - propagação do padrão ouro da Fase A (faixa de meta, gráficos, UX) aos
   Labs 03–10;
 - avaliação do piloto de reforma de profundidade do Lab 01 (`docs/REFORMA.md`
-  e a corrente de derivação do PR #17, ainda não mesclado), com o gate de
-  validação do leitor primário antes de propagar o padrão aos demais labs.
+  e a corrente de derivação + prova completa, já mescladas na `main`): falta
+  a validação do leitor primário no piloto e, só depois, a propagação do
+  padrão aos demais labs, um a um (ver o checklist de estado em
+  `docs/REFORMA.md`).
 
 Ao fim da Fase C, o gate de qualidade é levantado e escopos novos podem
-começar, já herdando o padrão ouro.
+começar, já herdando o padrão ouro — inclusive a Temporada 03 (ver abaixo).
 
 ---
 
@@ -190,3 +196,59 @@ Regra prática para agentes: todo laboratório novo declara, antes de
 qualquer código, qual pergunta inevitável ele responde — e o título, a
 provocação inicial e o segredo final devem ser reconhecíveis a partir
 dessa pergunta.
+
+---
+
+## Gate para a Temporada 03
+
+A Temporada 03 — **Girar é multiplicar** — já tem plano canônico completo em
+[docs/SEASON-03.md](SEASON-03.md) e está formalizada em `AGENTS.md` §14.
+
+Ela **não é escopo em andamento**. O plano existe para ser lido e citado,
+não para ser codificado, até que:
+
+1. as Fases A, B e C acima fechem sobre a Temporada 01 inteira;
+2. a Temporada 02 decida (em documento próprio, `docs/SEASON-02.md`) se os
+   Labs 05–10 avançam antes, em paralelo, ou depois da Temporada 03 — este
+   roadmap não resolve essa ordem, só impede que a 03 comece sem decisão.
+
+Nenhum agente deve abrir um laboratório da Temporada 03 antes desse gate
+ser explicitamente levantado neste documento.
+
+---
+
+## Coordenação entre agentes paralelos
+
+Este documento — `docs/ROADMAP.md` — é a fonte canônica de estado do
+projeto. Qualquer agente (humano ou automatizado) que for abrir um PR deve
+lê-lo primeiro. O motivo é concreto, não preventivo: os PRs #8 e #14
+chegaram a implementar o mesmo escopo (Labs 06–10) em paralelo, sem que um
+soubesse do outro, e só não colidiram de verdade na `main` porque foram
+comparados manualmente antes do merge. Separadamente, o PR #12 (Atlas do
+Resto) partiu de uma versão desatualizada do portal e teria gerado conflito
+real em `index.html` contra o que #14 trazia — outro sintoma do mesmo
+problema: nenhum lugar único para checar o que já está em andamento antes
+de começar.
+
+Regras:
+
+- **Antes de começar:** verificar neste documento se o escopo pretendido já
+  está em andamento (PR aberto) ou já entregue (na `main`). Em caso de
+  dúvida, procurar PRs abertos que toquem os mesmos arquivos antes de
+  escrever uma linha de código.
+- **Ao abrir um PR:** se ele tocar um arquivo que outro PR aberto também
+  toca, nomear o outro PR explicitamente no corpo do PR (não presumir que
+  quem revisar vai descobrir sozinho).
+- **Este documento é o critério de desempate**, não a ordem de chegada dos
+  PRs: quando dois PRs implementam o mesmo escopo, vence o que estiver mais
+  alinhado com o estado publicado aqui, e o outro é fechado como superado
+  (não deletado — o trabalho fica no branch para consulta).
+- **Status atual, resumido** (a fonte de verdade continua sendo este
+  arquivo e o README, não esta tabela — atualizar os três juntos):
+
+| Temporada | Estado | Onde |
+|---|---|---|
+| 01 — O cerco do círculo | Labs 01–10 e Interlúdio 01·B completos na `main`; gate de qualidade (Fases A–C acima) em andamento | `docs/SEASON-01.md` |
+| 02 — Números que constroem formas | Labs 01–04 completos na `main`; Labs 05–10 planejados, não iniciados | `docs/SEASON-02.md` |
+| 03 — Girar é multiplicar | Plano canônico completo; **não iniciada** (gate acima) | `docs/SEASON-03.md` |
+| 04+ | Não sequenciadas — três ideias soltas viraram duas depois que a rotação foi promovida a Temporada 03 | `AGENTS.md` §15 |

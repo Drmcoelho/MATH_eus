@@ -764,7 +764,48 @@ O plano completo, laboratório a laboratório, está em `docs/SEASON-02.md`.
 
 ---
 
-# 14. Temporadas futuras
+# 14. Terceira temporada — Girar é multiplicar
+
+A terceira temporada nasce de uma pergunta que as duas primeiras deixaram
+em aberto de propósito:
+
+> O que significa multiplicar por um número que não deixa nada maior nem
+> menor — só gira?
+
+Ela reencontra o círculo pela terceira vez — depois de `r/R = cos(π/n)` na
+Temporada 01 e depois de `(a/c, b/c)` na Temporada 02 — e finalmente
+pergunta o que ele faz quando dois de seus pontos se multiplicam. Em dez
+laboratórios, espelha o arco das duas primeiras: giro, mapa do giro,
+multiplicação, potência, raiz, onda, soma de ondas, decomposição, fase e
+reciprocidade.
+
+Cada laboratório segue o formato do Laboratório 6 da primeira temporada:
+partir de um objeto já conquistado, transformá-lo com uma construção
+mínima, deixar as fórmulas nascerem em blocos curtos e fechar com uma
+comparação dupla. O polígono regular da Temporada 01 reaparece intacto no
+Laboratório 05 (raízes da unidade), sem ter sido convocado.
+
+O plano completo, laboratório a laboratório, está em `docs/SEASON-03.md`.
+
+1. O que gira quando eu multiplico? — nomear o par (x, y) como um número.
+2. O mapa dos giros — a forma polar, módulo e ângulo.
+3. Multiplicar é somar ângulos — a lei de composição, descoberta e não decorada.
+4. Potências viram voltas — o expoente que faz o ponto rodar.
+5. Raízes se repartem em roda — o polígono da Temporada 01, sem ter sido chamado.
+6. Do giro à onda — a sombra do ponto girante no tempo.
+7. Somar ondas — o batimento como consequência visível.
+8. Toda onda é soma de giros — primeiro contato honesto com Fourier.
+9. A fase que muda tudo — o parâmetro que Lab 06–08 deixaram fixo.
+10. Girar, somar e voltar são o mesmo movimento — a reciprocidade final.
+
+**Gate de início:** esta temporada só começa depois que o gate de qualidade
+das Fases A, B e C da Temporada 01 (`docs/ROADMAP.md`) tiver fechado. Até
+lá, este plano é canônico, mas não é escopo em andamento — nenhum agente
+deve abrir laboratórios da Temporada 03 antes desse gate ser levantado.
+
+---
+
+# 15. Temporadas futuras (não sequenciadas)
 
 ## Números que não terminam
 
@@ -774,16 +815,6 @@ O plano completo, laboratório a laboratório, está em `docs/SEASON-02.md`.
 - periodicidade;
 - aproximações racionais;
 - música e temperamento.
-
-## Rotação, complexos e ondas
-
-- rotação;
-- números complexos;
-- raízes;
-- fase;
-- seno e cosseno;
-- ondas;
-- Fourier visual.
 
 ## Variação, risco e decisão
 
@@ -797,9 +828,14 @@ Condicionada a problemas concretos:
 - incerteza;
 - decisão sob risco.
 
+Nenhuma destas tem plano de laboratório nem número de temporada atribuído.
+Formalizar uma delas como Temporada 04 segue o mesmo processo que elevou
+"Rotação, complexos e ondas" a Temporada 03 (§14): escrever o
+`docs/SEASON-0X.md` completo e só então promovê-la aqui.
+
 ---
 
-# 15. Aplicabilidade
+# 16. Aplicabilidade
 
 Cada conceito recebe aplicação prática quando a transferência for legítima.
 
@@ -832,7 +868,7 @@ Cada aplicação responde:
 
 ---
 
-# 16. Honestidade matemática
+# 17. Honestidade matemática
 
 Simplificar apresentação não autoriza simplificar verdade.
 
@@ -862,7 +898,7 @@ A verificação não é opcional para o agente.
 
 ---
 
-# 17. Auditoria proporcional
+# 18. Auditoria proporcional
 
 Todo laboratório verifica:
 
@@ -888,7 +924,7 @@ A auditoria não deve produzir mais texto que o laboratório.
 
 ---
 
-# 18. Arquitetura técnica
+# 19. Arquitetura técnica
 
 ```text
 MATH_eus/
@@ -899,6 +935,7 @@ MATH_eus/
 │   ├── ROADMAP.md
 │   ├── SEASON-01.md
 │   ├── SEASON-02.md
+│   ├── SEASON-03.md
 │   └── MIGRATION.md
 ├── modules/
 │   ├── 01-duas-circunferencias/
@@ -937,7 +974,7 @@ Regras:
 
 ---
 
-# 19. Critério de conclusão
+# 20. Critério de conclusão
 
 Um laboratório está pronto quando:
 
@@ -966,7 +1003,7 @@ Não está pronto quando:
 
 ---
 
-# 20. Regra final para agentes
+# 21. Regra final para agentes
 
 Antes de adicionar qualquer seção, perguntar:
 

@@ -41,13 +41,16 @@ A raiz contém `index.html`, `.nojekyll` e `404.html`; não há build de publica
 
 ## Roadmap
 
-Com a Temporada 01 completa (Labs 01–05 e Interlúdio 01·B na `main`; Labs
-06–10 assim que o PR #14 mesclar), vale um gate de qualidade antes de
-qualquer escopo matemático novo: refinamento dos primeiros laboratórios
-(Fase A), elevação do Lab 03 a padrão ouro (Fase B) e revisão completa da
-temporada (Fase C) — além da revisão arquitetural (mapa de progressão,
-objeto persistente, organização por perguntas inevitáveis). Plano completo
-em [docs/ROADMAP.md](docs/ROADMAP.md).
+Com a Temporada 01 completa (Labs 01–10 e Interlúdio 01·B na `main`), vale
+um gate de qualidade antes de qualquer escopo matemático novo: refinamento
+dos primeiros laboratórios (Fase A), elevação do Lab 03 a padrão ouro
+(Fase B) e revisão completa da temporada (Fase C) — além da revisão
+arquitetural (mapa de progressão, objeto persistente, organização por
+perguntas inevitáveis) e do plano já canônico da Temporada 03. **O
+[docs/ROADMAP.md](docs/ROADMAP.md) é a fonte única de estado do
+projeto** — qualquer agente deve lê-lo antes de abrir um PR novo, para não
+duplicar trabalho em paralelo (como já aconteceu com PRs implementando o
+mesmo escopo sem saber um do outro).
 
 ## Primeira temporada
 
@@ -79,6 +82,24 @@ em [docs/ROADMAP.md](docs/ROADMAP.md).
 8. Acumular quadrados
 9. Quando o expoente sobe
 10. A grade e o círculo são o mesmo desenho
+
+## Terceira temporada
+
+**Girar é multiplicar** — dez laboratórios sobre uma única pergunta: o que
+significa multiplicar por um número que só gira? Plano completo em
+[docs/SEASON-03.md](docs/SEASON-03.md). **Planejada, não iniciada** — ver o
+gate de qualidade em [docs/ROADMAP.md](docs/ROADMAP.md).
+
+1. O que gira quando eu multiplico?
+2. O mapa dos giros
+3. Multiplicar é somar ângulos
+4. Potências viram voltas
+5. Raízes se repartem em roda
+6. Do giro à onda
+7. Somar ondas
+8. Toda onda é soma de giros
+9. A fase que muda tudo
+10. Girar, somar e voltar são o mesmo movimento
 
 ## Verificação dos laboratórios
 
