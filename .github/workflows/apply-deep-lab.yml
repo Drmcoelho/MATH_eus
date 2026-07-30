@@ -1,0 +1,53 @@
+name: Aplicar Lab 01 profundo
+
+on:
+  push:
+    branches:
+      - chatgpt-laboratorios-profundos
+    paths:
+      - tools/apply-deep-lab.py
+      - .github/workflows/apply-deep-lab.yml
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout do branch
+        uses: actions/checkout@v4
+        with:
+          ref: chatgpt-laboratorios-profundos
+
+      - name: Reconstruir o capítulo profundo
+        run: python tools/apply-deep-lab.py
+
+      - name: Validar HTML, JavaScript e matemática
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('modules/01-duas-circunferencias/index.html')
+          s = p.read_text(encoding='utf-8')
+          assert s.count('data-scene=') == 9
+          assert 'r / R = cos(π / n)' in s
+          assert 'n = π / arccos(r/R)' in s
+          js = s.split('<script>', 1)[1].split('</script>', 1)[0]
+          Path('/tmp/lab01.js').write_text(js, encoding='utf-8')
+          print(f'{len(s.splitlines())} linhas; {len(s.encode())} bytes')
+          PY
+          node --check /tmp/lab01.js
+          node modules/01-duas-circunferencias/check-math.mjs
+
+      - name: Remover aplicador temporário
+        run: rm -f tools/apply-deep-lab.py .github/workflows/apply-deep-lab.yml
+
+      - name: Commitar capítulo no branch experimental
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "feat: reconstrói Lab 01 como capítulo profundo"
+          git push origin HEAD:chatgpt-laboratorios-profundos
