@@ -3,21 +3,26 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Laboratório 01 do MATHeu$: descubra como duas circunferências revelam um polígono regular.">
-  <title>Lab 01 — Duas circunferências, um polígono · MATHeu$</title>
+  <meta name="description" content="Laboratório 01 profundo do MATHeu$: construa, investigue e derive como duas circunferências revelam um polígono regular.">
+  <title>Lab 01 profundo — Duas circunferências, um polígono · MATHeu$</title>
   <style>
     :root {
       color-scheme: light dark;
-      --bg: #f4f1e8;
+      --bg: #f4f0e6;
       --ink: #171713;
-      --muted: #666258;
-      --paper: rgba(255, 255, 255, .66);
-      --line: rgba(23, 23, 19, .15);
+      --muted: #625e55;
+      --paper: rgba(255,255,255,.72);
+      --paper-strong: rgba(255,255,255,.92);
+      --line: rgba(23,23,19,.15);
       --accent: #246b52;
+      --accent-soft: rgba(36,107,82,.11);
       --accent-2: #9b3f31;
-      --circle: #252520;
       --focus: #d4872d;
-      --shadow: 0 18px 60px rgba(48, 43, 31, .09);
+      --good: #246b52;
+      --bad: #9b3f31;
+      --circle: #252520;
+      --shadow: 0 18px 60px rgba(48,43,31,.09);
+      --radius: 24px;
     }
 
     @media (prefers-color-scheme: dark) {
@@ -25,391 +30,280 @@
         --bg: #11130f;
         --ink: #f0eee7;
         --muted: #b8b3a8;
-        --paper: rgba(255, 255, 255, .055);
-        --line: rgba(255, 255, 255, .14);
+        --paper: rgba(255,255,255,.055);
+        --paper-strong: rgba(255,255,255,.09);
+        --line: rgba(255,255,255,.14);
         --accent: #7bc5a3;
+        --accent-soft: rgba(123,197,163,.1);
         --accent-2: #ef9788;
-        --circle: #f0eee7;
         --focus: #ffc267;
+        --good: #7bc5a3;
+        --bad: #ef9788;
+        --circle: #f0eee7;
         --shadow: none;
       }
     }
 
     * { box-sizing: border-box; }
-
     html { scroll-behavior: smooth; }
-
     body {
       margin: 0;
       background: var(--bg);
       color: var(--ink);
-      font: 18px/1.55 ui-serif, Georgia, Cambria, "Times New Roman", serif;
+      font: 18px/1.62 ui-serif, Georgia, Cambria, "Times New Roman", serif;
     }
-
-    button, input { font: inherit; }
-
+    button, input, textarea, select { font: inherit; }
     a { color: var(--accent); }
-
-    :focus-visible {
-      outline: 3px solid var(--focus);
-      outline-offset: 3px;
-    }
+    :focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
 
     .skip-link {
       position: absolute;
       left: 12px;
-      top: -80px;
+      top: -90px;
+      z-index: 30;
       padding: 10px 14px;
       background: var(--ink);
       color: var(--bg);
-      z-index: 20;
     }
-
     .skip-link:focus { top: 12px; }
 
-    header, main, footer {
-      width: min(1120px, calc(100% - 32px));
-      margin-inline: auto;
-    }
-
-    header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 16px;
-      padding: 22px 0;
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
       border-bottom: 1px solid var(--line);
-      font-family: ui-sans-serif, system-ui, sans-serif;
-      font-size: .86rem;
+      background: color-mix(in srgb, var(--bg) 88%, transparent);
+      backdrop-filter: blur(16px);
     }
+    .topbar-inner {
+      width: min(1180px, calc(100% - 32px));
+      margin: auto;
+      min-height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      font: 700 .82rem/1.2 ui-sans-serif, system-ui, sans-serif;
+    }
+    .brand { color: var(--ink); text-decoration: none; font-weight: 900; }
+    .top-progress { flex: 1; max-width: 470px; }
+    .progress-track { height: 7px; background: var(--line); border-radius: 999px; overflow: hidden; }
+    .progress-fill { width: 0%; height: 100%; background: var(--accent); transition: width .25s ease; }
+    .progress-label { margin-top: 5px; color: var(--muted); text-align: right; font-size: .72rem; }
 
-    header a { text-decoration: none; }
+    main, footer { width: min(1180px, calc(100% - 32px)); margin-inline: auto; }
+    main { padding: 58px 0 100px; }
 
-    .brand { font-weight: 800; letter-spacing: -.02em; }
-
-    main { padding: 58px 0 88px; }
-
-    .eyebrow {
-      margin: 0 0 12px;
+    .hero { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(270px, .7fr); gap: 34px; align-items: end; }
+    .eyebrow, .scene-kicker, .box-label {
       color: var(--accent);
-      font: 800 .76rem/1.2 ui-sans-serif, system-ui, sans-serif;
-      letter-spacing: .15em;
+      font: 850 .75rem/1.2 ui-sans-serif, system-ui, sans-serif;
+      letter-spacing: .14em;
       text-transform: uppercase;
     }
-
     h1, h2, h3 { line-height: 1.08; letter-spacing: -.035em; }
+    h1 { margin: 10px 0 0; max-width: 950px; font-size: clamp(3.2rem, 8.5vw, 7.2rem); }
+    h2 { margin: 8px 0 18px; font-size: clamp(2.25rem, 5vw, 4rem); }
+    h3 { font-size: clamp(1.35rem, 2vw, 1.7rem); }
+    .lead { max-width: 820px; color: var(--muted); font-size: clamp(1.2rem, 2.7vw, 1.65rem); }
 
-    h1 {
-      max-width: 900px;
-      margin: 0;
-      font-size: clamp(2.9rem, 8vw, 6.6rem);
-    }
-
-    h2 { font-size: clamp(2rem, 5vw, 3.5rem); margin-top: 0; }
-
-    h3 { font-size: 1.25rem; }
-
-    .lead {
-      max-width: 780px;
-      margin: 24px 0 0;
-      color: var(--muted);
-      font-size: clamp(1.18rem, 2.8vw, 1.65rem);
-    }
-
-    .question-card, .lab-card, .formula-card, .challenge-card, details {
-      margin-top: 38px;
+    .hero-card, .scene, .callout, .exercise, .checkpoint, .notes-card {
       border: 1px solid var(--line);
-      border-radius: 24px;
+      border-radius: var(--radius);
       background: var(--paper);
       box-shadow: var(--shadow);
     }
+    .hero-card { padding: 24px; }
+    .hero-card dl { margin: 0; display: grid; gap: 14px; }
+    .hero-card dt { color: var(--muted); font: 800 .72rem/1.2 ui-sans-serif, system-ui, sans-serif; text-transform: uppercase; letter-spacing: .09em; }
+    .hero-card dd { margin: 4px 0 0; }
 
-    .question-card, .formula-card, .challenge-card, details { padding: clamp(22px, 4vw, 38px); }
-
-    .question-card strong, .box-label {
-      display: block;
-      color: var(--accent);
-      font: 800 .76rem/1.2 ui-sans-serif, system-ui, sans-serif;
-      letter-spacing: .13em;
-      text-transform: uppercase;
-    }
-
-    .question-card p {
-      max-width: 850px;
-      margin: 12px 0 22px;
-      font-size: clamp(1.45rem, 4vw, 2.45rem);
-      line-height: 1.18;
-    }
-
-    .answer-grid {
+    .route {
+      margin: 44px 0 0;
+      padding: 0;
       display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 10px;
+      grid-template-columns: repeat(9, minmax(105px, 1fr));
+      gap: 8px;
+      list-style: none;
+      overflow-x: auto;
     }
+    .route a {
+      display: block;
+      min-height: 86px;
+      padding: 13px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      color: var(--ink);
+      text-decoration: none;
+      background: var(--paper);
+      font: 700 .77rem/1.3 ui-sans-serif, system-ui, sans-serif;
+    }
+    .route .num { display: block; color: var(--accent); font-size: .7rem; margin-bottom: 7px; }
+
+    .scene { margin-top: 48px; padding: clamp(24px, 5vw, 54px); scroll-margin-top: 90px; }
+    .scene-intro { max-width: 850px; }
+    .scene-intro > p:not(.scene-kicker) { color: var(--muted); font-size: 1.08rem; }
+    .scene-grid { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(300px, .7fr); gap: 28px; align-items: start; margin-top: 30px; }
+    .scene-grid.equal { grid-template-columns: 1fr 1fr; }
+
+    .callout { padding: 22px; margin-top: 22px; box-shadow: none; }
+    .callout strong:first-child { color: var(--accent); }
+    .callout.warning { border-color: color-mix(in srgb, var(--accent-2) 55%, var(--line)); }
+    .callout.good { border-color: color-mix(in srgb, var(--accent) 55%, var(--line)); }
 
     button {
       border: 1px solid var(--line);
       border-radius: 999px;
-      padding: 12px 16px;
+      padding: 11px 16px;
       background: transparent;
       color: var(--ink);
       cursor: pointer;
     }
-
     button:hover { border-color: var(--accent); }
-
-    button[aria-pressed="true"], .primary {
-      border-color: var(--accent);
-      background: var(--accent);
-      color: var(--bg);
-    }
-
+    button[aria-pressed="true"], button.primary { background: var(--accent); border-color: var(--accent); color: var(--bg); }
+    button.secondary { border-color: var(--accent); }
     button:disabled { opacity: .45; cursor: not-allowed; }
 
-    .feedback {
-      min-height: 1.6em;
-      margin: 16px 0 0;
-      color: var(--muted);
-      font-family: ui-sans-serif, system-ui, sans-serif;
-    }
+    .choice-row, .quick-values, .toggle-row, .nav-actions { display: flex; flex-wrap: wrap; gap: 9px; }
+    .choice-grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 10px; }
+    .feedback { min-height: 1.5em; margin: 12px 0 0; color: var(--muted); font-family: ui-sans-serif, system-ui, sans-serif; }
+    .feedback.good { color: var(--good); }
+    .feedback.bad { color: var(--bad); }
 
-    .lab-card {
-      overflow: hidden;
+    .notebook {
+      margin-top: 24px;
+      padding: 20px;
+      border: 1px dashed var(--line);
+      border-radius: 18px;
+      background: color-mix(in srgb, var(--paper) 70%, transparent);
     }
-
-    .lab-grid {
-      display: grid;
-      grid-template-columns: minmax(0, 1.35fr) minmax(280px, .65fr);
+    .notebook label { display: block; margin-bottom: 8px; font: 800 .78rem/1.2 ui-sans-serif, system-ui, sans-serif; color: var(--accent); text-transform: uppercase; letter-spacing: .08em; }
+    textarea {
+      width: 100%;
+      min-height: 110px;
+      resize: vertical;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 14px;
+      background: var(--paper-strong);
+      color: var(--ink);
     }
+    .saved { margin-top: 6px; color: var(--muted); font: .76rem/1.3 ui-sans-serif, system-ui, sans-serif; }
 
-    .visual-panel {
-      min-height: 620px;
-      padding: 18px;
+    .visual-card { border: 1px solid var(--line); border-radius: 20px; overflow: hidden; background: var(--paper-strong); }
+    .visual-stage {
+      min-height: 610px;
+      padding: 16px;
       background:
         linear-gradient(var(--line) 1px, transparent 1px),
         linear-gradient(90deg, var(--line) 1px, transparent 1px);
       background-size: 28px 28px;
     }
-
-    svg { width: 100%; height: 100%; min-height: 580px; display: block; }
-
-    .control-panel {
-      padding: clamp(22px, 4vw, 34px);
-      border-left: 1px solid var(--line);
-    }
-
-    .control-panel h2 { font-size: 1.9rem; }
-
-    .control-panel label {
-      display: block;
-      margin-top: 26px;
-      font: 700 .86rem/1.3 ui-sans-serif, system-ui, sans-serif;
-    }
-
+    svg { display: block; width: 100%; height: auto; }
+    #geometry { min-height: 570px; }
+    .visual-controls { padding: 20px; border-top: 1px solid var(--line); }
+    .visual-controls label { display: block; font: 800 .82rem/1.3 ui-sans-serif, system-ui, sans-serif; }
     input[type="range"] { width: 100%; margin: 14px 0; accent-color: var(--accent); }
 
-    .quick-values {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
+    .measure-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 10px; margin-top: 18px; }
+    .measure { padding: 14px; border: 1px solid var(--line); border-radius: 15px; }
+    .measure dt { color: var(--muted); font: 750 .7rem/1.2 ui-sans-serif, system-ui, sans-serif; text-transform: uppercase; letter-spacing: .07em; }
+    .measure dd { margin: 5px 0 0; font-size: 1.22rem; font-variant-numeric: tabular-nums; }
 
-    .quick-values button { padding: 8px 12px; font-size: .88rem; }
-
-    .measurements {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      margin: 26px 0;
-    }
-
-    .measurement {
-      padding: 14px;
+    .construction-list { display: grid; gap: 10px; margin-top: 18px; }
+    .construction-step {
+      padding: 16px;
       border: 1px solid var(--line);
       border-radius: 16px;
+      background: transparent;
     }
+    .construction-step.complete { border-color: var(--accent); background: var(--accent-soft); }
+    .construction-step strong { display: block; }
 
-    .measurement dt {
-      color: var(--muted);
-      font: 700 .73rem/1.2 ui-sans-serif, system-ui, sans-serif;
-      text-transform: uppercase;
-      letter-spacing: .08em;
-    }
-
-    .measurement dd { margin: 5px 0 0; font-size: 1.32rem; font-variant-numeric: tabular-nums; }
-
-    .hint {
-      padding: 16px;
-      border-left: 4px solid var(--accent);
-      background: color-mix(in srgb, var(--accent) 9%, transparent);
-      color: var(--muted);
-    }
-
-    .reveal-row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-top: 22px; }
-
-    .formula-card[hidden] { display: none; }
+    table { width: 100%; border-collapse: collapse; font-family: ui-sans-serif, system-ui, sans-serif; font-variant-numeric: tabular-nums; }
+    th, td { padding: 11px 12px; border-top: 1px solid var(--line); text-align: left; }
+    th { color: var(--muted); font-size: .74rem; text-transform: uppercase; letter-spacing: .07em; }
+    td input { width: 100%; min-width: 90px; padding: 8px 10px; border: 1px solid var(--line); border-radius: 10px; background: var(--paper-strong); color: var(--ink); }
 
     .formula {
-      margin: 22px 0;
-      padding: 22px;
+      margin: 24px 0;
+      padding: 24px;
       border: 1px solid var(--line);
       border-radius: 18px;
       text-align: center;
-      font-size: clamp(1.8rem, 5vw, 3rem);
-      font-variant-numeric: lining-nums;
+      font-size: clamp(1.8rem, 5vw, 3.2rem);
       overflow-x: auto;
+      background: var(--paper-strong);
     }
-
-    .derivation {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 12px;
-      counter-reset: step;
-    }
-
-    .step {
-      padding: 18px;
-      border: 1px solid var(--line);
-      border-radius: 18px;
-    }
-
-    .step::before {
+    .formula.small { font-size: clamp(1.35rem, 3.5vw, 2.2rem); }
+    .derivation { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 11px; counter-reset: step; }
+    .derivation > div { padding: 18px; border: 1px solid var(--line); border-radius: 16px; }
+    .derivation > div::before {
       counter-increment: step;
       content: counter(step);
       display: grid;
       place-items: center;
-      width: 28px;
-      height: 28px;
+      width: 30px;
+      height: 30px;
       margin-bottom: 12px;
       border-radius: 50%;
       background: var(--accent);
       color: var(--bg);
-      font: 800 .82rem/1 ui-sans-serif, system-ui, sans-serif;
+      font: 850 .8rem/1 ui-sans-serif, system-ui, sans-serif;
     }
 
-    .step p { margin: 0; }
-
-    .dictionary {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
-      margin-top: 18px;
-    }
-
-    .dictionary div { padding: 14px; border-top: 1px solid var(--line); }
-
-    .challenge-options { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
-
-    details summary {
-      cursor: pointer;
-      font-weight: 700;
-      font-size: 1.25rem;
-    }
-
-    details p, details li { color: var(--muted); }
-
-    footer { padding: 28px 0 56px; border-top: 1px solid var(--line); color: var(--muted); }
-
-    .sr-only {
-      position: absolute;
-      width: 1px;
-      height: 1px;
-      padding: 0;
-      margin: -1px;
-      overflow: hidden;
-      clip: rect(0, 0, 0, 0);
-      white-space: nowrap;
-      border: 0;
-    }
-
-    .noise-controls {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 22px;
-      align-items: flex-end;
-      margin-top: 26px;
-    }
-
-    .noise-controls .field { flex: 1 1 220px; }
-
-    .noise-controls label,
-    .noise-controls .control-label {
-      display: block;
-      margin-bottom: 8px;
-      font: 700 .86rem/1.3 ui-sans-serif, system-ui, sans-serif;
-    }
-
-    .inner-bet { margin-top: 26px; }
-
-    .strip { margin-top: 26px; }
-
-    .strip svg { min-height: 0; height: auto; }
-
-    table.reach {
-      width: 100%;
-      margin-top: 20px;
-      border-collapse: collapse;
-      font-variant-numeric: tabular-nums;
-      font-family: ui-sans-serif, system-ui, sans-serif;
-      font-size: .95rem;
-    }
-
-    table.reach th, table.reach td {
+    .exercise-stack { display: grid; gap: 18px; margin-top: 24px; }
+    .exercise { padding: 22px; box-shadow: none; }
+    .exercise h3 { margin-top: 5px; }
+    .exercise-number { color: var(--accent); font: 850 .72rem/1.2 ui-sans-serif, system-ui, sans-serif; text-transform: uppercase; letter-spacing: .1em; }
+    details.hint { margin-top: 12px; border: 1px solid var(--line); border-radius: 14px; padding: 12px 14px; }
+    details.hint summary { cursor: pointer; font: 750 .85rem/1.3 ui-sans-serif, system-ui, sans-serif; }
+    .answer-input { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+    .answer-input input, .answer-input select {
+      flex: 1 1 180px;
       padding: 10px 12px;
-      border-top: 1px solid var(--line);
-      text-align: left;
-    }
-
-    table.reach th {
-      font: 700 .74rem/1.2 ui-sans-serif, system-ui, sans-serif;
-      text-transform: uppercase;
-      letter-spacing: .08em;
-      color: var(--muted);
-    }
-
-    .lab-nav {
-      margin-top: 48px;
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 12px;
-      font-family: ui-sans-serif, system-ui, sans-serif;
-    }
-
-    .lab-nav a {
-      display: block;
-      padding: 16px 18px;
       border: 1px solid var(--line);
-      border-radius: 18px;
-      background: var(--paper);
+      border-radius: 12px;
+      background: var(--paper-strong);
       color: var(--ink);
-      text-decoration: none;
     }
 
-    .lab-nav a:hover { border-color: var(--accent); }
+    .hypothesis-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 14px; margin-top: 20px; }
+    .hypothesis { padding: 18px; border: 1px solid var(--line); border-radius: 17px; }
+    .hypothesis h3 { margin: 0 0 8px; }
 
-    .lab-nav small {
-      display: block;
-      margin-bottom: 6px;
-      color: var(--accent);
-      font: 800 .7rem/1.2 ui-sans-serif, system-ui, sans-serif;
-      letter-spacing: .1em;
-      text-transform: uppercase;
+    .checkpoint { padding: 28px; margin-top: 30px; border-color: var(--accent); background: var(--accent-soft); box-shadow: none; }
+    .checkpoint h3 { margin-top: 0; }
+
+    .optional { border-style: dashed; }
+    .optional-badge { display: inline-block; padding: 6px 10px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); font: 800 .72rem/1 ui-sans-serif, system-ui, sans-serif; text-transform: uppercase; letter-spacing: .08em; }
+
+    .summary-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 12px; margin-top: 22px; }
+    .summary-grid > div { padding: 18px; border: 1px solid var(--line); border-radius: 16px; }
+
+    .lab-nav { margin-top: 46px; display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 12px; font-family: ui-sans-serif, system-ui, sans-serif; }
+    .lab-nav a, .lab-nav span { display: block; padding: 18px; border: 1px solid var(--line); border-radius: 16px; text-decoration: none; color: var(--ink); background: var(--paper); }
+    .lab-nav .center { text-align: center; color: var(--muted); }
+    .lab-nav .right { text-align: right; }
+
+    footer { padding: 28px 0 60px; border-top: 1px solid var(--line); color: var(--muted); }
+
+    @media (max-width: 900px) {
+      .hero, .scene-grid, .scene-grid.equal { grid-template-columns: 1fr; }
+      .route { grid-template-columns: repeat(9, 145px); }
+      .derivation { grid-template-columns: repeat(2, minmax(0,1fr)); }
+      .summary-grid { grid-template-columns: 1fr; }
     }
-
-    @media (max-width: 820px) {
-      .answer-grid, .derivation, .dictionary { grid-template-columns: 1fr; }
-      .lab-grid { grid-template-columns: 1fr; }
-      .control-panel { border-left: 0; border-top: 1px solid var(--line); }
-      .visual-panel { min-height: 480px; }
-      svg { min-height: 440px; }
+    @media (max-width: 620px) {
+      body { font-size: 17px; }
+      .topbar-inner { align-items: flex-start; padding: 12px 0; flex-direction: column; }
+      .top-progress { width: 100%; max-width: none; }
+      .choice-grid, .hypothesis-grid, .derivation, .lab-nav { grid-template-columns: 1fr; }
+      .measure-grid { grid-template-columns: 1fr; }
+      .lab-nav .center, .lab-nav .right { text-align: left; }
+      .visual-stage { min-height: 460px; }
+      #geometry { min-height: 420px; }
     }
-
-    @media (max-width: 480px) {
-      header { align-items: flex-start; flex-direction: column; }
-      main { padding-top: 38px; }
-      .measurements { grid-template-columns: 1fr; }
-    }
-
     @media (prefers-reduced-motion: reduce) {
       html { scroll-behavior: auto; }
       * { transition: none !important; }
@@ -417,200 +311,488 @@
   </style>
 </head>
 <body>
-  <a class="skip-link" href="#conteudo">Pular para o laboratório</a>
-  <header>
-    <a class="brand" href="../../index.html">MATHeu$</a>
-    <span>Temporada 01 · Laboratório 01</span>
-  </header>
+  <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
+
+  <div class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="../../index.html">MATHeu$ · edição profunda</a>
+      <div class="top-progress" aria-label="Progresso estimado no laboratório">
+        <div class="progress-track"><div id="progress-fill" class="progress-fill"></div></div>
+        <div id="progress-label" class="progress-label">0 de 9 cenas visitadas</div>
+      </div>
+    </div>
+  </div>
 
   <main id="conteudo">
-    <p class="eyebrow">Duas circunferências, um polígono</p>
-    <h1>Será que os círculos denunciam quantos lados existem?</h1>
-    <p class="lead">Você conhece apenas o raio que passa pelos vértices e o raio que toca os lados. Antes da fórmula, vamos obrigar a figura a falar.</p>
-
-    <section class="question-card" aria-labelledby="aposta-titulo">
-      <strong id="aposta-titulo">Pare e aposte</strong>
-      <p>Quando o número de lados aumenta, a razão entre o raio menor e o raio maior…</p>
-      <div class="answer-grid" role="group" aria-label="Escolha sua previsão">
-        <button type="button" data-prediction="decreases" aria-pressed="false">diminui</button>
-        <button type="button" data-prediction="same" aria-pressed="false">fica igual</button>
-        <button type="button" data-prediction="increases" aria-pressed="false">aumenta</button>
+    <section class="hero">
+      <div>
+        <p class="eyebrow">Temporada 01 · Laboratório 01 · capítulo-modelo</p>
+        <h1>Duas circunferências, um polígono</h1>
+        <p class="lead">A pergunta parece pequena: conhecendo apenas dois raios, dá para descobrir quantos lados há entre os círculos? Para responder sem decorar uma fórmula, vamos construir a figura, desmontá-la, testá-la, atacá-la e só então comprimi-la em símbolos.</p>
       </div>
-      <p id="prediction-feedback" class="feedback" aria-live="polite">Escolha antes de mexer no controle. Não vale consultar o cosseno clandestinamente.</p>
+      <aside class="hero-card" aria-label="Informações do laboratório">
+        <dl>
+          <div><dt>Tempo essencial</dt><dd>35–50 minutos</dd></div>
+          <div><dt>Com aprofundamento</dt><dd>60–80 minutos</dd></div>
+          <div><dt>Pré-requisito</dt><dd>Triângulo retângulo e ideia básica de cosseno. Há revisão no caminho.</dd></div>
+          <div><dt>Ao terminar</dt><dd>Você deverá conseguir construir, explicar, usar e limitar a relação entre os dois raios.</dd></div>
+        </dl>
+      </aside>
     </section>
 
-    <section class="lab-card" aria-labelledby="lab-title">
-      <div class="lab-grid">
-        <div class="visual-panel">
-          <svg id="geometry" viewBox="0 0 620 620" role="img" aria-labelledby="svg-title svg-desc">
-            <title id="svg-title">Polígono regular entre duas circunferências e triângulo fundamental</title>
-            <desc id="svg-desc">A circunferência externa passa pelos vértices, a interna toca os lados e um triângulo retângulo liga o centro, o ponto médio de um lado e um vértice.</desc>
-            <g id="drawing"></g>
-          </svg>
+    <ol class="route" aria-label="Rota do laboratório">
+      <li><a href="#cena-1"><span class="num">01</span>O problema</a></li>
+      <li><a href="#cena-2"><span class="num">02</span>Construa</a></li>
+      <li><a href="#cena-3"><span class="num">03</span>Casos</a></li>
+      <li><a href="#cena-4"><span class="num">04</span>Ângulo</a></li>
+      <li><a href="#cena-5"><span class="num">05</span>Fórmula</a></li>
+      <li><a href="#cena-6"><span class="num">06</span>Inverta</a></li>
+      <li><a href="#cena-7"><span class="num">07</span>Ataque</a></li>
+      <li><a href="#cena-8"><span class="num">08</span>Exercite</a></li>
+      <li><a href="#cena-9"><span class="num">09</span>Sintetize</a></li>
+    </ol>
+
+    <section id="cena-1" class="scene" data-scene="1">
+      <div class="scene-intro">
+        <p class="scene-kicker">Cena 01 · O problema antes da técnica</p>
+        <h2>Dois círculos podem denunciar uma forma?</h2>
+        <p>Imagine um polígono regular preso entre duas circunferências concêntricas. A circunferência externa passa por todos os vértices. A interna toca todos os lados. Você não vê o polígono, apenas mede os dois raios: o maior, <strong>R</strong>, e o menor, <strong>r</strong>.</p>
+        <p>A pergunta não é “qual fórmula devo usar?”. A pergunta anterior é: <strong>há informação suficiente?</strong></p>
+      </div>
+
+      <div class="scene-grid equal">
+        <div class="callout">
+          <span class="box-label">Pare e aposte</span>
+          <h3>Se a razão r/R for conhecida com precisão perfeita, ela determina um único número de lados?</h3>
+          <div class="choice-grid" role="group" aria-label="Escolha sua primeira hipótese">
+            <button type="button" data-opening="yes" aria-pressed="false">sim, sempre</button>
+            <button type="button" data-opening="no" aria-pressed="false">não, nunca</button>
+            <button type="button" data-opening="conditions" aria-pressed="false">depende das hipóteses</button>
+          </div>
+          <p id="opening-feedback" class="feedback" aria-live="polite">Registre uma hipótese. Não existe multa por errar; só por fingir que já sabia.</p>
         </div>
 
-        <div class="control-panel">
-          <p class="box-label">Brinque</p>
-          <h2 id="lab-title">Faça o polígono mudar</h2>
-          <p>O raio maior permanece fixo. Observe o raio menor se aproximar dele.</p>
+        <div class="callout warning">
+          <span class="box-label">A primeira armadilha</span>
+          <p>Sem a palavra <strong>regular</strong>, duas circunferências não bastam. É possível deformar lados e ângulos preservando um círculo externo e um círculo interno. A razão só tem chance de denunciar <em>n</em> porque o polígono regular impõe simetria.</p>
+          <p>Portanto, a resposta mais rigorosa é: <strong>sim, sob hipóteses específicas</strong>. Vamos descobrir quais.</p>
+        </div>
+      </div>
 
-          <label for="sides">Número de lados: <output id="sides-output" for="sides">6</output></label>
-          <input id="sides" type="range" min="3" max="40" step="1" value="6">
+      <div class="notebook">
+        <label for="note-1">Caderno · O que você acha que muda quando n aumenta?</label>
+        <textarea id="note-1" data-note="1" placeholder="Escreva em linguagem comum: o raio menor se aproxima do maior? por quê?"></textarea>
+        <div class="saved" aria-live="polite">Seu texto fica salvo apenas neste navegador.</div>
+      </div>
+    </section>
 
-          <div class="quick-values" aria-label="Valores rápidos">
-            <button type="button" data-n="3">3</button>
-            <button type="button" data-n="4">4</button>
-            <button type="button" data-n="6">6</button>
-            <button type="button" data-n="8">8</button>
-            <button type="button" data-n="12">12</button>
-            <button type="button" data-n="24">24</button>
+    <section id="cena-2" class="scene" data-scene="2">
+      <div class="scene-intro">
+        <p class="scene-kicker">Cena 02 · Construa antes de receber</p>
+        <h2>Faça o triângulo aparecer</h2>
+        <p>O polígono inteiro é visualmente barulhento. A estrutura decisiva cabe em um único setor. Você vai construir três segmentos: do centro ao vértice, do centro ao ponto de tangência e do ponto de tangência ao vértice.</p>
+      </div>
+
+      <div class="scene-grid">
+        <div class="visual-card">
+          <div class="visual-stage">
+            <svg id="geometry" viewBox="0 0 660 660" role="img" aria-labelledby="svg-title svg-desc">
+              <title id="svg-title">Polígono regular entre duas circunferências com construção progressiva do triângulo fundamental</title>
+              <desc id="svg-desc">A circunferência externa passa pelos vértices, a interna toca os lados. Segmentos opcionais ligam o centro O ao vértice V, o centro O ao ponto médio M e M a V.</desc>
+              <g id="drawing"></g>
+            </svg>
+          </div>
+          <div class="visual-controls">
+            <label for="sides">Número de lados: <output id="sides-output" for="sides">6</output></label>
+            <input id="sides" type="range" min="3" max="40" step="1" value="6">
+            <div class="quick-values" aria-label="Valores rápidos">
+              <button type="button" data-n="3">3</button>
+              <button type="button" data-n="4">4</button>
+              <button type="button" data-n="5">5</button>
+              <button type="button" data-n="6">6</button>
+              <button type="button" data-n="8">8</button>
+              <button type="button" data-n="12">12</button>
+              <button type="button" data-n="24">24</button>
+            </div>
+            <div class="toggle-row" style="margin-top:14px" role="group" aria-label="Elementos da construção">
+              <button type="button" data-segment="ov" aria-pressed="false">traçar OV</button>
+              <button type="button" data-segment="om" aria-pressed="false">traçar OM</button>
+              <button type="button" data-segment="mv" aria-pressed="false">traçar MV</button>
+              <button type="button" data-segment="angle" aria-pressed="false">marcar ângulo</button>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <span class="box-label">Construção guiada</span>
+          <div class="construction-list">
+            <div id="step-ov" class="construction-step"><strong>1. Centro ao vértice</strong>Trace OV. Esse segmento termina na circunferência externa, portanto mede R.</div>
+            <div id="step-om" class="construction-step"><strong>2. Centro ao lado</strong>Trace OM até o ponto em que a circunferência interna toca o lado. Esse segmento mede r.</div>
+            <div id="step-mv" class="construction-step"><strong>3. Meio-lado</strong>Ligue M a V. O segmento MV é metade de um lado do polígono.</div>
+            <div id="step-angle" class="construction-step"><strong>4. Ângulo escondido</strong>Marque o ângulo entre OM e OV. Ainda não lhe demos um valor.</div>
           </div>
 
-          <dl class="measurements" aria-label="Medidas normalizadas">
-            <div class="measurement"><dt>R — raio maior</dt><dd id="R-value">1,0000</dd></div>
-            <div class="measurement"><dt>r — raio menor</dt><dd id="r-value">0,8660</dd></div>
-            <div class="measurement"><dt>r / R</dt><dd id="ratio-value">0,8660</dd></div>
-            <div class="measurement"><dt>π / n</dt><dd id="angle-value">30,00°</dd></div>
+          <dl class="measure-grid" aria-label="Medidas normalizadas">
+            <div class="measure"><dt>R — raio maior</dt><dd>1,0000</dd></div>
+            <div class="measure"><dt>r — raio menor</dt><dd id="r-value">0,8660</dd></div>
+            <div class="measure"><dt>r/R</dt><dd id="ratio-value">0,8660</dd></div>
+            <div class="measure"><dt>ângulo OMV</dt><dd>90°</dd></div>
           </dl>
 
-          <p class="hint"><strong>Olhe de novo:</strong> o ponto onde o raio menor toca o lado divide esse lado ao meio e forma um ângulo reto.</p>
+          <div class="callout good">
+            <strong>Por que há um ângulo reto?</strong>
+            <p>Uma tangente é perpendicular ao raio no ponto de contato. Como o lado do polígono tangencia a circunferência interna em M, OM é perpendicular ao lado. Logo o triângulo O–M–V é retângulo.</p>
+          </div>
+        </div>
+      </div>
 
-          <div class="reveal-row">
-            <button id="reveal" type="button" class="primary" disabled>Revelar a relação</button>
-            <span id="reveal-status" class="feedback" aria-live="polite">Faça uma previsão e altere o número de lados.</span>
+      <div class="checkpoint">
+        <h3>Cheque antes de seguir</h3>
+        <p>Qual segmento é a hipotenusa do triângulo O–M–V?</p>
+        <div class="choice-row" role="group" aria-label="Hipotenusa do triângulo">
+          <button type="button" data-hyp="om">OM</button>
+          <button type="button" data-hyp="ov">OV</button>
+          <button type="button" data-hyp="mv">MV</button>
+        </div>
+        <p id="hyp-feedback" class="feedback" aria-live="polite"></p>
+      </div>
+    </section>
+
+    <section id="cena-3" class="scene" data-scene="3">
+      <div class="scene-intro">
+        <p class="scene-kicker">Cena 03 · Casos antes da generalização</p>
+        <h2>Veja a razão mudar em figuras conhecidas</h2>
+        <p>Antes de procurar uma lei geral, examine casos que você conseguiria desenhar à mão. O raio externo foi normalizado para R = 1. Assim, o valor de r também é o próprio valor da razão r/R.</p>
+      </div>
+
+      <div class="scene-grid equal">
+        <div>
+          <table aria-label="Tabela de casos do polígono regular">
+            <thead><tr><th>n</th><th>nome</th><th>ângulo central</th><th>meio ângulo</th><th>r/R</th></tr></thead>
+            <tbody>
+              <tr><td>3</td><td>triângulo equilátero</td><td>120°</td><td>60°</td><td>0,5000</td></tr>
+              <tr><td>4</td><td>quadrado</td><td>90°</td><td>45°</td><td>0,7071</td></tr>
+              <tr><td>6</td><td>hexágono</td><td>60°</td><td>30°</td><td>0,8660</td></tr>
+              <tr><td>8</td><td>octógono</td><td>45°</td><td>22,5°</td><td>0,9239</td></tr>
+              <tr><td>12</td><td>dodecágono</td><td>30°</td><td>15°</td><td>0,9659</td></tr>
+            </tbody>
+          </table>
+
+          <div class="callout">
+            <strong>O padrão visível</strong>
+            <p>Quanto mais lados, menor o ângulo do setor e mais o raio interno se aproxima do externo. A razão cresce, mas cresce cada vez menos: perto de 1, as marcas começam a se amontoar.</p>
+          </div>
+        </div>
+
+        <div class="callout">
+          <span class="box-label">Complete sem fórmula</span>
+          <h3>Um polígono tem r/R = 0,5000. Qual candidato da tabela é compatível?</h3>
+          <div class="choice-row" role="group" aria-label="Candidato para razão 0,5">
+            <button type="button" data-case="3">3 lados</button>
+            <button type="button" data-case="4">4 lados</button>
+            <button type="button" data-case="6">6 lados</button>
+          </div>
+          <p id="case-feedback" class="feedback" aria-live="polite"></p>
+
+          <h3 style="margin-top:28px">E uma razão 0,94?</h3>
+          <p>Ela fica entre os valores de n = 8 e n = 12. Isso já diz que o polígono tem mais de 8 e menos de 12 lados, mas não revela o inteiro exato sem uma relação geral.</p>
+        </div>
+      </div>
+
+      <div class="notebook">
+        <label for="note-3">Caderno · Diga o padrão sem usar seno ou cosseno</label>
+        <textarea id="note-3" data-note="3" placeholder="Exemplo: quando n cresce, o ângulo..., o triângulo fica..., e r/R..."></textarea>
+        <div class="saved">A formulação verbal é parte da matemática, não decoração.</div>
+      </div>
+    </section>
+
+    <section id="cena-4" class="scene" data-scene="4">
+      <div class="scene-intro">
+        <p class="scene-kicker">Cena 04 · Encontre o ângulo certo</p>
+        <h2>Por que aparece π/n — e não 2π/n?</h2>
+        <p>O círculo completo mede 2π radianos. Dividido em n setores iguais, o ângulo entre dois vértices consecutivos vale 2π/n. Mas o triângulo fundamental usa o ponto médio do lado, não o vértice seguinte.</p>
+      </div>
+
+      <div class="scene-grid equal">
+        <div class="callout">
+          <span class="box-label">Raciocínio em quatro passos</span>
+          <div class="derivation">
+            <div>O centro ligado a dois vértices consecutivos forma um triângulo isósceles.</div>
+            <div>O segmento do centro ao ponto médio do lado é eixo de simetria desse triângulo.</div>
+            <div>Esse eixo divide o ângulo central 2π/n em duas partes iguais.</div>
+            <div>Portanto, o ângulo entre OM e OV é π/n.</div>
+          </div>
+        </div>
+
+        <div class="callout warning">
+          <span class="box-label">Erro fértil</span>
+          <h3>Usar 2π/n parece plausível</h3>
+          <p>Ele é realmente um ângulo importante: o ângulo central inteiro. Só não é o ângulo do triângulo O–M–V. Um símbolo correto colocado no triângulo errado produz uma fórmula elegante e falsa — uma das formas mais sofisticadas de fabricar besteira.</p>
+          <div class="formula small">ângulo em O = (2π/n) ÷ 2 = π/n</div>
+        </div>
+      </div>
+
+      <div class="checkpoint">
+        <h3>Teste a ideia no hexágono</h3>
+        <p>Para n = 6, o ângulo central inteiro vale 60°. Qual é o ângulo do triângulo fundamental?</p>
+        <div class="choice-row">
+          <button type="button" data-angle-answer="60">60°</button>
+          <button type="button" data-angle-answer="30">30°</button>
+          <button type="button" data-angle-answer="15">15°</button>
+        </div>
+        <p id="angle-feedback" class="feedback" aria-live="polite"></p>
+      </div>
+    </section>
+
+    <section id="cena-5" class="scene" data-scene="5">
+      <div class="scene-intro">
+        <p class="scene-kicker">Cena 05 · A fórmula nasce</p>
+        <h2>O cosseno não chega de helicóptero</h2>
+        <p>Agora o triângulo contém tudo o que precisamos: um ângulo conhecido, a hipotenusa R e o cateto adjacente r. O nome “cosseno” apenas compacta essa razão.</p>
+      </div>
+
+      <div class="callout good">
+        <div class="derivation">
+          <div>No triângulo, OV é a hipotenusa e mede R.</div>
+          <div>OM é o cateto adjacente ao ângulo π/n e mede r.</div>
+          <div>Cosseno = cateto adjacente ÷ hipotenusa.</div>
+          <div>Substituindo os comprimentos: cos(π/n) = r/R.</div>
+        </div>
+        <div class="formula">r / R = cos(π / n)</div>
+      </div>
+
+      <div class="scene-grid equal">
+        <div>
+          <h3>Leia a fórmula em português</h3>
+          <p>“A razão entre o raio que toca os lados e o raio que passa pelos vértices é o cosseno de metade do ângulo central.”</p>
+          <p>Essa frase é mais importante que decorar a escrita. Ela diz que a razão não depende do tamanho absoluto: dobrar os dois raios não muda r/R.</p>
+        </div>
+        <div>
+          <h3>Condições de validade</h3>
+          <ul>
+            <li>polígono regular;</li>
+            <li>mesmo centro para as duas circunferências;</li>
+            <li>circunferência externa passando pelos vértices;</li>
+            <li>circunferência interna tangente aos lados;</li>
+            <li>número inteiro n ≥ 3.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="checkpoint">
+        <h3>Use a fórmula em um caso controlável</h3>
+        <p>Para um quadrado, n = 4. Então π/n = 45°. Como cos 45° = √2/2, qual é r/R?</p>
+        <div class="answer-input">
+          <input id="square-answer" inputmode="decimal" placeholder="Digite, por exemplo, 0,7071">
+          <button id="check-square" type="button">Conferir</button>
+        </div>
+        <p id="square-feedback" class="feedback" aria-live="polite"></p>
+      </div>
+    </section>
+
+    <section id="cena-6" class="scene" data-scene="6">
+      <div class="scene-intro">
+        <p class="scene-kicker">Cena 06 · Inverta a pergunta</p>
+        <h2>Da razão de volta ao número de lados</h2>
+        <p>A fórmula direta recebe n e devolve r/R. A pergunta original faz o contrário: recebe a razão e procura n. Para inverter, usamos a função que desfaz o cosseno no intervalo relevante.</p>
+      </div>
+
+      <div class="formula">n = π / arccos(r/R)</div>
+
+      <div class="scene-grid">
+        <div class="visual-card">
+          <div class="visual-controls" style="border-top:0">
+            <label for="ratio-input">Razão medida r/R</label>
+            <input id="ratio-input" type="range" min="0.5" max="0.995" step="0.0001" value="0.8660254">
+            <div class="measure-grid">
+              <div class="measure"><dt>razão escolhida</dt><dd id="inverse-ratio">0,8660</dd></div>
+              <div class="measure"><dt>n contínuo</dt><dd id="inverse-n">6,000</dd></div>
+              <div class="measure"><dt>inteiro mais próximo</dt><dd id="inverse-round">6</dd></div>
+              <div class="measure"><dt>desvio do inteiro</dt><dd id="inverse-distance">0,000</dd></div>
+            </div>
+          </div>
+          <svg id="inverse-chart" viewBox="0 0 660 310" role="img" aria-label="Gráfico da razão r sobre R em função do número de lados"><g id="inverse-drawing"></g></svg>
+        </div>
+
+        <div>
+          <div class="callout">
+            <strong>Por que aparece um n não inteiro?</strong>
+            <p>A expressão π/arccos(r/R) aceita qualquer razão entre 0,5 e 1 e devolve um número real. Mas um polígono tem número inteiro de lados. Se o resultado for 7,42, há três possibilidades: a medida tem erro, a figura não é regular, ou os círculos não obedecem às hipóteses.</p>
+          </div>
+          <div class="callout warning">
+            <strong>O gráfico fica comprimido perto de 1</strong>
+            <p>Para n grande, razões diferentes ficam muito próximas. Identificar 6 lados é fácil; distinguir 60 de 61 exige precisão muito maior. A fórmula é invertível em teoria, mas a medição pode tornar a inferência frágil.</p>
           </div>
         </div>
       </div>
     </section>
 
-    <section id="formula-card" class="formula-card" hidden aria-labelledby="formula-title">
-      <p class="box-label">Entenda</p>
-      <h2 id="formula-title">A fórmula já estava dentro do triângulo</h2>
-
-      <div class="derivation">
-        <div class="step"><p><strong>OV</strong> é o raio maior <strong>R</strong>: a hipotenusa.</p></div>
-        <div class="step"><p><strong>OM</strong> é o raio menor <strong>r</strong>: o cateto ao lado do ângulo.</p></div>
-        <div class="step"><p>O ângulo entre OM e OV vale metade do ângulo central: <strong>π/n</strong>.</p></div>
+    <section id="cena-7" class="scene" data-scene="7">
+      <div class="scene-intro">
+        <p class="scene-kicker">Cena 07 · Ataque as hipóteses</p>
+        <h2>Uma fórmula entendida deve sobreviver a perguntas hostis</h2>
+        <p>Não basta saber aplicá-la quando tudo vem etiquetado. Precisamos saber quando ela deixa de valer e por quê.</p>
       </div>
 
-      <p>A leitura natural é:</p>
-      <div class="formula" aria-label="r dividido por R é igual ao cosseno de pi dividido por n">
-        r / R = cos(π / n)
+      <div class="hypothesis-grid">
+        <div class="hypothesis">
+          <h3>Polígono irregular</h3>
+          <p>Os lados e ângulos podem variar. Um único setor deixa de representar o todo. A razão global não determina n.</p>
+          <button type="button" data-attack="irregular">Julgar a fórmula</button>
+          <p class="feedback" id="attack-irregular"></p>
+        </div>
+        <div class="hypothesis">
+          <h3>Círculos não concêntricos</h3>
+          <p>Os dois raios deixam de partir do mesmo centro. O triângulo O–M–V não existe na forma usada.</p>
+          <button type="button" data-attack="offcenter">Julgar a fórmula</button>
+          <p class="feedback" id="attack-offcenter"></p>
+        </div>
+        <div class="hypothesis">
+          <h3>Círculo interno não tangente</h3>
+          <p>Se ele apenas “cabe” dentro do polígono sem tocar os lados, r não é apótema.</p>
+          <button type="button" data-attack="notangent">Julgar a fórmula</button>
+          <p class="feedback" id="attack-notangent"></p>
+        </div>
+        <div class="hypothesis">
+          <h3>Mesma figura em outra escala</h3>
+          <p>R e r dobram juntos. A razão permanece igual.</p>
+          <button type="button" data-attack="scale">Julgar a fórmula</button>
+          <p class="feedback" id="attack-scale"></p>
+        </div>
       </div>
 
-      <div class="dictionary" aria-label="Dicionário da fórmula">
-        <div><strong>r</strong><br>raio que toca os lados</div>
-        <div><strong>R</strong><br>raio que passa pelos vértices</div>
-        <div><strong>n</strong><br>número de lados</div>
+      <div class="callout good">
+        <span class="box-label">Invariante</span>
+        <p>A razão r/R é invariável por escala. Esse é o motivo de a fórmula identificar a <em>forma</em>, não o tamanho. Um hexágono microscópico e um hexágono de estádio produzem o mesmo valor.</p>
       </div>
-
-      <p><strong>O que ela mede:</strong> uma razão sem unidade. Por isso o tamanho absoluto da figura não importa; importa apenas sua forma.</p>
-      <p><strong>Quando vale:</strong> para polígonos regulares, com as duas circunferências concêntricas e corretamente inscrita/circunscrita.</p>
     </section>
 
-    <section id="challenge" class="challenge-card" hidden aria-labelledby="challenge-title">
-      <p class="box-label">Agora use a ideia</p>
-      <h2 id="challenge-title">Uma razão de aproximadamente 0,866 aponta para qual polígono?</h2>
-      <p>Considere medidas perfeitas e um polígono regular.</p>
-      <div class="challenge-options" role="group" aria-label="Escolha o número de lados">
-        <button type="button" data-answer="4">4 lados</button>
-        <button type="button" data-answer="6">6 lados</button>
-        <button type="button" data-answer="8">8 lados</button>
-      </div>
-      <p id="challenge-feedback" class="feedback" aria-live="polite"></p>
-    </section>
-
-    <section id="noise-card" class="challenge-card" hidden aria-labelledby="noise-title">
-      <p class="box-label">Brinque de novo</p>
-      <h2 id="noise-title">E se a régua tremer?</h2>
-      <p>O desafio anterior supôs uma medida perfeita. Instrumentos reais erram: a razão medida pode desviar até um limite <strong>δ</strong> do valor verdadeiro, para mais ou para menos. Quanto isso custa?</p>
-
-      <div class="question-card inner-bet" aria-labelledby="noise-bet-title">
-        <strong id="noise-bet-title">Pare e aposte</strong>
-        <p>Se o erro do instrumento cair pela metade, o maior número de lados que ele distingue do vizinho…</p>
-        <div class="answer-grid" role="group" aria-label="Escolha sua previsão sobre a precisão">
-          <button type="button" data-noise-bet="doubles" aria-pressed="false">dobra</button>
-          <button type="button" data-noise-bet="more" aria-pressed="false">mais que dobra</button>
-          <button type="button" data-noise-bet="less" aria-pressed="false">cresce, mas não dobra</button>
-        </div>
-        <p id="noise-bet-feedback" class="feedback" aria-live="polite">Aposte antes de experimentar as precisões abaixo.</p>
+    <section id="cena-8" class="scene" data-scene="8">
+      <div class="scene-intro">
+        <p class="scene-kicker">Cena 08 · Oficina de exercícios</p>
+        <h2>Agora a ideia precisa trabalhar sem corrimão</h2>
+        <p>Os exercícios não repetem todos a mesma conta. Eles alternam leitura geométrica, cálculo, inversão, diagnóstico de erro e transferência.</p>
       </div>
 
-      <div class="noise-controls">
-        <div class="field">
-          <label for="noise-n">Número de lados verdadeiro: <output id="noise-n-output" for="noise-n">8</output></label>
-          <input id="noise-n" type="range" min="3" max="30" step="1" value="8">
-        </div>
-        <div class="field">
-          <span class="control-label" id="delta-label">Erro máximo do instrumento (δ)</span>
-          <div class="quick-values" role="group" aria-labelledby="delta-label">
-            <button type="button" data-delta="0.05" aria-pressed="false">±0,050</button>
-            <button type="button" data-delta="0.02" aria-pressed="false">±0,020</button>
-            <button type="button" data-delta="0.01" aria-pressed="true">±0,010</button>
-            <button type="button" data-delta="0.005" aria-pressed="false">±0,005</button>
-            <button type="button" data-delta="0.002" aria-pressed="false">±0,002</button>
+      <div class="exercise-stack">
+        <article class="exercise">
+          <span class="exercise-number">Exercício 1 · leitura</span>
+          <h3>Em O–M–V, qual segmento é o apótema?</h3>
+          <div class="choice-row"><button data-ex="1" data-value="OM">OM</button><button data-ex="1" data-value="OV">OV</button><button data-ex="1" data-value="MV">MV</button></div>
+          <p id="ex-1-feedback" class="feedback"></p>
+          <details class="hint"><summary>Pista 1</summary><p>O apótema vai do centro ao meio de um lado.</p></details>
+        </article>
+
+        <article class="exercise">
+          <span class="exercise-number">Exercício 2 · ângulo</span>
+          <h3>Num decágono regular, qual é o ângulo do triângulo fundamental?</h3>
+          <div class="answer-input"><input id="ex-2-input" inputmode="decimal" placeholder="graus"><button data-check="2">Conferir</button></div>
+          <p id="ex-2-feedback" class="feedback"></p>
+          <details class="hint"><summary>Pista 1</summary><p>O ângulo central inteiro é 360°/n.</p></details>
+          <details class="hint"><summary>Pista 2</summary><p>O triângulo usa metade desse ângulo.</p></details>
+        </article>
+
+        <article class="exercise">
+          <span class="exercise-number">Exercício 3 · cálculo direto</span>
+          <h3>Para n = 8 e R = 10 cm, calcule r.</h3>
+          <div class="answer-input"><input id="ex-3-input" inputmode="decimal" placeholder="cm"><button data-check="3">Conferir</button></div>
+          <p id="ex-3-feedback" class="feedback"></p>
+          <details class="hint"><summary>Pista 1</summary><p>Use r = R·cos(π/n).</p></details>
+          <details class="hint"><summary>Pista 2</summary><p>cos(22,5°) ≈ 0,9239.</p></details>
+        </article>
+
+        <article class="exercise">
+          <span class="exercise-number">Exercício 4 · inversão</span>
+          <h3>Uma razão perfeita r/R = √3/2 corresponde a qual n?</h3>
+          <div class="choice-row"><button data-ex="4" data-value="4">4</button><button data-ex="4" data-value="6">6</button><button data-ex="4" data-value="8">8</button></div>
+          <p id="ex-4-feedback" class="feedback"></p>
+          <details class="hint"><summary>Pista 1</summary><p>√3/2 é o cosseno de 30°.</p></details>
+          <details class="hint"><summary>Pista 2</summary><p>π/n = 30°.</p></details>
+        </article>
+
+        <article class="exercise">
+          <span class="exercise-number">Exercício 5 · escala</span>
+          <h3>Um pentágono é ampliado por fator 7. O que acontece com r/R?</h3>
+          <div class="choice-row"><button data-ex="5" data-value="x7">multiplica por 7</button><button data-ex="5" data-value="same">não muda</button><button data-ex="5" data-value="div7">divide por 7</button></div>
+          <p id="ex-5-feedback" class="feedback"></p>
+          <details class="hint"><summary>Pista 1</summary><p>Numerador e denominador são multiplicados pelo mesmo fator.</p></details>
+        </article>
+
+        <article class="exercise">
+          <span class="exercise-number">Exercício 6 · diagnóstico</span>
+          <h3>A inversão devolveu n = 9,38. Qual conclusão é legítima?</h3>
+          <div class="choice-grid">
+            <button data-ex="6" data-value="round">o polígono tem certamente 9 lados</button>
+            <button data-ex="6" data-value="fail">a matemática falhou</button>
+            <button data-ex="6" data-value="inspect">é preciso investigar medida e hipóteses</button>
           </div>
-        </div>
-        <div class="field">
-          <button id="remeasure" type="button">Medir de novo</button>
-        </div>
+          <p id="ex-6-feedback" class="feedback"></p>
+        </article>
+
+        <article class="exercise">
+          <span class="exercise-number">Exercício 7 · limite intuitivo</span>
+          <h3>Quando n cresce sem limite, para qual valor tende r/R?</h3>
+          <div class="answer-input"><input id="ex-7-input" inputmode="decimal" placeholder="valor"><button data-check="7">Conferir</button></div>
+          <p id="ex-7-feedback" class="feedback"></p>
+          <details class="hint"><summary>Pista 1</summary><p>π/n tende a 0.</p></details>
+          <details class="hint"><summary>Pista 2</summary><p>cos(0) = 1.</p></details>
+        </article>
+
+        <article class="exercise">
+          <span class="exercise-number">Exercício 8 · explique</span>
+          <h3>Por que o raio interno nunca supera o externo?</h3>
+          <div class="notebook" style="margin-top:12px">
+            <label for="ex-8-text">Resposta em linguagem comum</label>
+            <textarea id="ex-8-text" data-note="ex8" placeholder="Use a geometria do triângulo, não apenas 'porque a fórmula diz'."></textarea>
+          </div>
+          <details class="hint"><summary>Pista 1</summary><p>No triângulo retângulo, R é a hipotenusa.</p></details>
+          <details class="hint"><summary>Pista 2</summary><p>A hipotenusa é o maior lado.</p></details>
+        </article>
       </div>
 
-      <div class="strip">
-        <svg id="strip-svg" viewBox="0 0 620 200" aria-hidden="true"><g id="strip-drawing"></g></svg>
-      </div>
-
-      <dl class="measurements" aria-label="Resultado da medição com ruído">
-        <div class="measurement"><dt>razão verdadeira</dt><dd id="true-ratio">—</dd></div>
-        <div class="measurement"><dt>razão medida</dt><dd id="measured-ratio">—</dd></div>
-        <div class="measurement"><dt>polígonos compatíveis</dt><dd id="compatible-list">—</dd></div>
-      </dl>
-      <p id="noise-status" class="feedback" aria-live="polite"></p>
-
-      <div class="reveal-row">
-        <button id="reveal-pattern" type="button" class="primary" disabled>Revelar o padrão</button>
-        <span id="pattern-status" class="feedback" aria-live="polite">Aposte e experimente pelo menos duas precisões diferentes.</span>
+      <div class="checkpoint">
+        <h3>Seu placar</h3>
+        <p><strong id="score">0</strong> de 7 respostas objetivas conferidas corretamente. O exercício 8 é deliberadamente aberto.</p>
       </div>
     </section>
 
-    <section id="pattern-card" class="formula-card" hidden aria-labelledby="pattern-title">
-      <p class="box-label">Entenda</p>
-      <h2 id="pattern-title">A precisão compra menos do que parece</h2>
-      <p>Chame de <strong>alcance</strong> o maior número de lados que o instrumento ainda separa do vizinho seguinte. Contado caso a caso:</p>
-      <table class="reach">
-        <thead><tr><th scope="col">erro máximo δ</th><th scope="col">alcance</th></tr></thead>
-        <tbody>
-          <tr><td>±0,050</td><td>n = 4</td></tr>
-          <tr><td>±0,020</td><td>n = 5</td></tr>
-          <tr><td>±0,010</td><td>n = 7</td></tr>
-          <tr><td>±0,005</td><td>n = 9</td></tr>
-          <tr><td>±0,002</td><td>n = 12</td></tr>
-        </tbody>
-      </table>
-      <p>De ±0,010 para ±0,005 o erro caiu pela metade, mas o alcance foi de 7 para 9: <strong>cresceu, e não dobrou</strong>. Para dobrar o alcance de 7 para 14 é preciso encolher o erro cerca de seis vezes, até perto de ±0,0016.</p>
-      <p>O motivo está na régua acima: as marcas <strong>cos(π/n)</strong> se amontoam perto de 1. Cada lado a mais aperta as marcas seguintes, e o aperto acelera. A forma exata desse aperto é um segredo que o Laboratório 04 vai medir.</p>
-      <p><strong>Porta futura:</strong> a razão entre os raios denuncia a forma — mas ainda não dissemos quanto mede o contorno. Essa é a pergunta que abre o <a href="../02-perimetros/index.html">Laboratório 02</a>.</p>
+    <section id="cena-9" class="scene" data-scene="9">
+      <div class="scene-intro">
+        <p class="scene-kicker">Cena 09 · Síntese e saída</p>
+        <h2>O que você deve levar — e o que ainda não foi resolvido</h2>
+        <p>Um laboratório termina quando o leitor consegue reconstruir a ideia, não quando chega ao rodapé.</p>
+      </div>
+
+      <div class="summary-grid">
+        <div><strong>Objeto</strong><p>Polígono regular entre duas circunferências concêntricas: uma pelos vértices, outra tangente aos lados.</p></div>
+        <div><strong>Estrutura escondida</strong><p>O triângulo retângulo O–M–V com hipotenusa R, cateto adjacente r e ângulo π/n.</p></div>
+        <div><strong>Relação</strong><p>r/R = cos(π/n), uma razão de forma invariável por escala.</p></div>
+        <div><strong>Inversão</strong><p>n = π/arccos(r/R), desde que as hipóteses sejam satisfeitas e a medida seja suficientemente precisa.</p></div>
+        <div><strong>Limite</strong><p>Quando n cresce, π/n tende a 0 e r/R tende a 1: os dois círculos se aproximam.</p></div>
+        <div><strong>Fronteira</strong><p>A fórmula identifica a forma, mas não nos disse quanto mede o lado ou o contorno. Essa é a próxima pergunta.</p></div>
+      </div>
+
+      <div class="notebook">
+        <label for="note-final">Caderno · Explique a relação para alguém sem mostrar a fórmula</label>
+        <textarea id="note-final" data-note="final" placeholder="Conte a história geométrica: centro, vértice, tangência, meio do lado, ângulo e razão."></textarea>
+        <div class="saved">Uma explicação clara é o teste mais duro de compreensão.</div>
+      </div>
+
+      <div class="checkpoint">
+        <h3>Conclusão do percurso essencial</h3>
+        <p>Você terminou o núcleo do Laboratório 01. O aprofundamento sobre erro de medição será tratado como oficina opcional separada, para não fingir que “mais conteúdo” e “mais compreensão” são sinônimos.</p>
+      </div>
+
+      <nav class="lab-nav" aria-label="Navegação entre laboratórios">
+        <a href="../../index.html">← Página da temporada</a>
+        <span class="center">Temporada 01 · 1 de 10</span>
+        <a class="right" href="../02-perimetros/index.html">Próximo: perímetros →</a>
+      </nav>
     </section>
-
-    <details>
-      <summary>Oficina — por que o ponto de tangência é o ponto médio?</summary>
-      <p>O raio de uma circunferência é perpendicular à tangente no ponto de contato. No polígono regular, o segmento que sai do centro perpendicularmente a um lado também é eixo de simetria desse lado. Portanto, ele o divide em duas partes iguais.</p>
-      <p>O triângulo O–M–V é retângulo. Assim, também podemos conferir a figura por Pitágoras:</p>
-      <p><strong>R² = r² + (L/2)²</strong></p>
-      <p>Essa identidade será a ponte para o próximo laboratório, no qual o meio-lado vira lado inteiro e depois perímetro.</p>
-      <p><strong>Porta lateral:</strong> os n pontos M estão na figura o tempo todo — e ninguém os ligou. O que aparece quando se liga cada um ao vizinho é o assunto do <a href="../01b-poligono-escondido/index.html">Interlúdio 01·B</a>.</p>
-      <p><strong>Sobre o alcance do instrumento:</strong> a distância entre marcas vizinhas, cos(π/(n+1)) − cos(π/n), encolhe cada vez mais rápido — aproximadamente como o cubo de 1/n quando n cresce. Por isso o alcance cresce apenas como a raiz cúbica da precisão: dividir δ por 8 costuma apenas dobrar o alcance. O verificador do módulo confere por força bruta os alcances citados na tabela.</p>
-    </details>
-
-    <nav class="lab-nav" aria-label="Continuar no MATHeu$">
-      <a href="../../index.html"><small>Índice</small>Todos os laboratórios</a>
-      <a href="../01b-poligono-escondido/index.html"><small>A seguir</small>Interlúdio 01·B — O polígono escondido</a>
-      <a href="../02-perimetros/index.html"><small>Próximo laboratório</small>Lab 02 — Quanto mede o contorno?</a>
-    </nav>
   </main>
 
   <footer>
-    <p>MATHeu$ · Laboratório 01 · HTML autocontido, SVG calculado e funcionamento offline.</p>
+    <p>MATHeu$ · branch <code>chatgpt-laboratorios-profundos</code> · capítulo experimental. A versão publicada na main permanece intocada.</p>
   </footer>
 
   <script>
@@ -618,37 +800,25 @@
       'use strict';
 
       const NS = 'http://www.w3.org/2000/svg';
-      const cx = 310;
-      const cy = 318;
-      const visualR = 238;
-
+      const cx = 330;
+      const cy = 335;
+      const visualR = 245;
       const drawing = document.getElementById('drawing');
       const sides = document.getElementById('sides');
       const sidesOutput = document.getElementById('sides-output');
       const rValue = document.getElementById('r-value');
       const ratioValue = document.getElementById('ratio-value');
-      const angleValue = document.getElementById('angle-value');
-      const reveal = document.getElementById('reveal');
-      const revealStatus = document.getElementById('reveal-status');
-      const formulaCard = document.getElementById('formula-card');
-      const challenge = document.getElementById('challenge');
-      const predictionFeedback = document.getElementById('prediction-feedback');
-      const challengeFeedback = document.getElementById('challenge-feedback');
+      const segmentState = { ov: false, om: false, mv: false, angle: false };
+      const solved = new Set();
 
-      let predicted = false;
-      let manipulated = false;
-      let initialN = Number(sides.value);
+      const fmt = (value, digits = 4) => new Intl.NumberFormat('pt-BR', {
+        minimumFractionDigits: digits,
+        maximumFractionDigits: digits
+      }).format(value);
 
-      function fmt(value, digits = 4) {
-        return new Intl.NumberFormat('pt-BR', {
-          minimumFractionDigits: digits,
-          maximumFractionDigits: digits
-        }).format(value);
-      }
-
-      function el(name, attrs = {}, text = '') {
+      function svgEl(name, attrs = {}, text = '') {
         const node = document.createElementNS(NS, name);
-        for (const [key, value] of Object.entries(attrs)) node.setAttribute(key, value);
+        Object.entries(attrs).forEach(([key, value]) => node.setAttribute(key, value));
         if (text) node.textContent = text;
         return node;
       }
@@ -657,354 +827,232 @@
         return [cx + radius * Math.cos(angle), cy + radius * Math.sin(angle)];
       }
 
-      function pointsForPolygon(n) {
-        const start = -Math.PI / 2 - Math.PI / n;
-        return Array.from({ length: n }, (_, i) => polar(visualR, start + (2 * Math.PI * i) / n));
-      }
-
-      function addLabel(x, y, text, anchor = 'start', className = '') {
-        drawing.appendChild(el('text', {
-          x, y,
-          'text-anchor': anchor,
+      function addLabel(group, x, y, text, anchor = 'start', fill = 'currentColor') {
+        group.appendChild(svgEl('text', {
+          x, y, 'text-anchor': anchor,
           'font-family': 'ui-sans-serif, system-ui, sans-serif',
-          'font-size': '18',
-          'font-weight': '750',
-          fill: 'currentColor',
-          class: className
+          'font-size': '18', 'font-weight': '750', fill
         }, text));
       }
 
-      function updateReadiness() {
-        const ready = predicted && manipulated;
-        reveal.disabled = !ready;
-        revealStatus.textContent = ready
-          ? 'Agora a relação pode aparecer sem cair do céu.'
-          : 'Faça uma previsão e altere o número de lados.';
-      }
-
-      function render() {
+      function renderGeometry() {
         const n = Number(sides.value);
         const theta = Math.PI / n;
         const ratio = Math.cos(theta);
         const innerR = visualR * ratio;
-        const polygon = pointsForPolygon(n);
+        const start = -Math.PI / 2 - theta;
+        const points = Array.from({ length: n }, (_, i) => polar(visualR, start + 2 * Math.PI * i / n));
+        const O = [cx, cy];
         const M = polar(innerR, -Math.PI / 2);
         const V = polar(visualR, -Math.PI / 2 + theta);
-        const O = [cx, cy];
 
-        sidesOutput.value = String(n);
         sidesOutput.textContent = String(n);
         rValue.textContent = fmt(ratio);
         ratioValue.textContent = fmt(ratio);
-        angleValue.textContent = `${fmt(theta * 180 / Math.PI, 2)}°`;
-
         drawing.replaceChildren();
 
-        drawing.appendChild(el('circle', {
-          cx, cy, r: visualR,
-          fill: 'none',
-          stroke: 'var(--circle)',
-          'stroke-width': '3',
-          'stroke-dasharray': '3 8'
+        drawing.appendChild(svgEl('circle', { cx, cy, r: visualR, fill: 'none', stroke: 'var(--circle)', 'stroke-width': '3', 'stroke-dasharray': '3 8' }));
+        drawing.appendChild(svgEl('polygon', {
+          points: points.map(p => p.join(',')).join(' '),
+          fill: 'color-mix(in srgb, var(--accent) 7%, transparent)',
+          stroke: 'var(--accent)', 'stroke-width': '4', 'stroke-linejoin': 'round'
         }));
+        drawing.appendChild(svgEl('circle', { cx, cy, r: innerR, fill: 'none', stroke: 'var(--accent-2)', 'stroke-width': '4', 'stroke-dasharray': '12 8' }));
 
-        drawing.appendChild(el('polygon', {
-          points: polygon.map(point => point.join(',')).join(' '),
-          fill: 'color-mix(in srgb, var(--accent) 8%, transparent)',
-          stroke: 'var(--accent)',
-          'stroke-width': '4',
-          'stroke-linejoin': 'round'
-        }));
+        drawing.appendChild(svgEl('circle', { cx: O[0], cy: O[1], r: 7, fill: 'var(--ink)' }));
+        drawing.appendChild(svgEl('circle', { cx: M[0], cy: M[1], r: 7, fill: 'var(--ink)' }));
+        drawing.appendChild(svgEl('circle', { cx: V[0], cy: V[1], r: 7, fill: 'var(--ink)' }));
+        addLabel(drawing, O[0] + 12, O[1] + 22, 'O');
+        addLabel(drawing, M[0] - 14, M[1] - 10, 'M', 'end');
+        addLabel(drawing, V[0] + 12, V[1] - 8, 'V');
 
-        drawing.appendChild(el('circle', {
-          cx, cy, r: innerR,
-          fill: 'none',
-          stroke: 'var(--accent-2)',
-          'stroke-width': '4',
-          'stroke-dasharray': '12 8'
-        }));
-
-        const trianglePoints = [O, M, V].map(point => point.join(',')).join(' ');
-        drawing.appendChild(el('polygon', {
-          points: trianglePoints,
-          fill: 'color-mix(in srgb, var(--focus) 18%, transparent)',
-          stroke: 'var(--focus)',
-          'stroke-width': '4',
-          'stroke-linejoin': 'round'
-        }));
-
-        drawing.appendChild(el('line', {
-          x1: cx, y1: cy, x2: M[0], y2: M[1],
-          stroke: 'var(--accent-2)', 'stroke-width': '5'
-        }));
-        drawing.appendChild(el('line', {
-          x1: cx, y1: cy, x2: V[0], y2: V[1],
-          stroke: 'var(--circle)', 'stroke-width': '5'
-        }));
-
-        const markerSize = 18;
-        const tangentDir = [-Math.sin(-Math.PI / 2), Math.cos(-Math.PI / 2)];
-        const radialDir = [Math.cos(-Math.PI / 2), Math.sin(-Math.PI / 2)];
-        const p1 = [M[0] + tangentDir[0] * markerSize, M[1] + tangentDir[1] * markerSize];
-        const p2 = [p1[0] - radialDir[0] * markerSize, p1[1] - radialDir[1] * markerSize];
-        const p3 = [M[0] - radialDir[0] * markerSize, M[1] - radialDir[1] * markerSize];
-        drawing.appendChild(el('polyline', {
-          points: [M, p1, p2, p3].map(point => point.join(',')).join(' '),
-          fill: 'none', stroke: 'var(--focus)', 'stroke-width': '3'
-        }));
-
-        for (const [point, label] of [[O, 'O'], [M, 'M'], [V, 'V']]) {
-          drawing.appendChild(el('circle', { cx: point[0], cy: point[1], r: 7, fill: 'var(--ink)' }));
-          addLabel(point[0] + 12, point[1] - 10, label);
+        if (segmentState.ov) {
+          drawing.appendChild(svgEl('line', { x1: O[0], y1: O[1], x2: V[0], y2: V[1], stroke: 'var(--circle)', 'stroke-width': '5' }));
+          addLabel(drawing, (O[0] + V[0]) / 2 + 12, (O[1] + V[1]) / 2, 'R');
+        }
+        if (segmentState.om) {
+          drawing.appendChild(svgEl('line', { x1: O[0], y1: O[1], x2: M[0], y2: M[1], stroke: 'var(--accent-2)', 'stroke-width': '5' }));
+          addLabel(drawing, (O[0] + M[0]) / 2 - 15, (O[1] + M[1]) / 2, 'r', 'end');
+        }
+        if (segmentState.mv) {
+          drawing.appendChild(svgEl('line', { x1: M[0], y1: M[1], x2: V[0], y2: V[1], stroke: 'var(--focus)', 'stroke-width': '5' }));
+          addLabel(drawing, (M[0] + V[0]) / 2 + 10, (M[1] + V[1]) / 2 - 8, 'L/2');
+          const s = 18;
+          const p1 = [M[0] + s, M[1]];
+          const p2 = [M[0] + s, M[1] + s];
+          const p3 = [M[0], M[1] + s];
+          drawing.appendChild(svgEl('polyline', { points: [M,p1,p2,p3].map(p => p.join(',')).join(' '), fill: 'none', stroke: 'var(--focus)', 'stroke-width': '3' }));
+        }
+        if (segmentState.angle) {
+          const arcR = 58;
+          const a1 = polar(arcR, -Math.PI / 2);
+          const a2 = polar(arcR, -Math.PI / 2 + theta);
+          drawing.appendChild(svgEl('path', { d: `M ${a1[0]} ${a1[1]} A ${arcR} ${arcR} 0 0 1 ${a2[0]} ${a2[1]}`, fill: 'none', stroke: 'var(--focus)', 'stroke-width': '4' }));
+          const labelP = polar(88, -Math.PI / 2 + theta / 2);
+          addLabel(drawing, labelP[0], labelP[1], 'π/n', 'middle');
         }
 
-        addLabel((O[0] + M[0]) / 2 - 18, (O[1] + M[1]) / 2, 'r', 'end');
-        addLabel((O[0] + V[0]) / 2 + 14, (O[1] + V[1]) / 2, 'R');
-        addLabel((M[0] + V[0]) / 2 + 10, (M[1] + V[1]) / 2 - 8, 'L/2');
-
-        const arcRadius = 54;
-        const arcStart = polar(arcRadius, -Math.PI / 2);
-        const arcEnd = polar(arcRadius, -Math.PI / 2 + theta);
-        drawing.appendChild(el('path', {
-          d: `M ${arcStart[0]} ${arcStart[1]} A ${arcRadius} ${arcRadius} 0 0 1 ${arcEnd[0]} ${arcEnd[1]}`,
-          fill: 'none', stroke: 'var(--focus)', 'stroke-width': '4'
-        }));
-        const labelAngle = -Math.PI / 2 + theta / 2;
-        const angleLabel = polar(82, labelAngle);
-        addLabel(angleLabel[0], angleLabel[1], 'π/n', 'middle');
-
-        addLabel(cx, 36, `n = ${n}`, 'middle');
-        addLabel(cx, 594, `r/R = ${fmt(ratio)}`, 'middle');
+        addLabel(drawing, cx, 38, `n = ${n}`, 'middle');
+        addLabel(drawing, cx, 630, `r/R = ${fmt(ratio)}`, 'middle');
       }
 
-      document.querySelectorAll('[data-prediction]').forEach(button => {
-        button.addEventListener('click', () => {
-          document.querySelectorAll('[data-prediction]').forEach(item => item.setAttribute('aria-pressed', 'false'));
-          button.setAttribute('aria-pressed', 'true');
-          predicted = true;
-          const correct = button.dataset.prediction === 'increases';
-          predictionFeedback.textContent = correct
-            ? 'Boa aposta. Agora mova o controle e veja se a figura sustenta a ideia.'
-            : 'Aposta registrada. Agora tente fazer a figura confirmar — ou destruir — sua hipótese.';
-          updateReadiness();
-        });
-      });
+      sides.addEventListener('input', renderGeometry);
+      document.querySelectorAll('[data-n]').forEach(button => button.addEventListener('click', () => {
+        sides.value = button.dataset.n;
+        renderGeometry();
+      }));
 
-      sides.addEventListener('input', () => {
-        manipulated = manipulated || Number(sides.value) !== initialN;
-        render();
-        updateReadiness();
-      });
+      document.querySelectorAll('[data-segment]').forEach(button => button.addEventListener('click', () => {
+        const key = button.dataset.segment;
+        segmentState[key] = !segmentState[key];
+        button.setAttribute('aria-pressed', String(segmentState[key]));
+        document.getElementById(`step-${key}`).classList.toggle('complete', segmentState[key]);
+        renderGeometry();
+      }));
 
-      document.querySelectorAll('[data-n]').forEach(button => {
-        button.addEventListener('click', () => {
-          sides.value = button.dataset.n;
-          manipulated = manipulated || Number(sides.value) !== initialN;
-          render();
-          updateReadiness();
-        });
-      });
-
-      reveal.addEventListener('click', () => {
-        formulaCard.hidden = false;
-        challenge.hidden = false;
-        reveal.textContent = 'Relação revelada';
-        reveal.disabled = true;
-        formulaCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      });
-
-      document.querySelectorAll('[data-answer]').forEach(button => {
-        button.addEventListener('click', () => {
-          const answer = Number(button.dataset.answer);
-          const correct = answer === 6;
-          challengeFeedback.textContent = correct
-            ? 'Exato. cos(π/6) = cos(30°) ≈ 0,866. A razão denuncia um hexágono regular. Mas isso supôs uma medida perfeita — continue abaixo.'
-            : 'Ainda não. Compare o valor mostrado no laboratório para n = 4, 6 e 8.';
-          if (correct && noiseCard.hidden) {
-            noiseCard.hidden = false;
-            renderNoise();
-          }
-        });
-      });
-
-      // --- ruído de medição e inferência inversa ---
-
-      const noiseCard = document.getElementById('noise-card');
-      const patternCard = document.getElementById('pattern-card');
-      const noiseN = document.getElementById('noise-n');
-      const noiseNOutput = document.getElementById('noise-n-output');
-      const trueRatioEl = document.getElementById('true-ratio');
-      const measuredRatioEl = document.getElementById('measured-ratio');
-      const compatibleEl = document.getElementById('compatible-list');
-      const noiseStatus = document.getElementById('noise-status');
-      const noiseBetFeedback = document.getElementById('noise-bet-feedback');
-      const revealPattern = document.getElementById('reveal-pattern');
-      const patternStatus = document.getElementById('pattern-status');
-      const stripDrawing = document.getElementById('strip-drawing');
-
-      const STRIP = { left: 30, right: 590, min: 0.45, max: 1, axisY: 120 };
-      const N_MAX = 400;
-
-      let noiseFraction = 0.62;
-      let delta = 0.01;
-      let noiseBet = false;
-      const deltasTried = new Set([delta]);
-
-      function fmtDelta(value) {
-        return new Intl.NumberFormat('pt-BR', {
-          minimumFractionDigits: 3,
-          maximumFractionDigits: 3
-        }).format(value);
-      }
-
-      function stripX(ratio) {
-        return STRIP.left + (ratio - STRIP.min) / (STRIP.max - STRIP.min) * (STRIP.right - STRIP.left);
-      }
-
-      function compatibleRange(measured, tolerance) {
-        let first = 0;
-        let last = 0;
-        for (let n = 3; n <= N_MAX; n += 1) {
-          if (Math.abs(Math.cos(Math.PI / n) - measured) <= tolerance) {
-            if (!first) first = n;
-            last = n;
-          } else if (first) {
-            break;
-          }
-        }
-        return first ? [first, last] : null;
-      }
-
-      function stripLabel(x, y, text, anchor = 'middle') {
-        stripDrawing.appendChild(el('text', {
-          x, y,
-          'text-anchor': anchor,
-          'font-family': 'ui-sans-serif, system-ui, sans-serif',
-          'font-size': '14',
-          'font-weight': '700',
-          fill: 'currentColor'
-        }, text));
-      }
-
-      function renderNoise() {
-        const n = Number(noiseN.value);
-        const trueRatio = Math.cos(Math.PI / n);
-        const measured = trueRatio + noiseFraction * delta;
-        const range = compatibleRange(measured, delta);
-
-        noiseNOutput.value = String(n);
-        noiseNOutput.textContent = String(n);
-        trueRatioEl.textContent = fmt(trueRatio);
-        measuredRatioEl.textContent = `${fmt(measured)} (δ = ±${fmtDelta(delta)})`;
-
-        if (!range) {
-          compatibleEl.textContent = 'nenhum';
-          noiseStatus.textContent = 'A medida caiu fora de todas as marcas: nenhum polígono regular explica esse valor com esse erro.';
-        } else if (range[1] >= N_MAX) {
-          compatibleEl.textContent = `n = ${range[0]} em diante`;
-          noiseStatus.textContent = 'A partir daqui as marcas estão tão coladas que o instrumento não decide mais nada.';
-        } else if (range[0] === range[1]) {
-          compatibleEl.textContent = `apenas n = ${range[0]}`;
-          noiseStatus.textContent = 'Resposta única: com esse erro, a medida ainda denuncia o polígono.';
+      document.querySelectorAll('[data-opening]').forEach(button => button.addEventListener('click', () => {
+        document.querySelectorAll('[data-opening]').forEach(b => b.setAttribute('aria-pressed','false'));
+        button.setAttribute('aria-pressed','true');
+        const f = document.getElementById('opening-feedback');
+        if (button.dataset.opening === 'conditions') {
+          f.textContent = 'Boa formulação: a razão pode determinar n no regime regular e concêntrico. Fora dele, não.';
+          f.className = 'feedback good';
         } else {
-          compatibleEl.textContent = `n = ${range[0]} até ${range[1]}`;
-          noiseStatus.textContent = `${range[1] - range[0] + 1} polígonos diferentes explicam a mesma medida. O instrumento não sabe qual é o verdadeiro.`;
+          f.textContent = 'Hipótese registrada. O ponto decisivo será descobrir quais condições tornam a inferência possível.';
+          f.className = 'feedback';
         }
+      }));
 
-        stripDrawing.replaceChildren();
+      document.querySelectorAll('[data-hyp]').forEach(button => button.addEventListener('click', () => {
+        const f = document.getElementById('hyp-feedback');
+        const ok = button.dataset.hyp === 'ov';
+        f.textContent = ok ? 'Exato. OV está oposto ao ângulo reto e mede R.' : 'Ainda não. Procure o lado oposto ao ângulo de 90°.';
+        f.className = `feedback ${ok ? 'good' : 'bad'}`;
+      }));
 
-        stripDrawing.appendChild(el('line', {
-          x1: STRIP.left, y1: STRIP.axisY, x2: STRIP.right, y2: STRIP.axisY,
-          stroke: 'var(--line)', 'stroke-width': '2'
-        }));
+      document.querySelectorAll('[data-case]').forEach(button => button.addEventListener('click', () => {
+        const ok = button.dataset.case === '3';
+        const f = document.getElementById('case-feedback');
+        f.textContent = ok ? 'Correto. No triângulo equilátero, o apótema é metade do raio circunscrito.' : 'Compare com a primeira linha da tabela: 0,5000 aparece em n = 3.';
+        f.className = `feedback ${ok ? 'good' : 'bad'}`;
+      }));
 
-        const bandLeft = Math.max(STRIP.left - 2, stripX(measured - delta));
-        const bandRight = Math.min(STRIP.right + 2, stripX(measured + delta));
-        if (bandRight > bandLeft) {
-          stripDrawing.appendChild(el('rect', {
-            x: bandLeft, y: 66, width: bandRight - bandLeft, height: 108,
-            fill: 'color-mix(in srgb, var(--focus) 22%, transparent)',
-            stroke: 'var(--focus)', 'stroke-width': '2'
-          }));
-        }
+      document.querySelectorAll('[data-angle-answer]').forEach(button => button.addEventListener('click', () => {
+        const ok = button.dataset.angleAnswer === '30';
+        const f = document.getElementById('angle-feedback');
+        f.textContent = ok ? 'Correto: 60° dividido pelo eixo de simetria produz 30°.' : 'O triângulo fundamental usa metade do ângulo central de 60°.';
+        f.className = `feedback ${ok ? 'good' : 'bad'}`;
+      }));
 
-        for (let k = 3; k <= 60; k += 1) {
-          const x = stripX(Math.cos(Math.PI / k));
-          const isTrue = k === n;
-          const isCompatible = Boolean(range) && k >= range[0] && k <= range[1];
-          stripDrawing.appendChild(el('line', {
-            x1: x, y1: isTrue ? 92 : 102, x2: x, y2: isTrue ? 148 : 138,
-            stroke: isTrue ? 'var(--accent)' : (isCompatible ? 'var(--accent-2)' : 'var(--line)'),
-            'stroke-width': isTrue ? '5' : (isCompatible ? '3' : '2')
-          }));
-        }
+      document.getElementById('check-square').addEventListener('click', () => {
+        const raw = document.getElementById('square-answer').value.replace(',','.');
+        const value = Number(raw);
+        const ok = Number.isFinite(value) && Math.abs(value - Math.SQRT1_2) < 0.002;
+        const f = document.getElementById('square-feedback');
+        f.textContent = ok ? 'Correto. r/R ≈ 0,7071. O raio interno é cerca de 70,7% do externo.' : 'O valor esperado é √2/2 ≈ 0,7071.';
+        f.className = `feedback ${ok ? 'good' : 'bad'}`;
+      });
 
-        const measuredX = Math.min(STRIP.right, Math.max(STRIP.left, stripX(measured)));
-        stripDrawing.appendChild(el('line', {
-          x1: measuredX, y1: 56, x2: measuredX, y2: 184,
-          stroke: 'var(--accent-2)', 'stroke-width': '3', 'stroke-dasharray': '7 5'
-        }));
-        stripLabel(measuredX, 44, 'medida');
-
-        for (const k of [3, 4, 5, 6, 8, 10, 15]) {
-          stripLabel(stripX(Math.cos(Math.PI / k)), k >= 15 ? 196 : 168, String(k));
-        }
-        stripLabel(STRIP.left, 168, '0,5', 'start');
-        stripLabel(STRIP.right, 168, '1', 'end');
+      function renderInverse() {
+        const ratio = Number(document.getElementById('ratio-input').value);
+        const n = Math.PI / Math.acos(ratio);
+        const rounded = Math.round(n);
+        document.getElementById('inverse-ratio').textContent = fmt(ratio);
+        document.getElementById('inverse-n').textContent = fmt(n,3);
+        document.getElementById('inverse-round').textContent = String(rounded);
+        document.getElementById('inverse-distance').textContent = fmt(Math.abs(n-rounded),3);
+        renderInverseChart(ratio, n);
       }
 
-      function updatePatternReadiness() {
-        const ready = noiseBet && deltasTried.size >= 2;
-        revealPattern.disabled = !ready || !patternCard.hidden;
-        if (patternCard.hidden) {
-          patternStatus.textContent = ready
-            ? 'Você já viu o suficiente para conferir a aposta.'
-            : 'Aposte e experimente pelo menos duas precisões diferentes.';
+      function renderInverseChart(selectedRatio, selectedN) {
+        const g = document.getElementById('inverse-drawing');
+        const W = { left: 60, right: 640, top: 25, bottom: 255 };
+        const x = n => W.left + (n - 3) / 37 * (W.right - W.left);
+        const y = r => W.bottom - (r - 0.48) / 0.52 * (W.bottom - W.top);
+        g.replaceChildren();
+        for (const r of [0.5,0.6,0.7,0.8,0.9,1]) {
+          g.appendChild(svgEl('line',{x1:W.left,y1:y(r),x2:W.right,y2:y(r),stroke:'var(--line)','stroke-width':'1'}));
+          addLabel(g,W.left-8,y(r)+4,fmt(r,1),'end','var(--muted)');
         }
+        for (const n of [3,6,12,20,30,40]) addLabel(g,x(n),W.bottom+24,String(n),'middle','var(--muted)');
+        const pts = [];
+        for (let n=3;n<=40;n+=0.2) pts.push([x(n),y(Math.cos(Math.PI/n))]);
+        g.appendChild(svgEl('polyline',{points:pts.map(p=>p.join(',')).join(' '),fill:'none',stroke:'var(--accent)','stroke-width':'4'}));
+        g.appendChild(svgEl('line',{x1:W.left,y1:y(selectedRatio),x2:W.right,y2:y(selectedRatio),stroke:'var(--focus)','stroke-width':'2','stroke-dasharray':'7 6'}));
+        if (selectedN >= 3 && selectedN <= 40) {
+          g.appendChild(svgEl('circle',{cx:x(selectedN),cy:y(selectedRatio),r:'7',fill:'var(--accent-2)'}));
+        }
+        addLabel(g,(W.left+W.right)/2,295,'n — número de lados','middle','var(--muted)');
+        addLabel(g,8,18,'r/R','start','var(--muted)');
       }
 
-      document.querySelectorAll('[data-noise-bet]').forEach(button => {
-        button.addEventListener('click', () => {
-          document.querySelectorAll('[data-noise-bet]').forEach(item => item.setAttribute('aria-pressed', 'false'));
-          button.setAttribute('aria-pressed', 'true');
-          noiseBet = true;
-          noiseBetFeedback.textContent = button.dataset.noiseBet === 'less'
-            ? 'Boa aposta. Agora confira: compare ±0,010 com ±0,005 e conte até onde a régua separa vizinhos.'
-            : 'Aposta registrada. Compare ±0,010 com ±0,005 e conte até onde a régua separa vizinhos.';
-          updatePatternReadiness();
+      document.getElementById('ratio-input').addEventListener('input', renderInverse);
+
+      const attackText = {
+        irregular: ['Não vale','Sem regularidade, um setor não representa o todo e a razão não determina n.'],
+        offcenter: ['Não vale','Sem centro comum, os segmentos usados na derivação não formam o mesmo triângulo.'],
+        notangent: ['Não vale','Sem tangência, r não é apótema e OM pode não ser perpendicular ao lado.'],
+        scale: ['Continua valendo','A escala multiplica r e R pelo mesmo fator, preservando r/R.']
+      };
+      document.querySelectorAll('[data-attack]').forEach(button => button.addEventListener('click', () => {
+        const [title, body] = attackText[button.dataset.attack];
+        const f = document.getElementById(`attack-${button.dataset.attack}`);
+        f.textContent = `${title}. ${body}`;
+        f.className = `feedback ${button.dataset.attack === 'scale' ? 'good' : 'bad'}`;
+      }));
+
+      function markSolved(id, ok, message, fallback) {
+        const f = document.getElementById(`ex-${id}-feedback`);
+        f.textContent = ok ? message : fallback;
+        f.className = `feedback ${ok ? 'good' : 'bad'}`;
+        if (ok) solved.add(String(id));
+        document.getElementById('score').textContent = String(solved.size);
+      }
+
+      document.querySelectorAll('[data-ex]').forEach(button => button.addEventListener('click', () => {
+        const id = button.dataset.ex;
+        const value = button.dataset.value;
+        if (id === '1') markSolved(1, value === 'OM', 'Correto. OM é o apótema.', 'O apótema vai do centro ao lado: OM.');
+        if (id === '4') markSolved(4, value === '6', 'Correto. π/n = 30°, então n = 6.', 'Use que √3/2 = cos 30°.');
+        if (id === '5') markSolved(5, value === 'same', 'Correto. A razão é invariável por escala.', 'Os dois raios recebem o mesmo fator.');
+        if (id === '6') markSolved(6, value === 'inspect', 'Correto. Um n não inteiro é um diagnóstico, não um convite para arredondar cegamente.', 'É preciso investigar medida, regularidade e concentricidade.');
+      }));
+
+      document.querySelector('[data-check="2"]').addEventListener('click', () => {
+        const v = Number(document.getElementById('ex-2-input').value.replace(',','.'));
+        markSolved(2, Math.abs(v-18)<0.05, 'Correto. 360°/10 = 36° e a metade é 18°.', 'O resultado correto é 18°.');
+      });
+      document.querySelector('[data-check="3"]').addEventListener('click', () => {
+        const v = Number(document.getElementById('ex-3-input').value.replace(',','.'));
+        const expected = 10*Math.cos(Math.PI/8);
+        markSolved(3, Math.abs(v-expected)<0.03, `Correto. r ≈ ${fmt(expected,3)} cm.`, `Use 10·cos(22,5°) ≈ ${fmt(expected,3)} cm.`);
+      });
+      document.querySelector('[data-check="7"]').addEventListener('click', () => {
+        const v = Number(document.getElementById('ex-7-input').value.replace(',','.'));
+        markSolved(7, Math.abs(v-1)<0.001, 'Correto. A razão tende a 1.', 'Quando π/n tende a 0, cos(π/n) tende a cos 0 = 1.');
+      });
+
+      document.querySelectorAll('[data-note]').forEach(area => {
+        const key = `matheus-deep-note-${area.dataset.note}`;
+        area.value = localStorage.getItem(key) || '';
+        area.addEventListener('input', () => localStorage.setItem(key, area.value));
+      });
+
+      const seen = new Set();
+      const observer = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            seen.add(entry.target.dataset.scene);
+            const pct = seen.size / 9 * 100;
+            document.getElementById('progress-fill').style.width = `${pct}%`;
+            document.getElementById('progress-label').textContent = `${seen.size} de 9 cenas visitadas`;
+          }
         });
-      });
+      }, { threshold: .28 });
+      document.querySelectorAll('[data-scene]').forEach(scene => observer.observe(scene));
 
-      noiseN.addEventListener('input', renderNoise);
-
-      document.querySelectorAll('[data-delta]').forEach(button => {
-        button.addEventListener('click', () => {
-          document.querySelectorAll('[data-delta]').forEach(item => item.setAttribute('aria-pressed', 'false'));
-          button.setAttribute('aria-pressed', 'true');
-          delta = Number(button.dataset.delta);
-          deltasTried.add(delta);
-          renderNoise();
-          updatePatternReadiness();
-        });
-      });
-
-      document.getElementById('remeasure').addEventListener('click', () => {
-        noiseFraction = Math.random() * 2 - 1;
-        renderNoise();
-      });
-
-      revealPattern.addEventListener('click', () => {
-        patternCard.hidden = false;
-        revealPattern.textContent = 'Padrão revelado';
-        revealPattern.disabled = true;
-        patternStatus.textContent = 'Compare a tabela com o que você observou.';
-        patternCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      });
-
-      render();
-      updateReadiness();
-      renderNoise();
-      updatePatternReadiness();
+      renderGeometry();
+      renderInverse();
     })();
   </script>
 </body>
