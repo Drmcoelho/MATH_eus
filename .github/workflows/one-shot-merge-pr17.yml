@@ -1,0 +1,40 @@
+name: One-shot merge PR 17
+
+on:
+  push:
+    branches:
+      - claude/reforma-lab01-profundidade
+
+permissions:
+  contents: write
+
+jobs:
+  merge-main:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Integrar main preservando a reforma profunda
+        shell: bash
+        run: |
+          git config user.name "MATH_eus maintenance"
+          git config user.email "actions@users.noreply.github.com"
+          git fetch origin main
+          git merge --no-commit --no-ff -X ours origin/main
+
+          FILE="modules/01-duas-circunferencias/index.html"
+          grep -q 'id="restart-lab"' "$FILE"
+          grep -q 'class="lab-meta"' "$FILE"
+          grep -q 'id="exercise-limit"' "$FILE"
+          grep -q 'id="deriv-svg"' "$FILE"
+          grep -q 'class="proof"' "$FILE"
+          test -f docs/REFORMA.md
+
+          node modules/01-duas-circunferencias/check-math.mjs
+
+          rm .github/workflows/one-shot-merge-pr17.yml
+          git add -A
+          git commit -m "integra a reforma profunda do Lab 01 à main atual"
+          git push origin HEAD:claude/reforma-lab01-profundidade
