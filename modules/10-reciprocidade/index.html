@@ -1,0 +1,991 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Laboratório 10 do MATHeu$: a máquina de ida e volta — derivar e integrar são o mesmo caminho em sentidos opostos, e o final da temporada dá nome ao Teorema Fundamental do Cálculo.">
+  <title>Lab 10 — Derivar e integrar são movimentos inversos · MATHeu$</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --bg: #f4f1e8;
+      --ink: #171713;
+      --muted: #666258;
+      --paper: rgba(255, 255, 255, .66);
+      --line: rgba(23, 23, 19, .15);
+      --accent: #246b52;
+      --accent-2: #9b3f31;
+      --circle: #252520;
+      --focus: #d4872d;
+      --shadow: 0 18px 60px rgba(48, 43, 31, .09);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #11130f;
+        --ink: #f0eee7;
+        --muted: #b8b3a8;
+        --paper: rgba(255, 255, 255, .055);
+        --line: rgba(255, 255, 255, .14);
+        --accent: #7bc5a3;
+        --accent-2: #ef9788;
+        --circle: #f0eee7;
+        --focus: #ffc267;
+        --shadow: none;
+      }
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font: 18px/1.55 ui-serif, Georgia, Cambria, "Times New Roman", serif;
+    }
+
+    button, input { font: inherit; }
+
+    a { color: var(--accent); }
+
+    :focus-visible {
+      outline: 3px solid var(--focus);
+      outline-offset: 3px;
+    }
+
+    .skip-link {
+      position: absolute;
+      left: 12px;
+      top: -80px;
+      padding: 10px 14px;
+      background: var(--ink);
+      color: var(--bg);
+      z-index: 20;
+    }
+
+    .skip-link:focus { top: 12px; }
+
+    header, main, footer {
+      width: min(1120px, calc(100% - 32px));
+      margin-inline: auto;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      padding: 22px 0;
+      border-bottom: 1px solid var(--line);
+      font-family: ui-sans-serif, system-ui, sans-serif;
+      font-size: .86rem;
+    }
+
+    header a { text-decoration: none; }
+
+    .brand { font-weight: 800; letter-spacing: -.02em; }
+
+    main { padding: 58px 0 88px; }
+
+    .eyebrow {
+      margin: 0 0 12px;
+      color: var(--accent);
+      font: 800 .76rem/1.2 ui-sans-serif, system-ui, sans-serif;
+      letter-spacing: .15em;
+      text-transform: uppercase;
+    }
+
+    h1, h2, h3 { line-height: 1.08; letter-spacing: -.035em; }
+
+    h1 {
+      max-width: 900px;
+      margin: 0;
+      font-size: clamp(2.9rem, 8vw, 6.6rem);
+    }
+
+    h2 { font-size: clamp(2rem, 5vw, 3.5rem); margin-top: 0; }
+
+    h3 { font-size: 1.35rem; margin: 0 0 8px; }
+
+    .lead {
+      max-width: 780px;
+      margin: 24px 0 0;
+      color: var(--muted);
+      font-size: clamp(1.18rem, 2.8vw, 1.65rem);
+    }
+
+    .question-card, .lab-card, .formula-card, .challenge-card, details.oficina {
+      margin-top: 38px;
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      background: var(--paper);
+      box-shadow: var(--shadow);
+    }
+
+    .question-card, .formula-card, .challenge-card, details.oficina { padding: clamp(22px, 4vw, 38px); }
+
+    .question-card strong, .box-label {
+      display: block;
+      color: var(--accent);
+      font: 800 .76rem/1.2 ui-sans-serif, system-ui, sans-serif;
+      letter-spacing: .13em;
+      text-transform: uppercase;
+    }
+
+    .box-label.warn { color: var(--accent-2); }
+
+    .question-card p {
+      max-width: 850px;
+      margin: 12px 0 22px;
+      font-size: clamp(1.45rem, 4vw, 2.45rem);
+      line-height: 1.18;
+    }
+
+    .answer-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    button {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 12px 16px;
+      background: transparent;
+      color: var(--ink);
+      cursor: pointer;
+    }
+
+    button:hover { border-color: var(--accent); }
+
+    button[aria-pressed="true"], .primary {
+      border-color: var(--accent);
+      background: var(--accent);
+      color: var(--bg);
+    }
+
+    button:disabled { opacity: .45; cursor: not-allowed; }
+
+    .feedback {
+      min-height: 1.6em;
+      margin: 16px 0 0;
+      color: var(--muted);
+      font-family: ui-sans-serif, system-ui, sans-serif;
+    }
+
+    .lab-card { overflow: hidden; }
+
+    .lab-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.35fr) minmax(280px, .65fr);
+    }
+
+    .chart-panel { padding: clamp(18px, 3vw, 30px); }
+
+    @media (min-width: 821px) {
+      .chart-panel {
+        position: sticky;
+        top: 12px;
+        align-self: start;
+      }
+    }
+
+    .chart-panel svg { width: 100%; height: auto; display: block; }
+
+    .control-panel {
+      padding: clamp(22px, 4vw, 34px);
+      border-left: 1px solid var(--line);
+    }
+
+    .control-panel h2 { font-size: 1.9rem; }
+
+    .control-label {
+      display: block;
+      margin-top: 26px;
+      margin-bottom: 8px;
+      font: 700 .86rem/1.3 ui-sans-serif, system-ui, sans-serif;
+    }
+
+    .quick-values {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .quick-values button { padding: 8px 12px; font-size: .88rem; }
+
+    .measurements {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin: 26px 0;
+    }
+
+    .measurement {
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+    }
+
+    .measurement dt {
+      color: var(--muted);
+      font: 700 .73rem/1.2 ui-sans-serif, system-ui, sans-serif;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+    }
+
+    .measurement dd { margin: 5px 0 0; font-size: 1.32rem; font-variant-numeric: tabular-nums; }
+
+    .measurement.inside dd { color: var(--accent); }
+
+    .measurement.outside dd { color: var(--accent-2); }
+
+    .hint {
+      padding: 16px;
+      border-left: 4px solid var(--accent);
+      background: color-mix(in srgb, var(--accent) 9%, transparent);
+      color: var(--muted);
+    }
+
+    .hint.secret { margin-top: 24px; }
+
+    .reveal-row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-top: 22px; }
+
+    .formula-card[hidden], .challenge-card[hidden] { display: none; }
+
+    .formula {
+      margin: 22px 0;
+      padding: 22px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      text-align: center;
+      font-size: clamp(1.35rem, 4vw, 2.3rem);
+      font-variant-numeric: lining-nums;
+      overflow-x: auto;
+    }
+
+    .formula sub, .formula sup { font-size: .55em; }
+
+    .dictionary {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .dictionary div { padding: 14px; border-top: 1px solid var(--line); }
+
+    .exercise { margin-top: 30px; padding-top: 26px; border-top: 1px solid var(--line); }
+
+    .exercise:first-of-type { margin-top: 8px; padding-top: 0; border-top: 0; }
+
+    .challenge-options { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+
+    details.solution {
+      margin-top: 16px;
+      padding: 16px 18px;
+      border: 1px dashed var(--line);
+      border-radius: 14px;
+    }
+
+    details.solution summary {
+      cursor: pointer;
+      font: 700 .9rem/1.3 ui-sans-serif, system-ui, sans-serif;
+      color: var(--accent);
+    }
+
+    details.solution dl { margin: 14px 0 0; }
+
+    details.solution dt {
+      font: 800 .72rem/1.2 ui-sans-serif, system-ui, sans-serif;
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      color: var(--accent);
+      margin-top: 12px;
+    }
+
+    details.solution dd { margin: 4px 0 0; color: var(--muted); }
+
+    details.oficina summary {
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 1.25rem;
+    }
+
+    details.oficina p, details.oficina li { color: var(--muted); }
+
+    footer { padding: 28px 0 56px; border-top: 1px solid var(--line); color: var(--muted); }
+
+    @media (max-width: 820px) {
+      .answer-grid, .dictionary { grid-template-columns: 1fr; }
+      .lab-grid { grid-template-columns: 1fr; }
+      .control-panel { border-left: 0; border-top: 1px solid var(--line); }
+    }
+
+    @media (max-width: 480px) {
+      header { align-items: flex-start; flex-direction: column; }
+      main { padding-top: 38px; }
+      .measurements { grid-template-columns: 1fr; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      * { transition: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#conteudo">Pular para o laboratório</a>
+  <header>
+    <a class="brand" href="../../index.html">MATHeu$</a>
+    <span>Temporada 01 · Laboratório 10</span>
+  </header>
+
+  <main id="conteudo">
+    <p class="eyebrow">Derivar e integrar são movimentos inversos</p>
+    <h1>Derive, depois acumule. Você volta ao ponto de partida?</h1>
+    <p class="lead">A temporada deixou dois gestos prontos: fatiar e somar (<a href="../08-integral/index.html">Lab 08</a>) e medir o crescimento por coroas finas (<a href="../09-derivada/index.html">Lab 09</a>). Este laboratório final liga um no outro, numa máquina de ida e volta — e descobre que os dois gestos são o mesmo caminho, percorrido em sentidos opostos.</p>
+
+    <section class="question-card" aria-labelledby="aposta-titulo">
+      <strong id="aposta-titulo">Pare e aposte</strong>
+      <p>Se você acumular — somar em fatias finas — o contorno 2πr, de r = 0 até r = R, o resultado é…</p>
+      <div class="answer-grid" role="group" aria-label="Escolha sua previsão">
+        <button type="button" data-prediction="contorno" aria-pressed="false">o contorno maior, 2πR</button>
+        <button type="button" data-prediction="area" aria-pressed="false">a área πR²</button>
+        <button type="button" data-prediction="nada" aria-pressed="false">figura nenhuma — contorno não se soma</button>
+      </div>
+      <p id="prediction-feedback" class="feedback" aria-live="polite">Escolha antes de ligar a máquina.</p>
+    </section>
+
+    <section class="lab-card" aria-labelledby="lab-title">
+      <div class="lab-grid">
+        <div class="chart-panel">
+          <svg id="chart" viewBox="0 0 640 640" role="img" aria-labelledby="svg-title svg-desc">
+            <title id="svg-title">Dois gráficos empilhados: em cima, a curva das taxas; embaixo, a função original e a reconstrução acumulada</title>
+            <desc id="svg-desc">O gráfico de cima mostra a taxa nomeada como linha cheia e as taxas medidas por cascas finas como pontos. O de baixo mostra a função original como linha cheia e a reconstrução por soma de retângulos como pontos, que se aproximam da linha conforme os cortes dobram.</desc>
+            <g id="chart-drawing"></g>
+          </svg>
+        </div>
+
+        <div class="control-panel">
+          <p class="box-label">Brinque</p>
+          <h2 id="lab-title">A máquina de ida e volta</h2>
+          <p>Escolha um par da própria temporada. O raio vai de 0 até <strong>R = 2</strong>.</p>
+
+          <span class="control-label" id="pair-label">O par</span>
+          <div class="quick-values" role="group" aria-labelledby="pair-label">
+            <button type="button" data-pair="circulo" aria-pressed="true">círculo · A(r) = πr²</button>
+            <button type="button" data-pair="esfera" aria-pressed="false">esfera · V(r) = 4πr³⁄3</button>
+            <button type="button" data-pair="cone" aria-pressed="false">cone (h = r) · V(r) = πr³⁄3</button>
+          </div>
+
+          <span class="control-label" id="machine-label">A máquina</span>
+          <div class="quick-values" role="group" aria-labelledby="machine-label">
+            <button id="ida" type="button" aria-pressed="false">1 · Ida — derivar</button>
+            <button id="volta" type="button" aria-pressed="false" disabled>2 · Volta — integrar</button>
+          </div>
+
+          <div class="reveal-row">
+            <button id="double" type="button">Dobrar os cortes</button>
+            <button id="resetcuts" type="button">Voltar a 8 cortes</button>
+          </div>
+          <p id="machine-status" class="feedback" aria-live="polite">8 cortes · aperte Ida para medir as taxas por cascas finas.</p>
+
+          <dl class="measurements" aria-label="Medidas da máquina">
+            <div class="measurement"><dt>cortes</dt><dd id="val-cuts">8</dd></div>
+            <div class="measurement"><dt id="real-label">valor verdadeiro em R = 2</dt><dd id="val-real">12,5664</dd></div>
+            <div class="measurement outside"><dt>erro máximo da ida (taxas)</dt><dd id="val-errida">—</dd></div>
+            <div class="measurement inside"><dt>reconstrução em R = 2</dt><dd id="val-rec">—</dd></div>
+            <div class="measurement outside"><dt>erro máximo da volta</dt><dd id="val-err">—</dd></div>
+            <div class="measurement"><dt>cortes × erro da volta</dt><dd id="val-nerr">—</dd></div>
+          </dl>
+
+          <p class="hint"><strong>Olhe de novo:</strong> com a Volta ligada, dobre os cortes e vigie duas casas: o erro cai para a metade a cada dobra, e <em>cortes × erro</em> quase não se move. O erro da reconstrução tem forma (<a href="../04-erro/index.html">Lab 04</a>) — e forma é promessa: qualquer tolerância pode ser vencida (<a href="../05-limite/index.html">Lab 05</a>).</p>
+
+          <div class="reveal-row">
+            <button id="reveal" type="button" class="primary" disabled>Dar nome à reciprocidade</button>
+            <span id="reveal-status" class="feedback" aria-live="polite">Aposte, rode a ida e a volta e dobre os cortes ao menos duas vezes.</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="challenge-card" aria-labelledby="fertile-title">
+      <p class="box-label warn">Erro fértil</p>
+      <h2 id="fertile-title">"Se se cancelam, são só notações inversas"</h2>
+      <p>Um raciocínio tentador: <em>"integrar e derivar se cancelam sempre, então tanto faz a ordem — são a mesma informação escrita ao contrário."</em> Quase. E o quase é instrutivo.</p>
+      <details class="solution">
+        <summary>Onde o raciocínio quebra</summary>
+        <dl>
+          <dt>O ponto cego</dt>
+          <dd>A ordem importa. <strong>Acumular e depois derivar</strong> devolve exatamente a taxa que estava sendo somada — sem perda. Mas <strong>derivar e depois acumular</strong> devolve F(R) − F(0): o valor inicial se perde na ida, porque a taxa não enxerga onde a função começou.</dd>
+          <dt>Exemplo concreto</dt>
+          <dd>G(r) = πr² + 5 tem a mesma taxa 2πr da área comum: as coroas são idênticas. Acumular 2πr de 0 até 2 dá πR² ≈ 12,57 — e não 17,57. Os 5 iniciais desapareceram. Os dois sentidos só coincidem para funções que partem de zero, como área e volume.</dd>
+          <dt>Verificação</dt>
+          <dd>O exercício C, mais abaixo, transforma esse quase em regra — e o verificador do módulo confere o caso deslocado numericamente.</dd>
+        </dl>
+      </details>
+    </section>
+
+    <section id="formula-card" class="formula-card" hidden aria-labelledby="formula-title">
+      <p class="box-label">Entenda</p>
+      <h2 id="formula-title">Isso tem nome: Teorema Fundamental do Cálculo</h2>
+      <p>Você acabou de ver a reciprocidade nos números: as duas curvas se sobrepondo e o erro caindo a cada dobra. Só agora ela merece o nome. A leitura verbal completa, antes de qualquer símbolo: <strong>acumular a taxa devolve a função; medir a taxa da acumulação devolve o que estava sendo somado.</strong></p>
+
+      <p><strong>Primeira direção</strong> — lê-se: "somar a taxa f em fatias finas, de zero até R, dá a variação de F entre zero e R".</p>
+      <div class="formula" aria-label="a integral de zero a R de f de r, d r, é igual a F de R menos F de zero">
+        ∫<sub>0</sub><sup>R</sup> f(r) dr &nbsp;=&nbsp; F(R) − F(0)
+      </div>
+
+      <p><strong>Segunda direção</strong> — lê-se: "a taxa com que a acumulação cresce, quando R avança, é exatamente o f que está sendo somado".</p>
+      <div class="formula" aria-label="a derivada em relação a R da integral de zero a R de f de r, d r, é igual a f de R">
+        d⁄dR&thinsp;( ∫<sub>0</sub><sup>R</sup> f(r) dr ) &nbsp;=&nbsp; f(R)
+      </div>
+
+      <div class="dictionary" aria-label="Dicionário das fórmulas">
+        <div><strong>∫₀ᴿ … dr</strong><br>a soma de fatias finas de 0 até R — a máquina de acumular do Lab 08</div>
+        <div><strong>f(r)</strong><br>a taxa local — a coroa, a casca, a contribuição marginal do Lab 09</div>
+        <div><strong>F(R) − F(0)</strong><br>a variação total da função entre o começo e o fim</div>
+      </div>
+
+      <p><strong>Exemplo pequeno:</strong> círculo com R = 1: acumular 2πr de 0 a 1 dá π ≈ 3,14 — a área do círculo unitário. E derivar πr² em r = 1 dá 2π ≈ 6,28 — o contorno. Ida e volta fecham.</p>
+      <p><strong>Unidade:</strong> acumular sobe uma dimensão — comprimento (2πr) vira área, área (4πr²) vira volume. Derivar desce a mesma escada. É o parentesco superfície ↔ volume que o giro do <a href="../07-revolucao/index.html">Lab 07</a> criou: a esfera cresce vestindo cascas, e cada casca é a sua superfície.</p>
+      <p><strong>Domínio de validade:</strong> taxas contínuas no intervalo. E a honestidade da casa: a máquina mostra a reciprocidade <em>numericamente</em>, para três pares e cortes finitos; a igualdade exata é do <a href="../05-limite/index.html">limite (Lab 05)</a> — o erro tem forma e vence toda tolerância, mas gráfico não é demonstração.</p>
+      <p><strong>Origem curta:</strong> os retângulos do <a href="../08-integral/index.html">Lab 08</a> mais as coroas do <a href="../09-derivada/index.html">Lab 09</a>, colados pela observação de que a coroa <em>é</em> o retângulo seguinte. As contas do erro estão na Oficina.</p>
+    </section>
+
+    <section id="exercises" class="challenge-card" hidden aria-labelledby="exercises-title">
+      <p class="box-label">Agora use a reciprocidade</p>
+      <h2 id="exercises-title">Três exercícios, três direções</h2>
+
+      <div class="exercise" id="exA">
+        <h3>A — Ida e volta na esfera</h3>
+        <p>Acumule a superfície 4πr² em fatias finas, de r = 0 até R = 2. O resultado se aproxima de…</p>
+        <div class="challenge-options" role="group" aria-label="Escolha o valor da acumulação">
+          <button type="button" data-ex="A" data-option="33.51">≈ 33,51</button>
+          <button type="button" data-ex="A" data-option="50.27">≈ 50,27</button>
+          <button type="button" data-ex="A" data-option="100.53">≈ 100,53</button>
+        </div>
+        <div class="reveal-row">
+          <button type="button" class="hint-button" data-hints="A">Pedir uma pista</button>
+          <span id="feedback-A" class="feedback" aria-live="polite"></span>
+        </div>
+        <details class="solution">
+          <summary>Solução comentada (gabarito)</summary>
+          <dl>
+            <dt>Primeiro passo</dt>
+            <dd>Ligue a máquina no par esfera e aperte Volta: ela soma cascas de espessura Δr e superfície 4πr², de dentro para fora, até R = 2.</dd>
+            <dt>Intuição útil</dt>
+            <dd>Acumular a superfície preenche a bola como uma cebola montada ao contrário: cada casca é uma demão fina, e as de dentro quase não pesam.</dd>
+            <dt>Armadilha provável</dt>
+            <dd>50,27 é 4π·2² — a taxa no final da viagem, uma casca só, não a soma de todas. E 100,53 é um retângulo grosso único (taxa final × 2), como se todas as cascas tivessem o tamanho da última.</dd>
+            <dt>Verificação</dt>
+            <dd>Acumular a taxa devolve a função: V(2) = 4π·2³⁄3 = 32π⁄3 ≈ 33,51. Na máquina, com 1024 cortes, a reconstrução chega a ≈ 33,46 — a menos de 0,05 do alvo, caindo pela metade a cada dobra.</dd>
+            <dt>Onde reaparece</dt>
+            <dd>Em toda grandeza cuja taxa você conhece: somar velocidade em fatias de tempo devolve distância — o hodômetro da colheita final.</dd>
+          </dl>
+        </details>
+      </div>
+
+      <div class="exercise" id="exB" hidden>
+        <h3>B — A máquina ao contrário</h3>
+        <p>A acumulação de uma taxa desconhecida deu <em>exatamente</em> t³, para todo t. Qual era a taxa?</p>
+        <div class="challenge-options" role="group" aria-label="Escolha a taxa">
+          <button type="button" data-ex="B" data-option="3t2">3t²</button>
+          <button type="button" data-ex="B" data-option="t3">a própria t³</button>
+          <button type="button" data-ex="B" data-option="t4">t⁴⁄4</button>
+        </div>
+        <div class="reveal-row">
+          <button type="button" class="hint-button" data-hints="B">Pedir uma pista</button>
+          <span id="feedback-B" class="feedback" aria-live="polite"></span>
+        </div>
+        <details class="solution">
+          <summary>Solução comentada (gabarito)</summary>
+          <dl>
+            <dt>Primeiro passo</dt>
+            <dd>Reconheça a direção: você conhece a acumulação e quer o integrando. A segunda direção do teorema responde: derive a acumulação.</dd>
+            <dt>Intuição útil</dt>
+            <dd>A taxa é quanto o acumulado cresce por unidade de t: entre t e t + Δt, t³ cresce (t+Δt)³ − t³ ≈ 3t²·Δt. Dividindo pela espessura, sobra 3t².</dd>
+            <dt>Armadilha provável</dt>
+            <dd>Responder t³ é confundir o acumulado com o que está sendo somado; t⁴⁄4 é acumular de novo — andar mais um passo na mesma direção em vez de voltar.</dd>
+            <dt>Verificação</dt>
+            <dd>Em t = 2: (2,001³ − 2³) ÷ 0,001 = 12,006… ≈ 3·2² = 12. O verificador do módulo confere em vários pontos, com o erro caindo junto com Δt.</dd>
+            <dt>Onde reaparece</dt>
+            <dd>Sempre que só o acumulado é observável: do hodômetro se extrai o velocímetro; da curva de volume infundido, a vazão.</dd>
+          </dl>
+        </details>
+      </div>
+
+      <div class="exercise" id="exC" hidden>
+        <h3>C — Quebre a regra</h3>
+        <p>"Acumular a taxa devolve a função" — <em>sempre</em>?</p>
+        <div class="challenge-options" role="group" aria-label="Escolha a condição">
+          <button type="button" data-ex="C" data-option="sempre">sim, sempre</button>
+          <button type="button" data-ex="C" data-option="zero">só se a função parte de zero</button>
+          <button type="button" data-ex="C" data-option="geo">só para os pares desta temporada</button>
+        </div>
+        <div class="reveal-row">
+          <button type="button" class="hint-button" data-hints="C">Pedir uma pista</button>
+          <span id="feedback-C" class="feedback" aria-live="polite"></span>
+        </div>
+        <details class="solution">
+          <summary>Solução comentada (gabarito)</summary>
+          <dl>
+            <dt>Primeiro passo</dt>
+            <dd>Procure o contraexemplo mais barato: some 5 à área. G(r) = πr² + 5 sobe em paralelo com A(r) = πr² — as coroas, e portanto a taxa 2πr, são idênticas.</dd>
+            <dt>Intuição útil</dt>
+            <dd>A taxa não enxerga o ponto de partida: ela só mede diferenças. Duas funções deslocadas uma da outra são indistinguíveis para a ida.</dd>
+            <dt>Armadilha provável</dt>
+            <dd>Achar que a máquina errou. Ela não erra: acumular 2πr de 0 a 2 dá ≈ 12,57 = G(2) − G(0) = 17,57 − 5. O teorema devolve a <em>variação</em> F(R) − F(0), sempre.</dd>
+            <dt>Verificação</dt>
+            <dd>Área e volume partem de zero — A(0) = 0, V(0) = 0 — e por isso, na temporada inteira, variação e valor coincidiram. Para função com valor inicial não nulo, é preciso somar o "+ valor inicial" à mão.</dd>
+            <dt>Onde reaparece</dt>
+            <dd>É a constante de integração "+ C" do cálculo, e a condição inicial de todo problema de física: a taxa dita o filme, o valor inicial dita a primeira cena.</dd>
+          </dl>
+        </details>
+      </div>
+    </section>
+
+    <section id="insights" class="formula-card" hidden aria-labelledby="insights-title">
+      <p class="box-label">Colheita final da temporada</p>
+      <h2 id="insights-title">O cerco fecha</h2>
+
+      <p>A temporada começou com um polígono preso entre duas circunferências — e termina aqui, com o cerco fechado por dentro: a <strong>forma</strong> virou <strong>medida</strong> (Labs 01–03); a medida deixou um resto, e o <strong>erro</strong> ganhou forma própria (04); a forma do erro virou <strong>garantia</strong>, e a garantia virou <strong>limite</strong> (05); o plano subiu e girou, criando <strong>espaço</strong> (<a href="../06-prisma/index.html">06</a> e <a href="../07-revolucao/index.html">07</a>); fatiar e somar virou <strong>acumulação</strong> (08); crescer virou <strong>variação</strong> (09) — e hoje os dois últimos gestos se revelaram um só caminho, percorrido em sentidos opostos: a <strong>reciprocidade</strong>. Tudo o que o cerco ensinou cabe numa frase de ida e volta: <em>acumular a taxa devolve a função; medir a taxa da acumulação devolve o que estava sendo somado.</em></p>
+
+      <p class="hint"><strong>Curiosidade — dois caminhos, uma briga:</strong> Newton e Leibniz chegaram à reciprocidade por caminhos independentes — um pensando em movimento e fluxos, o outro em diferenças e somas infinitesimais — e brigaram a vida inteira pela prioridade. A temporada refez um terceiro caminho, mais antigo que os dois: o geométrico, que vem dos cercos de Arquimedes e desemboca no mesmo teorema.</p>
+
+      <p class="hint"><strong>Aplicação real — o painel do carro:</strong> o velocímetro mede a taxa; o hodômetro acumula o que o velocímetro mede. Um é a derivada do outro; o outro é a integral do um — a mesma reciprocidade, sem um círculo à vista. E a pegadinha do exercício C mora ali: o hodômetro parcial da viagem parte de zero e mede a variação; a quilometragem total do carro precisa do valor inicial.</p>
+
+      <p class="hint secret"><strong>Segredo de mestre:</strong> o par que abriu a temporada já era o teorema disfarçado. O contorno 2πr do <a href="../02-perimetros/index.html">Lab 02</a> e a área πr² do <a href="../03-areas/index.html">Lab 03</a> formam exatamente um par taxa ↔ função: a temporada inteira foi uma demonstração visual do Teorema Fundamental do Cálculo, começada oito laboratórios antes de ele ter nome.</p>
+
+      <p><strong>Porta futura:</strong> a Temporada 01 termina aqui — não há Laboratório 11 neste cerco. As próximas temporadas trocam de pergunta-mãe: <em>Números que constroem formas</em> (ternas pitagóricas e a família dos ímpares), <em>Números que não terminam</em> (expansões, ciclos de restos e música), <em>Rotação, complexos e ondas</em> (fase, seno, Fourier visual) e <em>Variação, risco e decisão</em>. Enquanto elas não abrem, o cerco completo está na <a href="../../index.html">página inicial</a>.</p>
+    </section>
+
+    <details class="oficina">
+      <summary>Oficina — o enunciado inteiro, a forma do erro e a constante que se perde</summary>
+      <p><strong>O enunciado, nas duas direções.</strong> Seja f uma taxa contínua em [0, R] e F uma função com F′ = f. Primeira direção: ∫₀ᴿ f(r) dr = F(R) − F(0) — lê-se "somar f em fatias finas de zero até R dá a variação de F". Segunda direção: definindo a acumulação G(R) = ∫₀ᴿ f(r) dr, vale G′(R) = f(R) — lê-se "a taxa com que a acumulação cresce é o próprio integrando". Na máquina, a segunda direção aparece exata por construção: a diferença entre duas somas parciais vizinhas, dividida pela espessura, é literalmente o f do retângulo.</p>
+      <p><strong>Por que a reconstrução erra ≈ C⁄n.</strong> Cada retângulo apoiado no ponto esquerdo deixa de fora um quase-triângulo de base Δr e altura f′·Δr — área ≈ f′·Δr²⁄2. São n retângulos, e Δr = R⁄n, então o erro total é ≈ [f(R) − f(0)]·R⁄(2n): uma constante dividida por n. É o que a casa <em>cortes × erro</em> mostra estabilizando — a mesma assinatura experimental do Lab 04, agora de primeira ordem.</p>
+      <p><strong>O ponto médio melhora para ≈ C⁄n².</strong> Apoiar o retângulo na altura do meio da fatia compensa o excesso de um lado com a falta do outro; o que sobra é só a curvatura de f, e o erro cai para ≈ R³·f″⁄(24n²) — n²·erro estabiliza. Caso extremo bonito: no círculo a taxa 2πr é uma reta (f″ = 0), e o ponto médio acerta em cheio, com erro da ordem do arredondamento da máquina. O verificador confere as duas ordens.</p>
+      <p><strong>A constante de integração.</strong> Toda a família F(r) + C tem a mesma taxa; a acumulação, que parte de zero por construção, devolve a variação F(R) − F(0) e não sabe escolher o C. Para área e volume, F(0) = 0 e a distinção some — foi por isso que a temporada inteira pôde ignorá-la até o exercício C.</p>
+      <p><strong>Honestidade final.</strong> Esta página mostrou evidência numérica: três pares, cortes finitos, erro caindo com forma conhecida. Evidência numérica + a garantia do limite (Lab 05) é o que autoriza chamar a reciprocidade de <em>teorema</em> — e a prova completa, para toda taxa contínua, usa exatamente as peças já construídas (soma cercada por baixo e por cima, tolerância vencida para todo n grande). Ela fica para quando for necessária; nada nesta página depende de segredo não contado.</p>
+    </details>
+  </main>
+
+  <footer>
+    <p>MATHeu$ · Laboratório 10 · Final da Temporada 01 · HTML autocontido, SVG calculado e funcionamento offline.</p>
+  </footer>
+
+  <script>
+    (() => {
+      'use strict';
+
+      const NS = 'http://www.w3.org/2000/svg';
+      const R = 2;
+      const N_MIN = 8;
+      const N_MAX = 1024;
+
+      const PAIRS = {
+        circulo: {
+          fnLabel: 'FUNÇÃO — a área A(r) = πr²',
+          rateLabel: 'TAXA — o contorno 2πr',
+          realLabel: 'área verdadeira em R = 2',
+          F: r => Math.PI * r * r,
+          f: r => 2 * Math.PI * r
+        },
+        esfera: {
+          fnLabel: 'FUNÇÃO — o volume V(r) = 4πr³⁄3',
+          rateLabel: 'TAXA — a superfície 4πr²',
+          realLabel: 'volume verdadeiro em R = 2',
+          F: r => 4 * Math.PI * r * r * r / 3,
+          f: r => 4 * Math.PI * r * r
+        },
+        cone: {
+          fnLabel: 'FUNÇÃO — o volume V(r) = πr³⁄3',
+          rateLabel: 'TAXA — o disco da base πr²',
+          realLabel: 'volume verdadeiro em R = 2',
+          F: r => Math.PI * r * r * r / 3,
+          f: r => Math.PI * r * r
+        }
+      };
+
+      const chartDrawing = document.getElementById('chart-drawing');
+      const machineStatus = document.getElementById('machine-status');
+      const idaButton = document.getElementById('ida');
+      const voltaButton = document.getElementById('volta');
+      const doubleButton = document.getElementById('double');
+      const resetButton = document.getElementById('resetcuts');
+      const valCuts = document.getElementById('val-cuts');
+      const valReal = document.getElementById('val-real');
+      const valRec = document.getElementById('val-rec');
+      const valErr = document.getElementById('val-err');
+      const valNerr = document.getElementById('val-nerr');
+      const valErrIda = document.getElementById('val-errida');
+      const realLabel = document.getElementById('real-label');
+      const reveal = document.getElementById('reveal');
+      const revealStatus = document.getElementById('reveal-status');
+      const formulaCard = document.getElementById('formula-card');
+      const exercises = document.getElementById('exercises');
+      const predictionFeedback = document.getElementById('prediction-feedback');
+
+      let pairKey = 'circulo';
+      let n = N_MIN;
+      let idaDone = false;
+      let voltaDone = false;
+      let doublings = 0;
+      let predicted = false;
+
+      function fmt(value, digits = 4) {
+        return new Intl.NumberFormat('pt-BR', {
+          minimumFractionDigits: digits,
+          maximumFractionDigits: digits
+        }).format(value);
+      }
+
+      function el(name, attrs = {}, text = '') {
+        const node = document.createElementNS(NS, name);
+        for (const [key, value] of Object.entries(attrs)) node.setAttribute(key, value);
+        if (text) node.textContent = text;
+        return node;
+      }
+
+      // a ida: mede a taxa de cada casca fina, como no Lab 09
+      function measureRates(pair, cuts) {
+        const dr = R / cuts;
+        const points = [];
+        let maxError = 0;
+        for (let i = 0; i < cuts; i += 1) {
+          const r = i * dr;
+          const measured = (pair.F(r + dr) - pair.F(r)) / dr;
+          points.push([r, measured]);
+          maxError = Math.max(maxError, Math.abs(measured - pair.f(r)));
+        }
+        return { points, maxError };
+      }
+
+      // a volta: acumula a curva das taxas por retângulos finos, como no Lab 08
+      function accumulateRate(pair, cuts) {
+        const dr = R / cuts;
+        const points = [[0, 0]];
+        let acc = 0;
+        let maxError = 0;
+        for (let i = 0; i < cuts; i += 1) {
+          acc += pair.f(i * dr) * dr;
+          const r = (i + 1) * dr;
+          points.push([r, acc]);
+          maxError = Math.max(maxError, Math.abs(acc - pair.F(r)));
+        }
+        return { points, maxError, final: acc };
+      }
+
+      // dois quadros empilhados, cada um com uma escala só
+      const PLOT_T = { left: 64, right: 612, top: 42, bottom: 266 };
+      const PLOT_B = { left: 64, right: 612, top: 372, bottom: 596 };
+
+      function xPos(plot, r) {
+        return plot.left + (r / R) * (plot.right - plot.left);
+      }
+
+      function yPos(plot, value, maxValue) {
+        const scale = maxValue * 1.05;
+        return plot.bottom - (value / scale) * (plot.bottom - plot.top);
+      }
+
+      function chartLabel(x, y, text, anchor = 'middle', weight = '600') {
+        chartDrawing.appendChild(el('text', {
+          x, y,
+          'text-anchor': anchor,
+          'font-family': 'ui-sans-serif, system-ui, sans-serif',
+          'font-size': '13',
+          'font-weight': weight,
+          fill: 'var(--muted)'
+        }, text));
+      }
+
+      function drawGrid(plot, maxValue) {
+        for (let k = 0; k <= 4; k += 1) {
+          const value = (maxValue * k) / 4;
+          const gy = yPos(plot, value, maxValue);
+          chartDrawing.appendChild(el('line', {
+            x1: plot.left, y1: gy, x2: plot.right, y2: gy,
+            stroke: 'var(--line)', 'stroke-width': k === 0 ? '1.4' : '.7'
+          }));
+          if (k % 2 === 0) chartLabel(plot.left - 8, gy + 4, fmt(value, 1), 'end');
+        }
+        for (let k = 0; k <= 4; k += 1) {
+          const r = (R * k) / 4;
+          const gx = xPos(plot, r);
+          chartDrawing.appendChild(el('line', {
+            x1: gx, y1: plot.top, x2: gx, y2: plot.bottom,
+            stroke: 'var(--line)', 'stroke-width': '.7'
+          }));
+          chartLabel(gx, plot.bottom + 18, fmt(r, 1));
+        }
+      }
+
+      function drawCurve(plot, fn, maxValue, attrs) {
+        const points = [];
+        for (let s = 0; s <= 120; s += 1) {
+          const r = (R * s) / 120;
+          points.push(`${xPos(plot, r)},${yPos(plot, fn(r), maxValue)}`);
+        }
+        chartDrawing.appendChild(el('polyline', { points: points.join(' '), fill: 'none', ...attrs }));
+      }
+
+      function drawSamples(plot, samples, maxValue, color) {
+        if (samples.length > 97) {
+          const points = samples.map(([r, v]) => `${xPos(plot, r)},${yPos(plot, v, maxValue)}`);
+          chartDrawing.appendChild(el('polyline', {
+            points: points.join(' '), fill: 'none', stroke: color, 'stroke-width': '2.5', class: 'sample-line'
+          }));
+        } else {
+          for (const [r, v] of samples) {
+            chartDrawing.appendChild(el('circle', {
+              cx: xPos(plot, r), cy: yPos(plot, v, maxValue), r: samples.length > 33 ? 3 : 4.5,
+              fill: color, stroke: 'var(--bg)', 'stroke-width': '1.5', class: 'sample-dot'
+            }));
+          }
+        }
+      }
+
+      function legendMark(x, y, color, kind) {
+        if (kind === 'line') {
+          chartDrawing.appendChild(el('line', { x1: x, y1: y - 4, x2: x + 22, y2: y - 4, stroke: color, 'stroke-width': '3' }));
+        } else {
+          chartDrawing.appendChild(el('circle', { cx: x + 11, cy: y - 4, r: 4.5, fill: color }));
+        }
+      }
+
+      function renderChart() {
+        const pair = PAIRS[pairKey];
+        const maxRate = pair.f(R);
+        const maxFn = pair.F(R);
+        chartDrawing.replaceChildren();
+
+        chartLabel(PLOT_T.left, 22, pair.rateLabel, 'start', '800');
+        chartLabel(PLOT_B.left, 352, pair.fnLabel, 'start', '800');
+        drawGrid(PLOT_T, maxRate);
+        drawGrid(PLOT_B, maxFn);
+        chartLabel((PLOT_T.left + PLOT_T.right) / 2, PLOT_T.bottom + 36, 'r — o raio');
+        chartLabel((PLOT_B.left + PLOT_B.right) / 2, PLOT_B.bottom + 36, 'r — o raio');
+
+        // quadro de baixo: a função original, sempre visível
+        drawCurve(PLOT_B, pair.F, maxFn, { stroke: 'var(--accent)', 'stroke-width': '2.5', id: 'fn-curve' });
+        legendMark(PLOT_B.left + 8, PLOT_B.top + 16, 'var(--accent)', 'line');
+        chartLabel(PLOT_B.left + 36, PLOT_B.top + 16, 'função original', 'start');
+
+        if (voltaDone) {
+          const volta = accumulateRate(pair, n);
+          drawSamples(PLOT_B, volta.points, maxFn, 'var(--accent-2)');
+          legendMark(PLOT_B.left + 8, PLOT_B.top + 36, 'var(--accent-2)', n > 97 ? 'line' : 'dot');
+          chartLabel(PLOT_B.left + 36, PLOT_B.top + 36, 'reconstrução — soma de retângulos das taxas', 'start');
+        } else {
+          chartLabel(PLOT_B.left + 8, PLOT_B.top + 36, 'a Volta desenha a reconstrução aqui', 'start');
+        }
+
+        // quadro de cima: as taxas medidas pela ida
+        if (idaDone) {
+          drawCurve(PLOT_T, pair.f, maxRate, { stroke: 'var(--accent)', 'stroke-width': '2.5', id: 'rate-curve' });
+          const ida = measureRates(pair, n);
+          drawSamples(PLOT_T, ida.points, maxRate, 'var(--accent-2)');
+          legendMark(PLOT_T.left + 8, PLOT_T.top + 16, 'var(--accent)', 'line');
+          chartLabel(PLOT_T.left + 36, PLOT_T.top + 16, 'taxa nomeada no Lab 09', 'start');
+          legendMark(PLOT_T.left + 8, PLOT_T.top + 36, 'var(--accent-2)', n > 97 ? 'line' : 'dot');
+          chartLabel(PLOT_T.left + 36, PLOT_T.top + 36, 'taxa medida — casca fina ÷ espessura', 'start');
+        } else {
+          chartLabel(PLOT_T.left + 8, PLOT_T.top + 16, 'aperte Ida para medir as taxas', 'start');
+        }
+      }
+
+      function renderPanel() {
+        const pair = PAIRS[pairKey];
+        realLabel.textContent = pair.realLabel;
+        valCuts.textContent = String(n);
+        valReal.textContent = fmt(pair.F(R));
+
+        if (idaDone) {
+          valErrIda.textContent = fmt(measureRates(pair, n).maxError);
+        } else {
+          valErrIda.textContent = '—';
+        }
+
+        if (voltaDone) {
+          const volta = accumulateRate(pair, n);
+          valRec.textContent = fmt(volta.final);
+          valErr.textContent = fmt(volta.maxError);
+          valNerr.textContent = fmt(n * volta.maxError);
+        } else {
+          valRec.textContent = '—';
+          valErr.textContent = '—';
+          valNerr.textContent = '—';
+        }
+
+        if (!idaDone) {
+          machineStatus.textContent = `${n} cortes · aperte Ida para medir as taxas por cascas finas.`;
+        } else if (!voltaDone) {
+          machineStatus.textContent = `${n} cortes · a ida desenhou as taxas. Agora acumule: aperte Volta.`;
+        } else if (n >= N_MAX) {
+          machineStatus.textContent = `${n} cortes · limite do laboratório — as duas curvas praticamente coincidem.`;
+        } else {
+          machineStatus.textContent = `${n} cortes · ida e volta ligadas. Dobre os cortes e vigie o erro.`;
+        }
+
+        doubleButton.disabled = n >= N_MAX;
+      }
+
+      function updateReadiness() {
+        const ready = predicted && idaDone && voltaDone && doublings >= 2;
+        reveal.disabled = !ready || !formulaCard.hidden;
+        if (formulaCard.hidden) {
+          revealStatus.textContent = ready
+            ? 'A reciprocidade já apareceu nos números. Agora ela pode ganhar nome.'
+            : 'Aposte, rode a ida e a volta e dobre os cortes ao menos duas vezes.';
+        }
+      }
+
+      function renderAll() {
+        renderPanel();
+        renderChart();
+      }
+
+      document.querySelectorAll('[data-prediction]').forEach(button => {
+        button.addEventListener('click', () => {
+          document.querySelectorAll('[data-prediction]').forEach(item => item.setAttribute('aria-pressed', 'false'));
+          button.setAttribute('aria-pressed', 'true');
+          predicted = true;
+          predictionFeedback.textContent = button.dataset.prediction === 'area'
+            ? 'Boa aposta — o Lab 08 já tinha mostrado os anéis virando área. A novidade é o que isso significa: ligue a máquina.'
+            : 'Aposta registrada. Ligue a máquina e deixe os números darem o veredito.';
+          updateReadiness();
+        });
+      });
+
+      document.querySelectorAll('[data-pair]').forEach(button => {
+        button.addEventListener('click', () => {
+          document.querySelectorAll('[data-pair]').forEach(item => item.setAttribute('aria-pressed', 'false'));
+          button.setAttribute('aria-pressed', 'true');
+          pairKey = button.dataset.pair;
+          renderAll();
+        });
+      });
+
+      idaButton.addEventListener('click', () => {
+        idaDone = true;
+        idaButton.setAttribute('aria-pressed', 'true');
+        voltaButton.disabled = false;
+        renderAll();
+        updateReadiness();
+      });
+
+      voltaButton.addEventListener('click', () => {
+        if (!idaDone) return;
+        voltaDone = true;
+        voltaButton.setAttribute('aria-pressed', 'true');
+        renderAll();
+        updateReadiness();
+      });
+
+      doubleButton.addEventListener('click', () => {
+        if (n >= N_MAX) return;
+        n *= 2;
+        doublings += 1;
+        renderAll();
+        updateReadiness();
+      });
+
+      resetButton.addEventListener('click', () => {
+        n = N_MIN;
+        renderAll();
+        updateReadiness();
+      });
+
+      reveal.addEventListener('click', () => {
+        formulaCard.hidden = false;
+        exercises.hidden = false;
+        reveal.textContent = 'Reciprocidade nomeada';
+        reveal.disabled = true;
+        formulaCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+
+      // exercícios: escada de pistas + gabarito comentado, desbloqueio A → B → C
+      const EXERCISES = {
+        A: {
+          correct: '33.51',
+          next: 'exB',
+          right: 'Exato: 4π·2³⁄3 ≈ 33,51 — acumular a superfície devolve o volume. Na máquina, 1024 cortes chegam a ≈ 33,46 e seguem subindo para o alvo. O B inverte a pergunta.',
+          wrong: {
+            '50.27': 'Isso é 4π·2² — a taxa no final da viagem, uma casca só. A pergunta pede a soma de todas as cascas, das minúsculas do centro às grandes da borda.',
+            '100.53': 'Você fez um retângulo grosso único: taxa final × 2, como se toda casca tivesse o tamanho da última. A máquina soma fatias finas justamente para não cometer esse erro.'
+          },
+          hints: [
+            'Pista 1 — ligue a máquina no par esfera, aperte Volta e dobre os cortes. Para onde a reconstrução em R = 2 está indo?',
+            'Pista visual — cada fatia é uma casca de espessura Δr e superfície 4πr²: uma cebola montada de dentro para fora. As cascas de dentro quase não pesam.',
+            'Pista estrutural — acumular a taxa devolve a função: o resultado é V(2) = 4π·2³⁄3. Só falta a aritmética.'
+          ]
+        },
+        B: {
+          correct: '3t2',
+          next: 'exC',
+          right: 'Exato: entre t e t + Δt, t³ cresce ≈ 3t²·Δt — a taxa era 3t². Medir a taxa da acumulação devolve o que estava sendo somado. Falta quebrar a regra no C.',
+          wrong: {
+            't3': 'Isso confunde o acumulado com o que está sendo somado. A acumulação já é t³; a pergunta é o que, somado em fatias finas, produziu t³.',
+            't4': 't⁴⁄4 é acumular de novo — mais um passo na mesma direção. A pergunta pede o caminho de volta: derivar a acumulação.'
+          },
+          hints: [
+            'Pista 1 — a pergunta é a máquina ao contrário: você conhece a acumulação e quer o integrando. Qual movimento desfaz o outro?',
+            'Pista visual — desenhe t³ e pergunte quanto ele sobe entre t e t + Δt: (t + Δt)³ − t³ ≈ 3t²·Δt quando Δt é fino.',
+            'Pista estrutural — taxa = variação ÷ espessura. Divida 3t²·Δt por Δt.'
+          ]
+        },
+        C: {
+          correct: 'zero',
+          next: 'insights',
+          right: 'Exato: a acumulação parte de zero e devolve a variação F(R) − F(0). Área e volume partem de zero, por isso tudo coincidiu na temporada. A colheita final abriu logo abaixo.',
+          wrong: {
+            'sempre': 'Quase — mas some 5 à área antes de ligar a máquina. A taxa 2πr não muda, e a acumulação continua devolvendo ≈ 12,57. Onde foram parar os 5?',
+            'geo': 'A geometria não tem privilégio: o hodômetro do carro obedece à mesma reciprocidade. A condição verdadeira é mais barata — olhe o valor inicial da função.'
+          },
+          hints: [
+            'Pista 1 — quando uma regra parece valer sempre, procure o contraexemplo mais barato: mexa no ponto de partida da função.',
+            'Pista visual — compare A(r) = πr² com G(r) = πr² + 5: duas curvas paralelas. As coroas — e portanto a taxa — são idênticas.',
+            'Pista estrutural — a acumulação começa em zero por construção. O que ela consegue devolver é a diferença entre o fim e o começo.'
+          ]
+        }
+      };
+
+      const hintIndex = { A: 0, B: 0, C: 0 };
+
+      document.querySelectorAll('.hint-button').forEach(button => {
+        button.addEventListener('click', () => {
+          const key = button.dataset.hints;
+          const hints = EXERCISES[key].hints;
+          const index = Math.min(hintIndex[key], hints.length - 1);
+          document.getElementById(`feedback-${key}`).textContent = hints[index];
+          hintIndex[key] = index + 1;
+          if (hintIndex[key] >= hints.length) button.textContent = 'Pistas esgotadas — tente, ou abra o gabarito';
+        });
+      });
+
+      document.querySelectorAll('[data-ex]').forEach(button => {
+        button.addEventListener('click', () => {
+          const key = button.dataset.ex;
+          const spec = EXERCISES[key];
+          const option = button.dataset.option;
+          const feedback = document.getElementById(`feedback-${key}`);
+          if (option === spec.correct) {
+            feedback.textContent = spec.right;
+            const next = document.getElementById(spec.next);
+            if (next && next.hidden) next.hidden = false;
+          } else {
+            feedback.textContent = spec.wrong[option];
+          }
+        });
+      });
+
+      renderAll();
+      updateReadiness();
+    })();
+  </script>
+</body>
+</html>

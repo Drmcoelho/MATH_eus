@@ -67,7 +67,7 @@
 
     .skip-link:focus { top: 12px; }
 
-    header, main, footer {
+    header, .lab-meta, main, footer {
       width: min(1120px, calc(100% - 32px));
       margin-inline: auto;
     }
@@ -86,6 +86,47 @@
     header a { text-decoration: none; }
 
     .brand { font-weight: 800; letter-spacing: -.02em; }
+
+    .lab-meta {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px 20px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--line);
+      font-family: ui-sans-serif, system-ui, sans-serif;
+      font-size: .8rem;
+      color: var(--muted);
+    }
+
+    .lab-progress { display: flex; align-items: center; gap: 10px; }
+
+    .lab-progress-track {
+      width: 120px;
+      height: 6px;
+      border-radius: 999px;
+      background: var(--line);
+      overflow: hidden;
+    }
+
+    .lab-progress-fill {
+      height: 100%;
+      border-radius: 999px;
+      background: var(--accent);
+    }
+
+    .lab-restart {
+      margin-left: auto;
+      padding: 6px 14px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+    }
+
+    .lab-restart:hover,
+    .lab-restart:focus-visible { color: var(--ink); border-color: currentColor; }
 
     main { padding: 58px 0 88px; }
 
@@ -326,6 +367,17 @@
       border: 0;
     }
 
+    .hint-ladder { margin-top: 20px; }
+
+    .hint-ladder details {
+      margin-top: 10px;
+      padding: 14px 18px;
+      border-radius: 14px;
+      box-shadow: none;
+    }
+
+    .hint-ladder summary { font-size: 1rem; }
+
     .lab-nav {
       margin-top: 48px;
       display: grid;
@@ -383,6 +435,18 @@
     <a class="brand" href="../../index.html">MATHeu$</a>
     <span>Temporada 01 · Laboratório 02</span>
   </header>
+
+  <div class="lab-meta">
+    <div class="lab-progress">
+      <span>Lab 2 de 10</span>
+      <div class="lab-progress-track" role="img" aria-label="Progresso na temporada: laboratório 2 de 10">
+        <div class="lab-progress-fill" style="width: 20%"></div>
+      </div>
+    </div>
+    <span>≈ 20 min</span>
+    <span>Dificuldade <span role="img" aria-label="2 de 3">●●○</span></span>
+    <button id="restart-lab" type="button" class="lab-restart">Recomeçar laboratório</button>
+  </div>
 
   <main id="conteudo">
     <p class="eyebrow">Quanto mede o contorno?</p>
@@ -477,6 +541,23 @@
       <p><strong>Quando valem:</strong> polígonos regulares com n ≥ 3, inscrito (vértices no círculo) e circunscrito (lados tangentes ao círculo).</p>
 
       <p class="hint secret"><strong>Segredo de mestre:</strong> olhe a última medida do painel. O cerco de fora erra cerca de <em>o dobro</em> do cerco de dentro, e a razão se aproxima de 2 conforme n cresce. O Laboratório 04 vai explicar por quê.</p>
+
+      <div id="exercise-side-ratio" class="challenge-card" style="margin-top:26px; padding:0; border:0; box-shadow:none; background:transparent;">
+        <p class="box-label">Encontre o erro</p>
+        <h3>"Se o cerco de fora erra o dobro do de dentro, o lado de fora também deve ser cerca do dobro do lado de dentro."</h3>
+        <p>Parece a mesma ideia aplicada a outra medida — mas as duas razões não medem a mesma coisa.</p>
+        <div class="challenge-options" role="group" aria-label="Julgue a afirmação">
+          <button type="button" data-ex-side="right">está certo</button>
+          <button type="button" data-ex-side="close">errado: o lado de fora fica só um pouco maior — a razão vai a 1</button>
+          <button type="button" data-ex-side="smaller">errado: o lado de fora é bem menor</button>
+        </div>
+        <p id="side-feedback" class="feedback" aria-live="polite"></p>
+        <div class="hint-ladder">
+          <details><summary>Primeira pista</summary><p>Não confie na intuição — meça. No painel, calcule 2n·tg(π/n) (lado de fora) e compare com o "lado de dentro" já mostrado, para n = 12.</p></details>
+          <details><summary>Pista visual</summary><p>A razão lado de fora ÷ lado de dentro é tg(θ)/sen(θ) = 1/cos(θ) = R/r — a mesma razão R/r do Laboratório 01. E você já viu essa razão: ela vai a 1, não a 2, conforme n cresce.</p></details>
+          <details><summary>Solução comentada</summary><p>Errado — a razão dos lados tende a 1, bem diferente da razão dos erros, que tende a 2. Com n = 12: lado de fora ÷ lado de dentro ≈ 1,0353; erro de fora ÷ erro de dentro ≈ 2,0635. A armadilha é achar que, se duas quantidades "erram parecido" perto de um mesmo alvo, as próprias quantidades também devem guardar essa razão. Não guardam: lado de dentro e lado de fora convergem os dois para o mesmo valor (o elemento de arco), então a razão entre eles vai a 1 — mas as suas <em>distâncias</em> até esse valor podem convergir numa razão totalmente diferente. É a diferença entre comparar dois números e comparar o quanto cada um ainda falta para chegar a algum lugar. Essa distinção reaparece toda vez que duas sequências convergem juntas, a partir do Laboratório 04.</p></details>
+        </div>
+      </div>
     </section>
 
     <section id="challenge" class="challenge-card" hidden aria-labelledby="challenge-title">
@@ -735,9 +816,33 @@
         });
       });
 
+      const sideFeedback = document.getElementById('side-feedback');
+      document.querySelectorAll('[data-ex-side]').forEach(button => {
+        button.addEventListener('click', () => {
+          const value = button.dataset.exSide;
+          if (value === 'close') {
+            sideFeedback.textContent = 'Exato. Em n = 12, lado de fora ÷ lado de dentro ≈ 1,0353 — a mesma razão R/r do Laboratório 01. Os erros vão a 2; os lados, a 1.';
+          } else if (value === 'right') {
+            sideFeedback.textContent = 'Calcule: com n = 12, o lado de dentro vale ≈ 0,5176 e o de fora ≈ 0,5359. Isso não é o dobro — é a razão R/r do Laboratório 01.';
+          } else {
+            sideFeedback.textContent = 'O lado de fora é sempre maior que o de dentro (ele encosta no círculo pelo meio, não pelos vértices) — só que por pouco, não pelo dobro.';
+          }
+        });
+      });
+
       render();
       updateReadiness();
     })();
+  </script>
+  <script>
+    document.getElementById('restart-lab').addEventListener('click', () => {
+      document.querySelectorAll('input, select, textarea').forEach((el) => {
+        if (el.type === 'checkbox' || el.type === 'radio') el.checked = el.defaultChecked;
+        else el.value = el.defaultValue;
+      });
+      if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+      location.replace(location.pathname);
+    });
   </script>
 </body>
 </html>

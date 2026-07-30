@@ -80,4 +80,27 @@ assert.ok(halfIn96 < Math.PI && Math.PI < halfOut96, 'pi deve ficar preso entre 
 close(halfIn96, 3.14103, 5e-6, 'valor citado para o cerco interno de Arquimedes');
 close(halfOut96, 3.14271, 5e-6, 'valor citado para o cerco externo de Arquimedes');
 
-console.log('Lab 02: 998 casos de cerco, o desafio de 6,2 e as cotas de Arquimedes verificados sem divergência.');
+// exercício "encontre o erro": a razão dos LADOS tende a 1 (= R/r do Lab 01),
+// bem diferente da razão dos ERROS, que tende a 2.
+function sideIn(n) { return 2 * Math.sin(Math.PI / n); }
+function sideOut(n) { return 2 * Math.tan(Math.PI / n); }
+
+for (const n of [12, 24]) {
+  const theta = Math.PI / n;
+  const sideRatio = sideOut(n) / sideIn(n);
+  close(sideRatio, 1 / Math.cos(theta), 1e-12, `razão dos lados = R/r em n=${n}`);
+}
+close(sideOut(12) / sideIn(12), 1.0353, 5e-5, 'razão dos lados citada no exercício (n=12)');
+close(sideIn(12), 0.5176, 5e-5, 'lado de dentro citado no exercício (n=12)');
+close(sideOut(12), 0.5359, 5e-5, 'lado de fora citado no exercício (n=12)');
+
+let previousSideRatio = Infinity;
+for (let n = 3; n <= 5000; n += 1) {
+  const r = sideOut(n) / sideIn(n);
+  assert.ok(r > 1, `razão dos lados deve ficar acima de 1; falhou em n=${n}`);
+  assert.ok(r < previousSideRatio, `razão dos lados deve decrescer; falhou em n=${n}`);
+  previousSideRatio = r;
+}
+close(previousSideRatio, 1, 1e-6, 'razão dos lados em n=5000 deve estar colada em 1 (não em 2)');
+
+console.log('Lab 02: 998 casos de cerco, o desafio de 6,2, as cotas de Arquimedes e o exercício da razão dos lados (→1, não →2) verificados sem divergência.');
