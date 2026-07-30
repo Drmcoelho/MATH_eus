@@ -1,0 +1,397 @@
+name: One-shot Lab 01 canônico
+
+on:
+  push:
+    branches:
+      - agent/lab01-canonico-desbloqueado
+
+permissions:
+  contents: write
+
+jobs:
+  rebuild:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Reconstruir experiência do Lab 01
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          path = Path('modules/01-duas-circunferencias/index.html')
+          text = path.read_text()
+
+          def replace_once(old, new, label):
+              global text
+              if text.count(old) != 1:
+                  raise SystemExit(f'{label}: esperado 1, encontrado {text.count(old)}')
+              text = text.replace(old, new, 1)
+
+          replace_once(
+              '    .hint-ladder summary { font-size: 1rem; }\n\n    .lab-nav {',
+              '''    .hint-ladder summary { font-size: 1rem; }
+
+    .journey-map {
+      margin-top: 18px;
+      padding: 16px;
+      border: 1px dashed var(--line);
+      border-radius: 18px;
+      background: color-mix(in srgb, var(--accent) 6%, transparent);
+    }
+
+    .journey-map strong {
+      display: block;
+      margin-bottom: 10px;
+      font-family: ui-sans-serif, system-ui, sans-serif;
+    }
+
+    .journey-steps {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .journey-steps span {
+      padding: 7px 10px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--muted);
+      font: 700 .76rem/1.2 ui-sans-serif, system-ui, sans-serif;
+    }
+
+    .exercise-grid,
+    .curiosity-grid,
+    .completion-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 22px;
+    }
+
+    .exercise-card,
+    .curiosity-card,
+    .completion-item {
+      padding: 20px;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: color-mix(in srgb, var(--paper) 88%, transparent);
+    }
+
+    .exercise-card h3,
+    .curiosity-card h3,
+    .completion-item h3 { margin: 0 0 10px; }
+
+    .exercise-card details {
+      margin-top: 14px;
+      padding: 12px 14px;
+      border-radius: 14px;
+      box-shadow: none;
+    }
+
+    .exercise-card details summary { font-size: .95rem; }
+
+    .curiosity-number {
+      display: inline-grid;
+      place-items: center;
+      width: 34px;
+      height: 34px;
+      margin-bottom: 12px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: var(--bg);
+      font: 800 .82rem/1 ui-sans-serif, system-ui, sans-serif;
+    }
+
+    .completion-item strong {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--accent);
+      font-family: ui-sans-serif, system-ui, sans-serif;
+    }
+
+    @media (max-width: 820px) {
+      .exercise-grid, .curiosity-grid, .completion-grid { grid-template-columns: 1fr; }
+    }
+
+    .lab-nav {''',
+              'css canônico'
+          )
+
+          replace_once(
+              '    <span>≈ 15 min</span>\n    <span>Dificuldade <span role="img" aria-label="1 de 3">●○○</span></span>',
+              '    <span>≈ 25–35 min</span>\n    <span>Dificuldade <span role="img" aria-label="2 de 3">●●○</span></span>',
+              'metadados honestos'
+          )
+
+          replace_once(
+              '''          <div class="reveal-row">
+            <button id="reveal" type="button" class="primary" disabled>Revelar a relação</button>
+            <span id="reveal-status" class="feedback" aria-live="polite">Faça uma previsão e altere o número de lados.</span>
+          </div>''',
+              '''          <div class="reveal-row">
+            <button id="reveal" type="button" class="primary">1. Faça uma aposta acima</button>
+            <span id="reveal-status" class="feedback" aria-live="polite">O botão nunca será uma porta falsa: depois da aposta, ele revela.</span>
+          </div>
+
+          <div id="journey-map" class="journey-map">
+            <strong>O que ainda existe depois deste painel</strong>
+            <div class="journey-steps" aria-label="Mapa do laboratório">
+              <span>dedução desenhada em 7 passos</span>
+              <span>4 exercícios</span>
+              <span>experimento com ruído</span>
+              <span>4 curiosidades</span>
+              <span>prova completa</span>
+              <span>fechamento e transferência</span>
+            </div>
+          </div>''',
+              'porta de revelação'
+          )
+
+          insertion = '''
+
+    <section id="exercise-workbook" class="formula-card" hidden aria-labelledby="workbook-title">
+      <p class="box-label">Caderno de exercícios</p>
+      <h2 id="workbook-title">Agora a relação precisa trabalhar</h2>
+      <p>Não é um rodapé de continhas. Cada exercício muda o sentido da fórmula: ler, inverter, comparar e testar invariância.</p>
+
+      <div class="exercise-grid">
+        <article class="exercise-card">
+          <h3>1 · Leia a figura</h3>
+          <p>Para um quadrado, n = 4. Quanto vale aproximadamente r/R?</p>
+          <div class="challenge-options" role="group" aria-label="Razão do quadrado">
+            <button type="button" data-workbook="square" data-answer="0.5">0,5000</button>
+            <button type="button" data-workbook="square" data-answer="0.7071">0,7071</button>
+            <button type="button" data-workbook="square" data-answer="0.8660">0,8660</button>
+          </div>
+          <p class="feedback" data-workbook-feedback="square" aria-live="polite"></p>
+          <details><summary>Pista</summary><p>π/4 = 45°. A razão é cos(45°).</p></details>
+        </article>
+
+        <article class="exercise-card">
+          <h3>2 · Faça o caminho inverso</h3>
+          <p>Uma medição perfeita deu r/R ≈ 0,9239. Qual polígono regular é compatível?</p>
+          <div class="challenge-options" role="group" aria-label="Inferência inversa">
+            <button type="button" data-workbook="inverse" data-answer="6">6 lados</button>
+            <button type="button" data-workbook="inverse" data-answer="8">8 lados</button>
+            <button type="button" data-workbook="inverse" data-answer="12">12 lados</button>
+          </div>
+          <p class="feedback" data-workbook-feedback="inverse" aria-live="polite"></p>
+          <details><summary>Pista</summary><p>Procure um ângulo cujo cosseno seja 0,9239: 22,5° = π/8.</p></details>
+        </article>
+
+        <article class="exercise-card">
+          <h3>3 · Teste a escala</h3>
+          <p>Se R dobra e o número de lados não muda, o que acontece com r/R?</p>
+          <div class="challenge-options" role="group" aria-label="Invariância de escala">
+            <button type="button" data-workbook="scale" data-answer="half">cai pela metade</button>
+            <button type="button" data-workbook="scale" data-answer="same">permanece igual</button>
+            <button type="button" data-workbook="scale" data-answer="double">dobra</button>
+          </div>
+          <p class="feedback" data-workbook-feedback="scale" aria-live="polite"></p>
+          <details><summary>Pista</summary><p>r e R dobram juntos. O quociente não carrega unidade de comprimento.</p></details>
+        </article>
+
+        <article class="exercise-card">
+          <h3>4 · Compare sem calcular tudo</h3>
+          <p>Qual polígono deixa o raio interno mais próximo do externo?</p>
+          <div class="challenge-options" role="group" aria-label="Comparação de aproximações">
+            <button type="button" data-workbook="compare" data-answer="6">n = 6</button>
+            <button type="button" data-workbook="compare" data-answer="12">n = 12</button>
+            <button type="button" data-workbook="compare" data-answer="24">n = 24</button>
+          </div>
+          <p class="feedback" data-workbook-feedback="compare" aria-live="polite"></p>
+          <details><summary>Pista</summary><p>Quando n cresce, π/n diminui; nesse intervalo, o cosseno cresce em direção a 1.</p></details>
+        </article>
+      </div>
+    </section>
+
+    <section id="curiosity-card" class="formula-card" hidden aria-labelledby="curiosity-title">
+      <p class="box-label">Curiosidades que realmente explicam algo</p>
+      <h2 id="curiosity-title">Quatro fatos para guardar pela imagem</h2>
+      <div class="curiosity-grid">
+        <article class="curiosity-card"><span class="curiosity-number">1</span><h3>O hexágono entrega um valor exato</h3><p>Para n = 6, r/R = cos(30°) = √3/2. O 0,8660 do painel não é um número aleatório: é a sombra decimal de uma raiz.</p></article>
+        <article class="curiosity-card"><span class="curiosity-number">2</span><h3>O quadrado carrega √2</h3><p>Para n = 4, r/R = cos(45°) = √2/2. A diagonal do quadrado reaparece escondida na razão entre os raios.</p></article>
+        <article class="curiosity-card"><span class="curiosity-number">3</span><h3>A razão reconhece a forma, não o tamanho</h3><p>Uma miniatura e um polígono gigantesco com o mesmo n produzem o mesmo r/R. Essa invariância é o motivo de a inferência funcionar sem saber a unidade.</p></article>
+        <article class="curiosity-card"><span class="curiosity-number">4</span><h3>Um milhão de lados ainda não é um círculo</h3><p>Em n = 1.000.000, r/R ≈ 0,9999999999951. A diferença é microscópica, mas positiva: aproximar indefinidamente não significa alcançar em algum passo finito.</p></article>
+      </div>
+    </section>
+'''
+
+          replace_once(
+              '    </section>\n\n    <section id="noise-card" class="challenge-card" hidden aria-labelledby="noise-title">',
+              '    </section>' + insertion + '\n    <section id="noise-card" class="challenge-card" hidden aria-labelledby="noise-title">',
+              'caderno e curiosidades'
+          )
+
+          completion = '''
+
+    <section id="completion-card" class="formula-card" hidden aria-labelledby="completion-title">
+      <p class="box-label">Fechamento</p>
+      <h2 id="completion-title">Agora o laboratório termina de verdade</h2>
+      <div class="completion-grid">
+        <article class="completion-item"><strong>Você viu</strong><p>o polígono mudar e o triângulo fundamental permanecer.</p></article>
+        <article class="completion-item"><strong>Você deduziu</strong><p>r/R = cos(π/n), em vez de receber a fórmula pronta.</p></article>
+        <article class="completion-item"><strong>Você inverteu</strong><p>a relação para recuperar n a partir de uma medida.</p></article>
+        <article class="completion-item"><strong>Você auditou</strong><p>como o ruído transforma uma resposta única em intervalo de possibilidades.</p></article>
+      </div>
+      <p id="completion-status" class="feedback" aria-live="polite">Resolva os quatro exercícios do caderno; o painel registra quantos movimentos você já dominou.</p>
+      <p><strong>Pergunta de transferência:</strong> a razão denuncia a forma. Mas quanto mede o contorno que essa forma cria? Essa é a porta real do Lab 02.</p>
+    </section>
+'''
+
+          replace_once(
+              '    </section>\n\n    <details>\n      <summary>Oficina — Pitágoras, a porta lateral e o alcance</summary>',
+              '    </section>' + completion + '\n\n    <details>\n      <summary>Oficina — Pitágoras, a porta lateral e o alcance</summary>',
+              'fechamento'
+          )
+
+          replace_once(
+              '''      function updateReadiness() {
+        const ready = predicted && manipulated;
+        reveal.disabled = !ready;
+        revealStatus.textContent = ready
+          ? 'Agora a relação pode aparecer sem cair do céu.'
+          : 'Faça uma previsão e altere o número de lados.';
+      }''',
+              '''      function updateReadiness() {
+        reveal.disabled = false;
+        if (!predicted) {
+          reveal.textContent = '1. Faça uma aposta acima';
+          revealStatus.textContent = 'O botão leva à aposta; depois dela, revela de verdade.';
+        } else if (formulaCard.hidden) {
+          reveal.textContent = '2. Revelar a relação';
+          revealStatus.textContent = manipulated
+            ? 'Aposta e experimento feitos. Abra a dedução.'
+            : 'Aposta registrada. Mexer no número de lados ajuda, mas não é uma trava.';
+        } else {
+          reveal.textContent = 'Relação aberta abaixo ↓';
+          revealStatus.textContent = 'Continue pela dedução, exercícios, ruído, curiosidades e fechamento.';
+        }
+      }''',
+              'readiness sem porta falsa'
+          )
+
+          replace_once(
+              '''      reveal.addEventListener('click', () => {
+        formulaCard.hidden = false;
+        challenge.hidden = false;
+        reveal.textContent = 'Relação revelada';
+        reveal.disabled = true;
+        formulaCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });''',
+              '''      reveal.addEventListener('click', () => {
+        if (!predicted) {
+          document.querySelector('.question-card').scrollIntoView({ behavior: 'smooth', block: 'start' });
+          predictionFeedback.textContent = 'Registre qualquer hipótese. Ela não precisa estar certa; precisa existir antes da descoberta.';
+          return;
+        }
+        formulaCard.hidden = false;
+        challenge.hidden = false;
+        exerciseWorkbook.hidden = false;
+        curiosityCard.hidden = false;
+        noiseCard.hidden = false;
+        completionCard.hidden = false;
+        updateReadiness();
+        renderNoise();
+        formulaCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });''',
+              'revelação material'
+          )
+
+          replace_once(
+              '''      const challengeFeedback = document.getElementById('challenge-feedback');
+
+      let predicted = false;''',
+              '''      const challengeFeedback = document.getElementById('challenge-feedback');
+      const exerciseWorkbook = document.getElementById('exercise-workbook');
+      const curiosityCard = document.getElementById('curiosity-card');
+      const completionCard = document.getElementById('completion-card');
+      const completionStatus = document.getElementById('completion-status');
+
+      let predicted = false;''',
+              'referências das novas seções'
+          )
+
+          workbook_js = '''
+
+      const workbookAnswers = {
+        square: '0.7071',
+        inverse: '8',
+        scale: 'same',
+        compare: '24'
+      };
+      const workbookSolved = new Set();
+
+      document.querySelectorAll('[data-workbook]').forEach(button => {
+        button.addEventListener('click', () => {
+          const group = button.dataset.workbook;
+          const correct = button.dataset.answer === workbookAnswers[group];
+          const feedback = document.querySelector(`[data-workbook-feedback="${group}"]`);
+          const messages = {
+            square: 'Exato: cos(π/4) = cos(45°) = √2/2 ≈ 0,7071.',
+            inverse: 'Exato: cos(π/8) = cos(22,5°) ≈ 0,9239; portanto n = 8.',
+            scale: 'Exato: r e R mudam na mesma proporção; r/R permanece igual.',
+            compare: 'Exato: entre 6, 12 e 24, o de 24 lados tem π/n menor e razão mais próxima de 1.'
+          };
+          feedback.textContent = correct
+            ? messages[group]
+            : 'Ainda não. Use a pista e volte à figura; a resposta precisa nascer da relação, não de chute.';
+          if (correct) {
+            workbookSolved.add(group);
+            document.querySelectorAll(`[data-workbook="${group}"]`).forEach(item => {
+              item.disabled = true;
+              item.setAttribute('aria-pressed', item === button ? 'true' : 'false');
+            });
+            completionStatus.textContent = workbookSolved.size === 4
+              ? '4/4. Você leu, inverteu, comparou e testou a invariância da relação.'
+              : `${workbookSolved.size}/4 movimentos resolvidos no caderno.`;
+          }
+        });
+      });
+'''
+
+          replace_once(
+              '      // --- ruído de medição e inferência inversa ---',
+              workbook_js + '\n      // --- ruído de medição e inferência inversa ---',
+              'interatividade do caderno'
+          )
+
+          path.write_text(text)
+
+          checker = Path('modules/01-duas-circunferencias/check-math.mjs')
+          check = checker.read_text()
+          check = check.replace("import assert from 'node:assert/strict';", "import assert from 'node:assert/strict';\nimport { readFile } from 'node:fs/promises';", 1)
+          check += '''
+
+// Contrato de experiência: o laboratório não pode parecer terminar antes de começar.
+const html = await readFile(new URL('./index.html', import.meta.url), 'utf8');
+const revealTag = html.match(/<button id="reveal"[^>]*>/)?.[0] || '';
+assert.ok(revealTag, 'botão principal de revelação deve existir');
+assert.ok(!/disabled/.test(revealTag), 'o botão de revelação não pode nascer desabilitado');
+assert.ok(html.includes('id="journey-map"'), 'mapa do percurso deve anunciar o conteúdo posterior');
+assert.ok(html.includes('id="exercise-workbook"'), 'caderno de exercícios deve existir');
+assert.equal((html.match(/data-workbook=/g) || []).length, 12, 'quatro exercícios com três alternativas cada');
+assert.ok(html.includes('id="curiosity-card"'), 'box de curiosidades deve existir');
+assert.ok((html.match(/curiosity-number/g) || []).length >= 4, 'ao menos quatro curiosidades visuais');
+assert.ok(html.includes('id="completion-card"'), 'fechamento explícito deve existir');
+assert.ok(!html.includes('const ready = predicted && manipulated'), 'manipulação não pode ser uma trava invisível');
+
+close(Math.cos(Math.PI / 4), Math.SQRT1_2, 1e-12, 'exercício do quadrado');
+close(Math.cos(Math.PI / 8), 0.9238795325, 1e-10, 'exercício inverso do octógono');
+close(Math.cos(Math.PI / 6), Math.sqrt(3) / 2, 1e-12, 'curiosidade do hexágono');
+'''
+          checker.write_text(check)
+          PY
+
+          node modules/01-duas-circunferencias/check-math.mjs
+
+          rm .github/workflows/one-shot-lab01-canon.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add modules/01-duas-circunferencias/index.html modules/01-duas-circunferencias/check-math.mjs .github/workflows/one-shot-lab01-canon.yml
+          git commit -m "reconstrói o Lab 01 sem portas falsas"
+          git push
