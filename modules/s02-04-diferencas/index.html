@@ -348,6 +348,37 @@
       html { scroll-behavior: auto; }
       * { transition: none !important; }
     }
+
+    .lab-nav {
+      margin-top: 48px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
+      font-family: ui-sans-serif, system-ui, sans-serif;
+    }
+
+    .lab-nav a, .lab-nav .soon {
+      display: block;
+      padding: 16px 18px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: var(--paper);
+      color: var(--ink);
+      text-decoration: none;
+    }
+
+    .lab-nav a:hover { border-color: var(--accent); }
+
+    .lab-nav small {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--accent);
+      font: 800 .7rem/1.2 ui-sans-serif, system-ui, sans-serif;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+    }
+
+    .lab-nav .soon { color: var(--muted); }
   </style>
 </head>
 <body>
@@ -503,6 +534,12 @@
       <p><strong>Catetos gêmeos são Pell.</strong> Pedir |2mk − (m² − k²)| = 1 é pedir (m − k)² − 2k² = ±1: a equação de Pell com x = m − k e y = k. As soluções (1, 1), (3, 2), (7, 5), (17, 12)… dão os endereços (2, 1), (5, 2), (12, 5), (29, 12)… — exatamente as ternas da curiosidade, e a razão 3 + 2√2 é a unidade fundamental de Pell.</p>
       <p><strong>O que o verificador confere.</strong> Toda primitiva com hipotenusa até 5.000 tem falta quadrado ímpar ou dobro de quadrado; as nove presentes até 50 aparecem já com teto 500 e nenhuma proibida aparece nunca; as primeiras ocorrências citadas (8, 18, 25, 49) conferem; as cópias (3v, 4v, 5v) cobrem toda falta v; e os catetos gêmeos até 5.000 são exatamente os quatro citados, com a quinta terna e a razão de Pell conferidas.</p>
     </details>
+
+    <nav class="lab-nav" aria-label="Continuar no MATHeu$">
+      <a href="../s02-03-que-numeros-entram/index.html"><small>Anterior</small>T02 Lab 03 — Que números entram?</a>
+      <a href="../../index.html#temporada-02"><small>Índice</small>Todos os laboratórios</a>
+      <span class="soon"><small>Próximo</small>T02 Lab 05 — Quantas ternas até N? (em construção)</span>
+    </nav>
   </main>
 
   <footer>
