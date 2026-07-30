@@ -440,18 +440,18 @@
         <p>Essa frase parece razoável — mas a tabela do painel já teve tudo que você precisa para julgá-la.</p>
         <div class="challenge-options" role="group" aria-label="Julgue a afirmação">
           <button type="button" data-ex-scaling="right">está certo</button>
-          <button type="button" data-ex-scaling="hundred">errado: precisaria de ε cem vezes menor</button>
+          <button type="button" data-ex-scaling="hundred">errado: aproximadamente cem vezes menor</button>
           <button type="button" data-ex-scaling="ten">errado: N não depende de ε assim</button>
         </div>
         <p id="scaling-feedback" class="feedback" aria-live="polite"></p>
         <div class="hint-ladder">
           <details><summary>Primeira pista</summary><p>N ≈ √(π³/ε). Não é uma proporção direta com ε — é uma raiz quadrada.</p></details>
           <details><summary>Pista visual</summary><p>Compare no painel: ε = 0,01 dá N = 56; ε = 0,0001 (cem vezes menor) dá N = 557 — cerca de dez vezes maior. E ε = 0,001 (só dez vezes menor) dá N = 177, menos de quatro vezes maior.</p></details>
-          <details><summary>Solução comentada</summary><p>Errado: para multiplicar N por dez é preciso dividir ε por <strong>cem</strong>, não por dez. Vem direto da fórmula: N ∝ 1/√ε, então N₂/N₁ = √(ε₁/ε₂). Para N₂/N₁ = 10, é preciso ε₁/ε₂ = 100. A armadilha é tratar uma relação de raiz quadrada como se fosse linear — o mesmo tipo de erro que apareceu no Laboratório 04 ao confundir "dobrar n" com "dobrar a precisão". Essa raiz quadrada vai reaparecer sempre que uma garantia depender de uma forma quadrática.</p></details>
+          <details><summary>Solução comentada</summary><p>Errado: na escala assintótica, multiplicar N por dez exige dividir ε por aproximadamente <strong>cem</strong>, não por dez. A forma N ≈ √(π³/ε) dá N₂/N₁ ≈ √(ε₁/ε₂); por isso uma redução de 100 vezes em ε produz um N cerca de 10 vezes maior. O menor N é inteiro e a fórmula é assintótica, então não há igualdade exata: 56 vira 557, não 560. A armadilha é tratar uma relação de raiz quadrada como se fosse linear — o mesmo tipo de erro que apareceu no Laboratório 04 ao confundir "dobrar n" com "dobrar a precisão". Essa raiz quadrada vai reaparecer sempre que uma garantia depender de uma forma quadrática.</p></details>
         </div>
       </div>
 
-      <p class="hint secret"><strong>Segredo de mestre:</strong> a previsão N ≈ √(31/ε) acertou a resposta exata da máquina em todas as tolerâncias do painel. Conhecer a forma do erro transforma busca em cálculo — guarde isso: vai voltar quando formos fatiar áreas e volumes.</p>
+      <p class="hint secret"><strong>Segredo de mestre:</strong> a previsão N ≈ √(31/ε) ficou muito próxima da resposta exata da máquina em todas as tolerâncias do painel. Conhecer a forma do erro transforma busca em cálculo — guarde isso: vai voltar quando formos fatiar áreas e volumes.</p>
       <p><strong>Porta futura:</strong> com o limite no bolso, o plano ficou pequeno. No <a href="../06-prisma/index.html">Laboratório 06</a>, o polígono ganha altura e vira prisma — e o cerco inteiro vai junto.</p>
     </section>
 
@@ -684,7 +684,7 @@
         button.addEventListener('click', () => {
           const value = button.dataset.exScaling;
           if (value === 'hundred') {
-            scalingFeedback.textContent = 'Exato. N ∝ 1/√ε: dividir ε por 100 multiplica N por √100 = 10. Confira no painel: ε = 0,01 → N = 56; ε = 0,0001 → N = 557.';
+            scalingFeedback.textContent = 'Exato na ordem de grandeza: como N ≈ constante/√ε, dividir ε por 100 torna N cerca de 10 vezes maior. O inteiro mínimo vai de 56 a 557, não exatamente a 560.';
           } else if (value === 'right') {
             scalingFeedback.textContent = 'Compare ε = 0,01 (N=56) com ε = 0,001, dez vezes menor: N = 177, menos de 4× maior — não 10×.';
           } else {
