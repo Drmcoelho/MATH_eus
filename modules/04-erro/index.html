@@ -315,6 +315,37 @@
       html { scroll-behavior: auto; }
       * { transition: none !important; }
     }
+
+    .lab-nav {
+      margin-top: 48px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
+      font-family: ui-sans-serif, system-ui, sans-serif;
+    }
+
+    .lab-nav a, .lab-nav .soon {
+      display: block;
+      padding: 16px 18px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: var(--paper);
+      color: var(--ink);
+      text-decoration: none;
+    }
+
+    .lab-nav a:hover { border-color: var(--accent); }
+
+    .lab-nav small {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--accent);
+      font: 800 .7rem/1.2 ui-sans-serif, system-ui, sans-serif;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+    }
+
+    .lab-nav .soon { color: var(--muted); }
   </style>
 </head>
 <body>
@@ -433,6 +464,12 @@
       <p><strong>O nome oficial.</strong> Dizer que o erro "tem forma quadrática" é dizer que n² × erro tende a uma constante. A notação usual é erro = O(1/n²), lida como "da ordem de um sobre n ao quadrado". O símbolo comprime exatamente a experiência da tabela — e só por isso ele entra agora.</p>
       <p><strong>Estabilizar não é provar.</strong> A tabela dá evidência para finitos valores de n. A garantia para todo n vem das desigualdades por trás das folgas, que o verificador do módulo testa numericamente até n = 3072 e uma demonstração completa fecharia com desigualdades de série de Taylor.</p>
     </details>
+
+    <nav class="lab-nav" aria-label="Continuar no MATHeu$">
+      <a href="../03-areas/index.html"><small>Anterior</small>Lab 03 — O que acontece com as áreas?</a>
+      <a href="../../index.html"><small>Índice</small>Todos os laboratórios</a>
+      <a href="../05-limite/index.html"><small>Próximo</small>Lab 05 — Quando nasce o limite?</a>
+    </nav>
   </main>
 
   <footer>

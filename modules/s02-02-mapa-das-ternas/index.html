@@ -364,6 +364,37 @@
       html { scroll-behavior: auto; }
       * { transition: none !important; }
     }
+
+    .lab-nav {
+      margin-top: 48px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
+      font-family: ui-sans-serif, system-ui, sans-serif;
+    }
+
+    .lab-nav a, .lab-nav .soon {
+      display: block;
+      padding: 16px 18px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: var(--paper);
+      color: var(--ink);
+      text-decoration: none;
+    }
+
+    .lab-nav a:hover { border-color: var(--accent); }
+
+    .lab-nav small {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--accent);
+      font: 800 .7rem/1.2 ui-sans-serif, system-ui, sans-serif;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+    }
+
+    .lab-nav .soon { color: var(--muted); }
   </style>
 </head>
 <body>
@@ -494,6 +525,12 @@
       <p><strong>Por que as metades são quadrados para qualquer primitiva.</strong> (c − a)(c + a) = c² − a² = b², com b par. Os fatores (c − a)/2 e (c + a)/2 são primos entre si (um fator comum dividiria a soma c e a diferença a, impossível numa primitiva) e o produto deles é (b/2)². Fatores coprimos cujo produto é quadrado são, cada um, quadrados.</p>
       <p><strong>O que o verificador confere.</strong> Todas as casas válidas até m = 50 dão primitivas; as inválidas dão cópias; nenhuma terna se repete até m = 60; e a volta recupera o endereço de cada uma das primitivas com hipotenusa até 1.000 encontradas por força bruta — incluindo os exemplos citados nesta página, as contagens 190/86 e a casa (20, 9) com diferença 121.</p>
     </details>
+
+    <nav class="lab-nav" aria-label="Continuar no MATHeu$">
+      <a href="../s02-01-ternas-pitagoricas/index.html"><small>Anterior</small>T02 Lab 01 — A fábrica dos ímpares</a>
+      <a href="../../index.html#temporada-02"><small>Índice</small>Todos os laboratórios</a>
+      <span class="soon"><small>Próximo</small>T02 Lab 03 — Que números entram? (em construção)</span>
+    </nav>
   </main>
 
   <footer>
