@@ -39,6 +39,16 @@ O repositório é um site estático puro. A fonte do GitHub Pages deve ser confi
 
 A raiz contém `index.html`, `.nojekyll` e `404.html`; não há build de publicação nem dependência de CDN.
 
+## Roadmap
+
+Com a Temporada 01 completa (Labs 01–05 e Interlúdio 01·B na `main`; Labs
+06–10 assim que o PR #14 mesclar), vale um gate de qualidade antes de
+qualquer escopo matemático novo: refinamento dos primeiros laboratórios
+(Fase A), elevação do Lab 03 a padrão ouro (Fase B) e revisão completa da
+temporada (Fase C) — além da revisão arquitetural (mapa de progressão,
+objeto persistente, organização por perguntas inevitáveis). Plano completo
+em [docs/ROADMAP.md](docs/ROADMAP.md).
+
 ## Primeira temporada
 
 **O cerco do círculo**

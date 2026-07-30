@@ -67,7 +67,7 @@
 
     .skip-link:focus { top: 12px; }
 
-    header, main, footer {
+    header, .lab-meta, main, footer {
       width: min(1120px, calc(100% - 32px));
       margin-inline: auto;
     }
@@ -86,6 +86,47 @@
     header a { text-decoration: none; }
 
     .brand { font-weight: 800; letter-spacing: -.02em; }
+
+    .lab-meta {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px 20px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--line);
+      font-family: ui-sans-serif, system-ui, sans-serif;
+      font-size: .8rem;
+      color: var(--muted);
+    }
+
+    .lab-progress { display: flex; align-items: center; gap: 10px; }
+
+    .lab-progress-track {
+      width: 120px;
+      height: 6px;
+      border-radius: 999px;
+      background: var(--line);
+      overflow: hidden;
+    }
+
+    .lab-progress-fill {
+      height: 100%;
+      border-radius: 999px;
+      background: var(--accent);
+    }
+
+    .lab-restart {
+      margin-left: auto;
+      padding: 6px 14px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+    }
+
+    .lab-restart:hover,
+    .lab-restart:focus-visible { color: var(--ink); border-color: currentColor; }
 
     main { padding: 58px 0 88px; }
 
@@ -394,6 +435,18 @@
     <a class="brand" href="../../index.html">MATHeu$</a>
     <span>Temporada 01 · Laboratório 02</span>
   </header>
+
+  <div class="lab-meta">
+    <div class="lab-progress">
+      <span>Lab 2 de 10</span>
+      <div class="lab-progress-track" role="img" aria-label="Progresso na temporada: laboratório 2 de 10">
+        <div class="lab-progress-fill" style="width: 20%"></div>
+      </div>
+    </div>
+    <span>≈ 20 min</span>
+    <span>Dificuldade <span role="img" aria-label="2 de 3">●●○</span></span>
+    <button id="restart-lab" type="button" class="lab-restart">Recomeçar laboratório</button>
+  </div>
 
   <main id="conteudo">
     <p class="eyebrow">Quanto mede o contorno?</p>
@@ -780,6 +833,16 @@
       render();
       updateReadiness();
     })();
+  </script>
+  <script>
+    document.getElementById('restart-lab').addEventListener('click', () => {
+      document.querySelectorAll('input, select, textarea').forEach((el) => {
+        if (el.type === 'checkbox' || el.type === 'radio') el.checked = el.defaultChecked;
+        else el.value = el.defaultValue;
+      });
+      if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+      location.replace(location.pathname);
+    });
   </script>
 </body>
 </html>
