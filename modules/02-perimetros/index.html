@@ -3,846 +3,268 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Laboratório 02 do MATHeu$: construa o lado, cerque o círculo por dentro e por fora e compare os contornos.">
+  <meta name="description" content="Laboratório visual do MATHeu$: derive os perímetros de polígonos inscritos e circunscritos e cerque o círculo por dentro e por fora.">
   <title>Lab 02 — Quanto mede o contorno? · MATHeu$</title>
   <style>
-    :root {
-      color-scheme: light dark;
-      --bg: #f4f1e8;
-      --ink: #171713;
-      --muted: #666258;
-      --paper: rgba(255, 255, 255, .66);
-      --line: rgba(23, 23, 19, .15);
-      --accent: #246b52;
-      --accent-2: #9b3f31;
-      --circle: #252520;
-      --focus: #d4872d;
-      --shadow: 0 18px 60px rgba(48, 43, 31, .09);
+    :root{
+      color-scheme:light dark;
+      --bg:#f3f0e7;--ink:#171713;--muted:#68645b;--paper:#fffdf8cc;
+      --line:#17171324;--accent:#246b52;--accent2:#a04436;--focus:#d8892f;
+      --grid:#17171312;--shadow:0 18px 60px #302b1f16
     }
-
-    @media (prefers-color-scheme: dark) {
-      :root {
-        --bg: #11130f;
-        --ink: #f0eee7;
-        --muted: #b8b3a8;
-        --paper: rgba(255, 255, 255, .055);
-        --line: rgba(255, 255, 255, .14);
-        --accent: #7bc5a3;
-        --accent-2: #ef9788;
-        --circle: #f0eee7;
-        --focus: #ffc267;
-        --shadow: none;
-      }
-    }
-
-    * { box-sizing: border-box; }
-
-    html { scroll-behavior: smooth; }
-
-    body {
-      margin: 0;
-      background: var(--bg);
-      color: var(--ink);
-      font: 18px/1.55 ui-serif, Georgia, Cambria, "Times New Roman", serif;
-    }
-
-    button, input { font: inherit; }
-
-    a { color: var(--accent); }
-
-    :focus-visible {
-      outline: 3px solid var(--focus);
-      outline-offset: 3px;
-    }
-
-    .skip-link {
-      position: absolute;
-      left: 12px;
-      top: -80px;
-      padding: 10px 14px;
-      background: var(--ink);
-      color: var(--bg);
-      z-index: 20;
-    }
-
-    .skip-link:focus { top: 12px; }
-
-    header, .lab-meta, main, footer {
-      width: min(1120px, calc(100% - 32px));
-      margin-inline: auto;
-    }
-
-    header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 16px;
-      padding: 22px 0;
-      border-bottom: 1px solid var(--line);
-      font-family: ui-sans-serif, system-ui, sans-serif;
-      font-size: .86rem;
-    }
-
-    header a { text-decoration: none; }
-
-    .brand { font-weight: 800; letter-spacing: -.02em; }
-
-    .lab-meta {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 10px 20px;
-      padding: 12px 0;
-      border-bottom: 1px solid var(--line);
-      font-family: ui-sans-serif, system-ui, sans-serif;
-      font-size: .8rem;
-      color: var(--muted);
-    }
-
-    .lab-progress { display: flex; align-items: center; gap: 10px; }
-
-    .lab-progress-track {
-      width: 120px;
-      height: 6px;
-      border-radius: 999px;
-      background: var(--line);
-      overflow: hidden;
-    }
-
-    .lab-progress-fill {
-      height: 100%;
-      border-radius: 999px;
-      background: var(--accent);
-    }
-
-    .lab-restart {
-      margin-left: auto;
-      padding: 6px 14px;
-      border: 1px solid var(--line);
-      border-radius: 999px;
-      background: transparent;
-      color: var(--muted);
-      cursor: pointer;
-    }
-
-    .lab-restart:hover,
-    .lab-restart:focus-visible { color: var(--ink); border-color: currentColor; }
-
-    main { padding: 58px 0 88px; }
-
-    .eyebrow {
-      margin: 0 0 12px;
-      color: var(--accent);
-      font: 800 .76rem/1.2 ui-sans-serif, system-ui, sans-serif;
-      letter-spacing: .15em;
-      text-transform: uppercase;
-    }
-
-    h1, h2, h3 { line-height: 1.08; letter-spacing: -.035em; }
-
-    h1 {
-      max-width: 900px;
-      margin: 0;
-      font-size: clamp(2.9rem, 8vw, 6.6rem);
-    }
-
-    h2 { font-size: clamp(2rem, 5vw, 3.5rem); margin-top: 0; }
-
-    h3 { font-size: 1.25rem; }
-
-    .lead {
-      max-width: 780px;
-      margin: 24px 0 0;
-      color: var(--muted);
-      font-size: clamp(1.18rem, 2.8vw, 1.65rem);
-    }
-
-    .question-card, .lab-card, .formula-card, .challenge-card, details {
-      margin-top: 38px;
-      border: 1px solid var(--line);
-      border-radius: 24px;
-      background: var(--paper);
-      box-shadow: var(--shadow);
-    }
-
-    .question-card, .formula-card, .challenge-card, details { padding: clamp(22px, 4vw, 38px); }
-
-    .question-card strong, .box-label {
-      display: block;
-      color: var(--accent);
-      font: 800 .76rem/1.2 ui-sans-serif, system-ui, sans-serif;
-      letter-spacing: .13em;
-      text-transform: uppercase;
-    }
-
-    .question-card p {
-      max-width: 850px;
-      margin: 12px 0 22px;
-      font-size: clamp(1.45rem, 4vw, 2.45rem);
-      line-height: 1.18;
-    }
-
-    .answer-grid {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 10px;
-    }
-
-    button {
-      border: 1px solid var(--line);
-      border-radius: 999px;
-      padding: 12px 16px;
-      background: transparent;
-      color: var(--ink);
-      cursor: pointer;
-    }
-
-    button:hover { border-color: var(--accent); }
-
-    button[aria-pressed="true"], .primary {
-      border-color: var(--accent);
-      background: var(--accent);
-      color: var(--bg);
-    }
-
-    button:disabled { opacity: .45; cursor: not-allowed; }
-
-    .feedback {
-      min-height: 1.6em;
-      margin: 16px 0 0;
-      color: var(--muted);
-      font-family: ui-sans-serif, system-ui, sans-serif;
-    }
-
-    .lab-card { overflow: hidden; }
-
-    .lab-grid {
-      display: grid;
-      grid-template-columns: minmax(0, 1.35fr) minmax(280px, .65fr);
-    }
-
-    .visual-panel {
-      min-height: 620px;
-      padding: 18px;
-      background:
-        linear-gradient(var(--line) 1px, transparent 1px),
-        linear-gradient(90deg, var(--line) 1px, transparent 1px);
-      background-size: 28px 28px;
-    }
-
-    svg { width: 100%; height: 100%; min-height: 580px; display: block; }
-
-    .control-panel {
-      padding: clamp(22px, 4vw, 34px);
-      border-left: 1px solid var(--line);
-    }
-
-    .control-panel h2 { font-size: 1.9rem; }
-
-    .control-panel label {
-      display: block;
-      margin-top: 26px;
-      font: 700 .86rem/1.3 ui-sans-serif, system-ui, sans-serif;
-    }
-
-    input[type="range"] { width: 100%; margin: 14px 0; accent-color: var(--accent); }
-
-    .quick-values {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-
-    .quick-values button { padding: 8px 12px; font-size: .88rem; }
-
-    .measurements {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      margin: 26px 0;
-    }
-
-    .measurement {
-      padding: 14px;
-      border: 1px solid var(--line);
-      border-radius: 16px;
-    }
-
-    .measurement dt {
-      color: var(--muted);
-      font: 700 .73rem/1.2 ui-sans-serif, system-ui, sans-serif;
-      text-transform: uppercase;
-      letter-spacing: .08em;
-    }
-
-    .measurement dd { margin: 5px 0 0; font-size: 1.32rem; font-variant-numeric: tabular-nums; }
-
-    .measurement.inside dd { color: var(--accent); }
-
-    .measurement.outside dd { color: var(--accent-2); }
-
-    .hint {
-      padding: 16px;
-      border-left: 4px solid var(--accent);
-      background: color-mix(in srgb, var(--accent) 9%, transparent);
-      color: var(--muted);
-    }
-
-    .reveal-row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-top: 22px; }
-
-    .hint.secret { margin-top: 24px; }
-
-    .formula-card[hidden] { display: none; }
-
-    .formula {
-      margin: 22px 0;
-      padding: 22px;
-      border: 1px solid var(--line);
-      border-radius: 18px;
-      text-align: center;
-      font-size: clamp(1.5rem, 4.4vw, 2.6rem);
-      font-variant-numeric: lining-nums;
-      overflow-x: auto;
-    }
-
-    .derivation {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 12px;
-      counter-reset: step;
-    }
-
-    .step {
-      padding: 18px;
-      border: 1px solid var(--line);
-      border-radius: 18px;
-    }
-
-    .step::before {
-      counter-increment: step;
-      content: counter(step);
-      display: grid;
-      place-items: center;
-      width: 28px;
-      height: 28px;
-      margin-bottom: 12px;
-      border-radius: 50%;
-      background: var(--accent);
-      color: var(--bg);
-      font: 800 .82rem/1 ui-sans-serif, system-ui, sans-serif;
-    }
-
-    .step p { margin: 0; }
-
-    .dictionary {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
-      margin-top: 18px;
-    }
-
-    .dictionary div { padding: 14px; border-top: 1px solid var(--line); }
-
-    .challenge-options { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
-
-    details summary {
-      cursor: pointer;
-      font-weight: 700;
-      font-size: 1.25rem;
-    }
-
-    details p, details li { color: var(--muted); }
-
-    footer { padding: 28px 0 56px; border-top: 1px solid var(--line); color: var(--muted); }
-
-    .sr-only {
-      position: absolute;
-      width: 1px;
-      height: 1px;
-      padding: 0;
-      margin: -1px;
-      overflow: hidden;
-      clip: rect(0, 0, 0, 0);
-      white-space: nowrap;
-      border: 0;
-    }
-
-    .hint-ladder { margin-top: 20px; }
-
-    .hint-ladder details {
-      margin-top: 10px;
-      padding: 14px 18px;
-      border-radius: 14px;
-      box-shadow: none;
-    }
-
-    .hint-ladder summary { font-size: 1rem; }
-
-    .lab-nav {
-      margin-top: 48px;
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 12px;
-      font-family: ui-sans-serif, system-ui, sans-serif;
-    }
-
-    .lab-nav a, .lab-nav .soon {
-      display: block;
-      padding: 16px 18px;
-      border: 1px solid var(--line);
-      border-radius: 18px;
-      background: var(--paper);
-      color: var(--ink);
-      text-decoration: none;
-    }
-
-    .lab-nav a:hover { border-color: var(--accent); }
-
-    .lab-nav small {
-      display: block;
-      margin-bottom: 6px;
-      color: var(--accent);
-      font: 800 .7rem/1.2 ui-sans-serif, system-ui, sans-serif;
-      letter-spacing: .1em;
-      text-transform: uppercase;
-    }
-
-    .lab-nav .soon { color: var(--muted); }
-
-    @media (max-width: 820px) {
-      .answer-grid, .derivation, .dictionary { grid-template-columns: 1fr; }
-      .lab-grid { grid-template-columns: 1fr; }
-      .control-panel { border-left: 0; border-top: 1px solid var(--line); }
-      .visual-panel { min-height: 480px; }
-      svg { min-height: 440px; }
-    }
-
-    @media (max-width: 480px) {
-      header { align-items: flex-start; flex-direction: column; }
-      main { padding-top: 38px; }
-      .measurements { grid-template-columns: 1fr; }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      html { scroll-behavior: auto; }
-      * { transition: none !important; }
-    }
+    @media(prefers-color-scheme:dark){:root{
+      --bg:#10120e;--ink:#f1eee6;--muted:#b9b3a8;--paper:#ffffff0d;
+      --line:#ffffff24;--accent:#78c7a3;--accent2:#f19a8c;--focus:#ffc46d;
+      --grid:#ffffff12;--shadow:none
+    }}
+    *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--ink);font:18px/1.55 ui-serif,Georgia,Cambria,serif}
+    button,input{font:inherit}button{color:inherit}a{color:var(--accent)}[hidden]{display:none!important}
+    :focus-visible{outline:3px solid var(--focus);outline-offset:3px}
+    .skip{position:absolute;left:12px;top:-80px;padding:10px 14px;background:var(--ink);color:var(--bg);z-index:40}.skip:focus{top:12px}
+    header,.meta,main,footer{width:min(1120px,calc(100% - 28px));margin-inline:auto}
+    header{display:flex;justify-content:space-between;gap:16px;align-items:center;padding:20px 0;border-bottom:1px solid var(--line);font:700 .84rem/1.2 ui-sans-serif,system-ui}
+    header a{text-decoration:none}.brand{font-weight:900}
+    .meta{display:flex;flex-wrap:wrap;gap:10px 20px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line);color:var(--muted);font:700 .78rem/1.2 ui-sans-serif,system-ui}
+    .meta button{margin-left:auto}.progress-mini{display:flex;gap:10px;align-items:center}.track{width:120px;height:7px;border-radius:99px;background:var(--line);overflow:hidden}.track span{display:block;height:100%;width:0;background:var(--accent);transition:width .25s}
+    main{padding:54px 0 88px}.eyebrow{margin:0 0 12px;color:var(--accent);font:900 .75rem/1.2 ui-sans-serif,system-ui;letter-spacing:.15em;text-transform:uppercase}
+    h1,h2,h3{line-height:1.06;letter-spacing:-.035em}h1{max-width:930px;margin:0;font-size:clamp(3rem,9vw,7rem)}h2{font-size:clamp(2rem,5vw,3.6rem);margin:0 0 14px}h3{font-size:1.25rem;margin:0 0 10px}
+    .lead{max-width:820px;margin:24px 0 0;color:var(--muted);font-size:clamp(1.15rem,2.7vw,1.65rem)}
+    .question,.act,.proof,.work-card,.curiosity,.finish-item,.lab{border:1px solid var(--line);background:var(--paper);box-shadow:var(--shadow)}
+    .question,.act,.proof{margin-top:34px;border-radius:26px;padding:clamp(22px,4vw,38px)}
+    .label{display:block;color:var(--accent);font:900 .74rem/1.2 ui-sans-serif,system-ui;letter-spacing:.13em;text-transform:uppercase}
+    .question>p{max-width:850px;margin:12px 0 22px;font-size:clamp(1.4rem,4vw,2.4rem);line-height:1.18}
+    .options,.quick,.stepper,.step-dots{display:flex;flex-wrap:wrap;gap:10px}.options button,.primary,.ghost,.quick button,.meta button,.step-dots button{border:1px solid var(--line);border-radius:999px;padding:11px 15px;background:transparent;cursor:pointer}
+    .options button:hover,.primary:hover,.ghost:hover,.quick button:hover,.step-dots button:hover{border-color:var(--accent)}
+    button[aria-pressed=true],.primary,.step-dots button[aria-current=step]{border-color:var(--accent);background:var(--accent);color:var(--bg)}
+    button:disabled{opacity:.48;cursor:not-allowed}.feedback{min-height:1.5em;margin:14px 0 0;color:var(--muted);font:600 .91rem/1.45 ui-sans-serif,system-ui}
+    .route{margin-top:30px;padding:22px;border:1px dashed var(--line);border-radius:24px;background:color-mix(in srgb,var(--accent) 6%,transparent)}
+    .route h2{font-size:1.45rem}.route-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.route-step{padding:14px;border:1px solid var(--line);border-radius:16px}.route-step strong{display:block;color:var(--accent);font:800 .78rem/1.2 ui-sans-serif,system-ui}.route-step span{color:var(--muted);font-size:.92rem}
+    .lab{margin-top:34px;border-radius:28px;overflow:hidden}.lab-grid{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(290px,.75fr)}
+    .visual{min-height:650px;padding:16px;background:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:28px 28px}.visual svg{width:100%;height:100%;min-height:610px;display:block}
+    .controls{padding:clamp(22px,4vw,36px);border-left:1px solid var(--line)}.controls label{display:block;margin-top:24px;font:800 .86rem/1.3 ui-sans-serif,system-ui}.controls input[type=range]{width:100%;margin:14px 0;accent-color:var(--accent)}.quick button{padding:8px 12px;font-size:.86rem}
+    .values{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:24px 0}.value{padding:13px;border:1px solid var(--line);border-radius:15px}.value dt{color:var(--muted);font:800 .7rem/1.2 ui-sans-serif,system-ui;letter-spacing:.08em;text-transform:uppercase}.value dd{margin:5px 0 0;font-size:1.25rem;font-variant-numeric:tabular-nums}.inside dd{color:var(--accent)}.outside dd{color:var(--accent2)}
+    .hint{padding:15px;border-left:4px solid var(--accent);background:color-mix(in srgb,var(--accent) 9%,transparent);color:var(--muted)}.reveal-row{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:20px}
+    .chart-wrap{margin-top:18px;padding:13px;border:1px solid var(--line);border-radius:18px}.chart-wrap canvas{display:block;width:100%;height:230px}.chart-wrap small{color:var(--muted);font:700 .76rem/1.3 ui-sans-serif,system-ui}
+    .deriv-grid{display:grid;grid-template-columns:minmax(0,.95fr) minmax(0,1.05fr);gap:24px;align-items:start;margin-top:22px}.deriv-figure{position:sticky;top:12px;padding:12px;border:1px solid var(--line);border-radius:20px;background:var(--bg)}.deriv-figure svg{width:100%;height:auto;display:block}
+    .stepper{align-items:center;margin:14px 0 12px}.step-dots{margin-bottom:12px}.step-dots button{width:38px;height:38px;padding:0;font:900 .8rem/1 ui-sans-serif,system-ui}
+    .chain{list-style:none;margin:0;padding:0}.chain li{position:relative;padding:18px 18px 18px 56px;border:1px solid var(--focus);border-radius:18px;background:color-mix(in srgb,var(--focus) 8%,transparent)}.chain li::before{content:attr(data-step);position:absolute;left:16px;top:18px;display:grid;place-items:center;width:27px;height:27px;border-radius:50%;background:var(--focus);color:var(--bg);font:900 .78rem/1 ui-sans-serif,system-ui}.chain p{margin:0}.chain details{margin-top:12px;padding:11px 13px;border:1px solid var(--line);border-radius:13px}.chain summary{cursor:pointer;font-weight:800}
+    .result-reveal{margin-top:22px;padding:20px;border:1px solid var(--accent);border-radius:20px;background:color-mix(in srgb,var(--accent) 8%,transparent)}.formula{margin:14px 0;padding:18px;border:1px solid var(--line);border-radius:18px;text-align:center;font-size:clamp(1.55rem,4.5vw,2.8rem);overflow:auto}.dictionary{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.dictionary div{padding:14px;border-top:1px solid var(--line)}
+    .proof{box-shadow:none}.proof summary{cursor:pointer;font-weight:900;font-size:1.15rem}.proof p{color:var(--muted)}.qed{text-align:right;color:var(--accent)!important;font-weight:900}
+    .work-grid,.curiosity-grid,.finish-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:22px}.work-card,.curiosity,.finish-item{border-radius:20px;padding:20px;box-shadow:none}.work-card details{margin-top:14px;padding:11px 13px;border:1px solid var(--line);border-radius:13px}.work-card summary{cursor:pointer;font-weight:800}.number{display:inline-grid;place-items:center;width:34px;height:34px;margin-bottom:12px;border-radius:50%;background:var(--accent);color:var(--bg);font:900 .82rem/1 ui-sans-serif,system-ui}
+    .error-grid{display:grid;grid-template-columns:.75fr 1.25fr;gap:14px;align-items:start}.error-controls{padding:18px;border:1px solid var(--line);border-radius:18px}.error-controls label{font:800 .86rem/1.3 ui-sans-serif,system-ui}.error-controls input{width:100%;margin:12px 0}.error-canvas{padding:14px;border:1px solid var(--line);border-radius:18px}.error-canvas canvas{width:100%;height:300px;display:block}.error-result{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:14px}
+    .finish-item strong{display:block;color:var(--accent);font:900 .78rem/1.2 ui-sans-serif,system-ui;text-transform:uppercase;letter-spacing:.08em}.finish-item p{margin:7px 0 0;color:var(--muted)}
+    .lab-nav{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-top:40px;font-family:ui-sans-serif,system-ui}.lab-nav a{display:block;padding:16px 18px;border:1px solid var(--line);border-radius:18px;background:var(--paper);color:var(--ink);text-decoration:none}.lab-nav small{display:block;margin-bottom:5px;color:var(--accent);font:900 .68rem/1.2 ui-sans-serif,system-ui;letter-spacing:.1em;text-transform:uppercase}
+    footer{padding:28px 0 54px;border-top:1px solid var(--line);color:var(--muted)}
+    @media(max-width:840px){.route-grid{grid-template-columns:1fr 1fr}.lab-grid,.deriv-grid,.error-grid{grid-template-columns:1fr}.controls{border-left:0;border-top:1px solid var(--line)}.deriv-figure{position:relative;top:0}.work-grid,.curiosity-grid,.finish-grid{grid-template-columns:1fr}.visual{min-height:480px}.visual svg{min-height:450px}.stepper{position:sticky;bottom:8px;z-index:5;padding:10px;border:1px solid var(--line);border-radius:18px;background:color-mix(in srgb,var(--bg) 92%,transparent);backdrop-filter:blur(10px)}}
+    @media(max-width:520px){header{align-items:flex-start;flex-direction:column}.meta button{margin-left:0}.route-grid,.values,.dictionary,.error-result{grid-template-columns:1fr}main{padding-top:38px}}
+    @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
   </style>
 </head>
 <body>
-  <a class="skip-link" href="#conteudo">Pular para o laboratório</a>
-  <header>
-    <a class="brand" href="../../index.html">MATHeu$</a>
-    <span>Temporada 01 · Laboratório 02</span>
-  </header>
-
-  <div class="lab-meta">
-    <div class="lab-progress">
-      <span>Lab 2 de 10</span>
-      <div class="lab-progress-track" role="img" aria-label="Progresso na temporada: laboratório 2 de 10">
-        <div class="lab-progress-fill" style="width: 20%"></div>
-      </div>
-    </div>
-    <span>≈ 20 min</span>
-    <span>Dificuldade <span role="img" aria-label="2 de 3">●●○</span></span>
-    <button id="restart-lab" type="button" class="lab-restart">Recomeçar laboratório</button>
+  <a class="skip" href="#conteudo">Pular para o laboratório</a>
+  <header><a class="brand" href="../../index.html">MATHeu$</a><span>Temporada 01 · Laboratório 02</span></header>
+  <div class="meta">
+    <div class="progress-mini"><span>Progresso real</span><div class="track" role="progressbar" aria-valuemin="0" aria-valuemax="8" aria-valuenow="0"><span id="progress-fill"></span></div><strong id="progress-text">0/8</strong></div>
+    <span>≈ 30–40 min</span><span>Dificuldade <span role="img" aria-label="2 de 3">●●○</span></span>
+    <button id="restart" type="button">Recomeçar laboratório</button>
   </div>
 
   <main id="conteudo">
     <p class="eyebrow">Quanto mede o contorno?</p>
-    <h1>Um cerco por dentro, outro por fora. Quem erra menos?</h1>
-    <p class="lead">No Laboratório 01, a razão entre os raios denunciou a forma. Agora o círculo é cercado por dois polígonos com o mesmo número de lados — um por dentro, outro por fora — e queremos o comprimento de cada cerco.</p>
+    <h1>Um círculo preso entre dois cercos.</h1>
+    <p class="lead">O Lab 01 encontrou o triângulo fundamental. Agora ele precisa trabalhar duas vezes: primeiro para construir o lado do polígono de dentro; depois para construir o lado do polígono de fora. O círculo ficará entre os dois contornos — não por autoridade, mas por desenho, medida e dedução.</p>
 
-    <section class="question-card" aria-labelledby="aposta-titulo">
-      <strong id="aposta-titulo">Pare e aposte</strong>
-      <p>Com o mesmo número de lados, qual contorno fica mais perto do círculo?</p>
-      <div class="answer-grid" role="group" aria-label="Escolha sua previsão">
+    <section class="route" aria-labelledby="route-title">
+      <p class="label">Mapa do laboratório</p><h2 id="route-title">O segundo laboratório continua a mesma linguagem</h2>
+      <div class="route-grid">
+        <div class="route-step"><strong>Ato 1</strong><span>apostar qual cerco erra menos</span></div>
+        <div class="route-step"><strong>Ato 2</strong><span>manipular figura, números e gráfico</span></div>
+        <div class="route-step"><strong>Ato 3</strong><span>derivar os dois contornos em oito passos</span></div>
+        <div class="route-step"><strong>Ato 4</strong><span>resolver quatro exercícios</span></div>
+        <div class="route-step"><strong>Ato 5</strong><span>ver os erros encolherem</span></div>
+        <div class="route-step"><strong>Ato 6</strong><span>Arquimedes, prova e fechamento</span></div>
+      </div>
+    </section>
+
+    <section id="bet" class="question" aria-labelledby="bet-title">
+      <span class="label">Ato 1 · pare e aposte</span>
+      <p id="bet-title">Com o mesmo número de lados, qual contorno fica mais perto do círculo?</p>
+      <div class="options" role="group" aria-label="Escolha sua previsão">
         <button type="button" data-prediction="inside" aria-pressed="false">o de dentro</button>
         <button type="button" data-prediction="tie" aria-pressed="false">os dois empatam</button>
         <button type="button" data-prediction="outside" aria-pressed="false">o de fora</button>
       </div>
-      <p id="prediction-feedback" class="feedback" aria-live="polite">Escolha antes de mexer no controle. A figura vai dar o veredito.</p>
+      <p id="prediction-feedback" class="feedback" aria-live="polite">A aposta não precisa estar certa. Precisa existir antes da medição.</p>
     </section>
 
-    <section class="lab-card" aria-labelledby="lab-title">
+    <section class="lab" aria-labelledby="lab-title">
       <div class="lab-grid">
-        <div class="visual-panel">
+        <div class="visual">
           <svg id="geometry" viewBox="0 0 640 660" role="img" aria-labelledby="svg-title svg-desc">
-            <title id="svg-title">Círculo cercado por um polígono inscrito e um circunscrito, com o triângulo fundamental</title>
-            <desc id="svg-desc">O polígono de dentro tem os vértices sobre o círculo; o de fora encosta no círculo pelo meio de cada lado. Um triângulo retângulo liga o centro, o ponto médio de um lado interno e um vértice.</desc>
+            <title id="svg-title">Círculo cercado por polígonos regular inscrito e circunscrito</title>
+            <desc id="svg-desc">O polígono interno fica dentro do círculo e o externo fica fora; um triângulo fundamental é destacado.</desc>
             <g id="drawing"></g>
           </svg>
         </div>
-
-        <div class="control-panel">
-          <p class="box-label">Brinque</p>
-          <h2 id="lab-title">Aperte o cerco</h2>
-          <p>O círculo tem raio fixo <strong>R = 1</strong> e contorno ≈ 6,2832. Aumente os lados e observe os dois cercos.</p>
-
-          <label for="sides">Número de lados: <output id="sides-output" for="sides">6</output></label>
+        <div class="controls">
+          <span class="label">Ato 2 · aperte o cerco</span><h2 id="lab-title">Veja os dois lados se aproximarem</h2>
+          <p>O círculo tem raio R=1 e contorno 2π≈6,2832. Mude n e acompanhe três contornos ao mesmo tempo.</p>
+          <label for="sides">Número de lados: <output id="sides-output">6</output></label>
           <input id="sides" type="range" min="3" max="96" step="1" value="6">
-
-          <div class="quick-values" aria-label="Valores rápidos — a escada de Arquimedes">
-            <button type="button" data-n="3">3</button>
-            <button type="button" data-n="6">6</button>
-            <button type="button" data-n="12">12</button>
-            <button type="button" data-n="24">24</button>
-            <button type="button" data-n="48">48</button>
-            <button type="button" data-n="96">96</button>
-          </div>
-
-          <dl class="measurements" aria-label="Medidas normalizadas para R igual a 1">
-            <div class="measurement inside"><dt>contorno por dentro</dt><dd id="p-in">6,0000</dd></div>
-            <div class="measurement outside"><dt>contorno por fora</dt><dd id="p-out">6,9282</dd></div>
-            <div class="measurement"><dt>círculo</dt><dd>6,2832</dd></div>
-            <div class="measurement"><dt>lado de dentro</dt><dd id="side-value">1,0000</dd></div>
-            <div class="measurement inside"><dt>erro por dentro</dt><dd id="err-in">0,2832</dd></div>
-            <div class="measurement outside"><dt>erro por fora</dt><dd id="err-out">0,6450</dd></div>
-            <div class="measurement"><dt>erro fora ÷ erro dentro</dt><dd id="ratio-value">2,2777</dd></div>
+          <div class="quick" aria-label="Escada de duplicação"><button data-n="3">3</button><button data-n="6">6</button><button data-n="12">12</button><button data-n="24">24</button><button data-n="48">48</button><button data-n="96">96</button></div>
+          <dl class="values">
+            <div class="value inside"><dt>por dentro</dt><dd id="p-in">6,0000</dd></div>
+            <div class="value outside"><dt>por fora</dt><dd id="p-out">6,9282</dd></div>
+            <div class="value"><dt>círculo</dt><dd>6,2832</dd></div>
+            <div class="value"><dt>lado interno</dt><dd id="side-in">1,0000</dd></div>
+            <div class="value inside"><dt>erro interno</dt><dd id="err-in">0,2832</dd></div>
+            <div class="value outside"><dt>erro externo</dt><dd id="err-out">0,6450</dd></div>
+            <div class="value"><dt>erro fora ÷ dentro</dt><dd id="error-ratio">2,2777</dd></div>
+            <div class="value"><dt>lado fora ÷ dentro</dt><dd id="side-ratio">1,1547</dd></div>
           </dl>
-
-          <p class="hint"><strong>Olhe de novo:</strong> o triângulo destacado é o mesmo do Laboratório 01 — mas agora interessa o cateto <em>oposto</em> ao ângulo π/n: ele é metade do lado.</p>
-
-          <div class="reveal-row">
-            <button id="reveal" type="button" class="primary" disabled>Revelar as fórmulas</button>
-            <span id="reveal-status" class="feedback" aria-live="polite">Faça uma previsão e altere o número de lados.</span>
-          </div>
+          <div class="chart-wrap"><canvas id="perimeter-chart" aria-label="Gráfico dos contornos interno, circular e externo conforme n cresce"></canvas><small>O ponto verde sobe, o vermelho desce e ambos comprimem a linha do círculo.</small></div>
+          <p class="hint"><strong>Olhe o triângulo:</strong> no polígono interno, o meio-lado é cateto oposto e R é hipotenusa. No externo, o meio-lado é cateto oposto e R é cateto adjacente.</p>
+          <div class="reveal-row"><button id="reveal" type="button" class="primary">1. Faça uma aposta acima</button><span id="reveal-status" class="feedback" aria-live="polite">Depois da aposta, o botão abre a dedução inteira. Mexer em n ajuda, mas não é uma trava.</span></div>
         </div>
       </div>
     </section>
 
-    <section id="formula-card" class="formula-card" hidden aria-labelledby="formula-title">
-      <p class="box-label">Entenda</p>
-      <h2 id="formula-title">O lado nasce do triângulo; o contorno, do lado</h2>
-
-      <div class="derivation">
-        <div class="step"><p><strong>MV</strong> é metade do lado e é o cateto <em>oposto</em> ao ângulo <strong>π/n</strong>.</p></div>
-        <div class="step"><p><strong>OV</strong> é a hipotenusa <strong>R</strong>. Seno = oposto / hipotenusa, então <strong>L/2 = R · sen(π/n)</strong>.</p></div>
-        <div class="step"><p>São <strong>n</strong> lados iguais. O contorno inteiro é n vezes o lado.</p></div>
-      </div>
-
-      <div class="formula" aria-label="contorno por dentro é igual a 2 n R seno de pi sobre n">
-        contorno por dentro = 2nR · sen(π/n)
-      </div>
-
-      <p>O polígono de fora encosta no círculo pelo meio de cada lado: seu apótema é o próprio <strong>R</strong>. No triângulo correspondente, o meio-lado é o cateto oposto e <strong>R</strong> é o cateto adjacente — a razão entre eles é a tangente:</p>
-
-      <div class="formula" aria-label="contorno por fora é igual a 2 n R tangente de pi sobre n">
-        contorno por fora = 2nR · tg(π/n)
-      </div>
-
-      <div class="dictionary" aria-label="Dicionário das fórmulas">
-        <div><strong>R</strong><br>raio do círculo cercado</div>
-        <div><strong>n</strong><br>número de lados</div>
-        <div><strong>sen, tg</strong><br>razões do triângulo retângulo: oposto/hipotenusa e oposto/adjacente</div>
-      </div>
-
-      <p><strong>O que elas medem:</strong> comprimentos, na mesma unidade de R. O círculo fica sempre preso entre os dois: contorno por dentro &lt; 2πR &lt; contorno por fora.</p>
-      <p><strong>Quando valem:</strong> polígonos regulares com n ≥ 3, inscrito (vértices no círculo) e circunscrito (lados tangentes ao círculo).</p>
-
-      <p class="hint secret"><strong>Segredo de mestre:</strong> olhe a última medida do painel. O cerco de fora erra cerca de <em>o dobro</em> do cerco de dentro, e a razão se aproxima de 2 conforme n cresce. O Laboratório 04 vai explicar por quê.</p>
-
-      <div id="exercise-side-ratio" class="challenge-card" style="margin-top:26px; padding:0; border:0; box-shadow:none; background:transparent;">
-        <p class="box-label">Encontre o erro</p>
-        <h3>"Se o cerco de fora erra o dobro do de dentro, o lado de fora também deve ser cerca do dobro do lado de dentro."</h3>
-        <p>Parece a mesma ideia aplicada a outra medida — mas as duas razões não medem a mesma coisa.</p>
-        <div class="challenge-options" role="group" aria-label="Julgue a afirmação">
-          <button type="button" data-ex-side="right">está certo</button>
-          <button type="button" data-ex-side="close">errado: o lado de fora fica só um pouco maior — a razão vai a 1</button>
-          <button type="button" data-ex-side="smaller">errado: o lado de fora é bem menor</button>
-        </div>
-        <p id="side-feedback" class="feedback" aria-live="polite"></p>
-        <div class="hint-ladder">
-          <details><summary>Primeira pista</summary><p>Não confie na intuição — meça. No painel, calcule 2n·tg(π/n) (lado de fora) e compare com o "lado de dentro" já mostrado, para n = 12.</p></details>
-          <details><summary>Pista visual</summary><p>A razão lado de fora ÷ lado de dentro é tg(θ)/sen(θ) = 1/cos(θ) = R/r — a mesma razão R/r do Laboratório 01. E você já viu essa razão: ela vai a 1, não a 2, conforme n cresce.</p></details>
-          <details><summary>Solução comentada</summary><p>Errado — a razão dos lados tende a 1, bem diferente da razão dos erros, que tende a 2. Com n = 12: lado de fora ÷ lado de dentro ≈ 1,0353; erro de fora ÷ erro de dentro ≈ 2,0635. A armadilha é achar que, se duas quantidades "erram parecido" perto de um mesmo alvo, as próprias quantidades também devem guardar essa razão. Não guardam: lado de dentro e lado de fora convergem os dois para o mesmo valor (o elemento de arco), então a razão entre eles vai a 1 — mas as suas <em>distâncias</em> até esse valor podem convergir numa razão totalmente diferente. É a diferença entre comparar dois números e comparar o quanto cada um ainda falta para chegar a algum lugar. Essa distinção reaparece toda vez que duas sequências convergem juntas, a partir do Laboratório 04.</p></details>
+    <section id="derivation" class="act" hidden aria-labelledby="derivation-title">
+      <span class="label">Ato 3 · construir os dois contornos</span><h2 id="derivation-title">O mesmo ângulo gera seno por dentro e tangente por fora</h2>
+      <p>Um passo por vez. No celular, o controle fica imediatamente sob a figura; nenhum botão será enterrado depois de sete cartões.</p>
+      <div class="deriv-grid">
+        <div class="deriv-figure"><svg id="deriv-svg" viewBox="0 0 480 470" role="img" aria-label="Dedução progressiva dos contornos interno e externo"><g id="deriv-drawing"></g></svg></div>
+        <div>
+          <div class="stepper"><button id="prev-step" type="button" class="ghost">← anterior</button><button id="next-step" type="button" class="primary">próximo →</button><span id="step-status" class="feedback" aria-live="polite">Passo 1 de 8</span></div>
+          <div id="step-dots" class="step-dots" aria-label="Ir diretamente a um passo"></div>
+          <ol id="chain" class="chain">
+            <li data-step="1"><p>Escolha um lado do polígono interno. Os dois raios até suas extremidades medem R; nasce um triângulo isósceles cujo ângulo no centro mede <strong>2π/n</strong>.</p><details><summary>Por quê?</summary><p>A volta completa mede 2π e o polígono regular a reparte em n setores iguais.</p></details></li>
+            <li data-step="2" hidden><p>A altura traçada do centro até a base do triângulo isósceles também é mediana e bissetriz. Ela corta o lado ao meio e divide o ângulo central: <strong>(2π/n)/2 = 2π/(2n) = π/n</strong>.</p><details><summary>Por quê?</summary><p>Nos dois triângulos retângulos resultantes, as hipotenusas são iguais R e a altura é comum; eles são congruentes. Por isso a base e o ângulo são divididos em partes iguais.</p></details></li>
+            <li data-step="3" hidden><p>No meio-triângulo interno, o cateto oposto a π/n é L<sub>in</sub>/2 e a hipotenusa é R. Portanto <strong>sen(π/n)=(L<sub>in</sub>/2)/R</strong>.</p><details><summary>Por quê?</summary><p>Seno é a razão cateto oposto ÷ hipotenusa em um triângulo retângulo.</p></details></li>
+            <li data-step="4" hidden><p>Isole o lado: <strong>L<sub>in</sub>=2R·sen(π/n)</strong>. Como existem n lados iguais, <strong>P<sub>in</sub>=2nR·sen(π/n)</strong>.</p><details><summary>Por quê?</summary><p>Perímetro é a soma dos n lados; num polígono regular, todos têm a mesma medida.</p></details></li>
+            <li data-step="5" hidden><p>Agora use o polígono externo. Seu lado tangencia o círculo; o raio até o ponto de tangência é perpendicular ao lado e o divide ao meio.</p><details><summary>Por quê?</summary><p>Raio e tangente são perpendiculares no ponto de contato; a simetria do setor regular coloca esse ponto no meio do lado.</p></details></li>
+            <li data-step="6" hidden><p>No meio-triângulo externo, R é o cateto adjacente a π/n e L<sub>out</sub>/2 é o oposto. Logo <strong>tg(π/n)=(L<sub>out</sub>/2)/R</strong>.</p><details><summary>Por quê?</summary><p>Tangente é cateto oposto ÷ cateto adjacente.</p></details></li>
+            <li data-step="7" hidden><p>Isole e multiplique: <strong>L<sub>out</sub>=2R·tg(π/n)</strong> e <strong>P<sub>out</sub>=2nR·tg(π/n)</strong>.</p><details><summary>Por quê?</summary><p>É a mesma passagem do meio-lado para o lado inteiro e depois para n lados.</p></details></li>
+            <li data-step="8" hidden><p>O círculo fica preso entre os cercos: <strong>P<sub>in</sub>&lt;2πR&lt;P<sub>out</sub></strong>. Quando n cresce, o interno sobe e o externo desce para o mesmo alvo.</p><details><summary>Por quê?</summary><p>Cada corda é menor que o arco correspondente; cada par de tangentes que envolve esse arco é maior. Somando n setores, o cerco permanece válido.</p></details></li>
+          </ol>
         </div>
       </div>
-    </section>
-
-    <section id="challenge" class="challenge-card" hidden aria-labelledby="challenge-title">
-      <p class="box-label">Agora use a fórmula</p>
-      <h2 id="challenge-title">Quantos lados o cerco de dentro precisa para o contorno passar de 6,2?</h2>
-      <p>O círculo mede ≈ 6,2832. Procure o menor n que basta — a fórmula (ou o laboratório) responde.</p>
-      <div class="challenge-options" role="group" aria-label="Escolha o número de lados">
-        <button type="button" data-answer="8">8 lados</button>
-        <button type="button" data-answer="12">12 lados</button>
-        <button type="button" data-answer="20">20 lados</button>
+      <div id="deriv-result" class="result-reveal" hidden>
+        <span class="label">Corrente fechada</span>
+        <div class="formula">P<sub>in</sub>=2nR·sen(π/n)</div>
+        <div class="formula">P<sub>out</sub>=2nR·tg(π/n)</div>
+        <div class="dictionary"><div><strong>R</strong><br>raio do círculo</div><div><strong>n</strong><br>número de lados</div><div><strong>sen e tg</strong><br>oposto/hipotenusa e oposto/adjacente</div></div>
+        <p><strong>Leitura:</strong> o mesmo setor angular produz duas aproximações porque o papel de R muda de hipotenusa para cateto adjacente.</p>
+        <details class="proof"><summary>Prova completa — o alicerce inteiro</summary><p>Para cada setor, a corda interna tem comprimento 2R·sen(π/n), enquanto o lado tangente externo tem comprimento 2R·tg(π/n). Multiplicando por n, obtemos os dois perímetros. A corda é menor que o arco correspondente e o segmento tangente que o envolve é maior; somando todos os setores, P<sub>in</sub>&lt;2πR&lt;P<sub>out</sub>.</p><p class="qed">∎</p></details>
       </div>
-      <p id="challenge-feedback" class="feedback" aria-live="polite"></p>
     </section>
 
-    <section id="archimedes" class="challenge-card" hidden aria-labelledby="archimedes-title">
-      <p class="box-label">Curiosidade</p>
-      <h2 id="archimedes-title">A escada 3 → 6 → 12 → 24 → 48 → 96</h2>
-      <p>Arquimedes, sem calculadora, dobrou os lados cinco vezes a partir do hexágono. Com n = 96, os dois cercos prendem a metade do contorno do círculo — o número que hoje chamamos de π — entre 3,14103 e 3,14271. Foi assim que ele garantiu que π está entre 3 + 10/71 e 3 + 1/7.</p>
-      <p>Use o botão <strong>96</strong> no painel e confira: você acabou de refazer, com as mesmas fórmulas, um dos cálculos mais famosos da história.</p>
-      <p><strong>Porta futura:</strong> o contorno se aproxima do círculo — mas e a <em>área</em> coberta pelos cercos? Essa é a pergunta que abre o <a href="../03-areas/index.html">Laboratório 03</a>.</p>
+    <section id="workbook" class="act" hidden aria-labelledby="workbook-title">
+      <span class="label">Ato 4 · caderno de exercícios</span><h2 id="workbook-title">Agora os cercos precisam trabalhar</h2><p>Quatro movimentos: calcular, procurar um mínimo, separar quantidade de erro e reconstruir Arquimedes.</p>
+      <div class="work-grid">
+        <article class="work-card"><h3>1 · O hexágono interno</h3><p>Para R=1 e n=6, quanto vale P<sub>in</sub>?</p><div class="options"><button data-ex="hex" data-answer="5.196">5,196</button><button data-ex="hex" data-answer="6">6</button><button data-ex="hex" data-answer="6.928">6,928</button></div><p class="feedback" data-feedback="hex"></p><details><summary>Pista</summary><p>sen(π/6)=1/2.</p></details></article>
+        <article class="work-card"><h3>2 · Menor n que ultrapassa 6,2</h3><p>Qual é o menor n com P<sub>in</sub>&gt;6,2?</p><div class="options"><button data-ex="threshold" data-answer="8">8</button><button data-ex="threshold" data-answer="12">12</button><button data-ex="threshold" data-answer="20">20</button></div><p class="feedback" data-feedback="threshold"></p><details><summary>Pista</summary><p>n=11 ainda dá aproximadamente 6,1981.</p></details></article>
+        <article class="work-card"><h3>3 · Não confunda lado com erro</h3><p>Quando n cresce, a razão lado externo ÷ lado interno tende a…</p><div class="options"><button data-ex="side" data-answer="1">1</button><button data-ex="side" data-answer="2">2</button><button data-ex="side" data-answer="0">0</button></div><p class="feedback" data-feedback="side"></p><details><summary>Pista</summary><p>L<sub>out</sub>/L<sub>in</sub>=tg(θ)/sen(θ)=1/cos(θ).</p></details></article>
+        <article class="work-card"><h3>4 · A escada de Arquimedes</h3><p>Com n=96 e R=1, os semiperímetros prendem π entre quais valores aproximados?</p><div class="options"><button data-ex="arch" data-answer="bounds">3,14103 e 3,14271</button><button data-ex="arch" data-answer="wide">3 e 4</button><button data-ex="arch" data-answer="wrong">3,14 e 3,1401</button></div><p class="feedback" data-feedback="arch"></p><details><summary>Pista</summary><p>Divida os dois perímetros por 2.</p></details></article>
+      </div>
     </section>
 
-    <details>
-      <summary>Oficina — o lado de fora e o destino da razão dos erros</summary>
-      <p><strong>Lado de fora.</strong> No polígono circunscrito, o raio até o ponto de tangência é perpendicular ao lado e o divide ao meio, formando um triângulo retângulo com cateto adjacente R e ângulo central π/n. O cateto oposto é o meio-lado: L/2 = R · tg(π/n).</p>
-      <p><strong>Por que a razão dos erros tende a 2.</strong> Para ângulos pequenos, o seno fica <em>abaixo</em> do arco por uma folga, e a tangente fica <em>acima</em> do arco por cerca do dobro dessa folga. O erro do cerco de dentro vem do seno; o do cerco de fora, da tangente. Por isso a razão entre os erros desce em direção a 2 — e o verificador do módulo confere isso numericamente até n = 1000.</p>
-      <p><strong>A duplicação de Arquimedes.</strong> Dobrar n não exige medir ângulos novos: existem fórmulas que dão o lado do polígono de 2n lados a partir do de n lados. É o que torna a escada 6 → 96 viável à mão — e é uma porta para as identidades de ângulo-metade.</p>
-    </details>
+    <section id="errors" class="act" hidden aria-labelledby="errors-title">
+      <span class="label">Ato 5 · anatomia do erro</span><h2 id="errors-title">Um erro sobe por baixo; o outro desce por cima</h2><p>O gráfico usa escala logarítmica vertical para tornar visível o encolhimento. Dobre n e observe os dois erros caírem aproximadamente para um quarto.</p>
+      <div class="error-grid">
+        <div class="error-controls"><label for="error-n">Número de lados: n=<output id="error-n-output">12</output></label><input id="error-n" type="range" min="3" max="192" value="12"><div class="quick"><button data-error-n="6">6</button><button data-error-n="12">12</button><button data-error-n="24">24</button><button data-error-n="48">48</button><button data-error-n="96">96</button><button data-error-n="192">192</button></div><p class="hint"><strong>Teste:</strong> compare 12→24 e 24→48. A razão dos erros externo/interno caminha para 2, mas ambos têm ordem n⁻².</p></div>
+        <div class="error-canvas"><canvas id="error-chart" aria-label="Erros dos cercos interno e externo conforme o número de lados cresce"></canvas><div class="error-result"><div class="value inside"><dt>erro interno</dt><dd id="error-in-value">—</dd></div><div class="value outside"><dt>erro externo</dt><dd id="error-out-value">—</dd></div><div class="value"><dt>razão</dt><dd id="error-ratio-value">—</dd></div></div><p id="error-feedback" class="feedback" aria-live="polite"></p></div>
+      </div>
+    </section>
 
-    <nav class="lab-nav" aria-label="Continuar no MATHeu$">
-      <a href="../01b-poligono-escondido/index.html"><small>Anterior</small>Interlúdio 01·B — O polígono escondido</a>
-      <a href="../../index.html"><small>Índice</small>Todos os laboratórios</a>
-      <a href="../03-areas/index.html"><small>Próximo</small>Lab 03 — O que acontece com as áreas?</a>
-    </nav>
+    <section id="curiosities" class="act" hidden aria-labelledby="curiosity-title">
+      <span class="label">Ato 6 · box de curiosidades</span><h2 id="curiosity-title">Quatro fatos que merecem sobreviver à página</h2>
+      <div class="curiosity-grid">
+        <article class="curiosity"><span class="number">1</span><h3>Arquimedes não “calculou π”</h3><p>Ele construiu uma garantia: π ficou aprisionado entre um valor menor e outro maior. A força está no cerco, não em uma casa decimal isolada.</p></article>
+        <article class="curiosity"><span class="number">2</span><h3>O erro externo é assimetricamente maior</h3><p>Para n grande, o erro por fora é aproximadamente duas vezes o erro por dentro. A área inverterá essa assimetria no Lab 03.</p></article>
+        <article class="curiosity"><span class="number">3</span><h3>Dobrar lados quadruplica a precisão</h3><p>Os erros de perímetro são da ordem de 1/n². Dobrar n reduz cada erro para cerca de 1/4.</p></article>
+        <article class="curiosity"><span class="number">4</span><h3>O mesmo triângulo mudou de função</h3><p>No Lab 01 ele reconhecia a forma. Aqui ele fabrica comprimentos. Um objeto matemático robusto não serve uma vez; ele organiza uma família inteira de problemas.</p></article>
+      </div>
+      <details class="proof"><summary>Oficina — por que a razão dos erros tende a 2?</summary><p>Com x=π/n pequeno, sen x=x−x³/6+O(x⁵) e tg x=x+x³/3+O(x⁵). Assim, 2πR−P<sub>in</sub>≈π³R/(3n²), enquanto P<sub>out</sub>−2πR≈2π³R/(3n²). O quociente tende a 2.</p></details>
+    </section>
+
+    <section id="finish" class="act" hidden aria-labelledby="finish-title">
+      <span class="label">Fechamento</span><h2 id="finish-title">Agora o Lab 02 termina no mesmo idioma em que começou</h2>
+      <div class="finish-grid"><article class="finish-item"><strong>Você construiu</strong><p>o lado interno com seno e o externo com tangente.</p></article><article class="finish-item"><strong>Você cercou</strong><p>o círculo entre um perímetro menor e outro maior.</p></article><article class="finish-item"><strong>Você distinguiu</strong><p>a razão entre lados da razão entre erros.</p></article><article class="finish-item"><strong>Você refez</strong><p>a lógica da escada de Arquimedes até n=96.</p></article></div>
+      <p id="finish-status" class="feedback">O progresso registra aposta, manipulação, revelação, quatro exercícios e exploração do erro.</p>
+      <p><strong>Pergunta de transferência:</strong> o contorno externo erra mais. Será que a área externa também erra mais? O Lab 03 foi construído para destruir essa extrapolação automática.</p>
+    </section>
+
+    <nav class="lab-nav" aria-label="Continuar no MATHeu$"><a href="../01-duas-circunferencias/index.html"><small>Anterior</small>Lab 01 — Duas circunferências</a><a href="../../index.html"><small>Índice</small>Todos os laboratórios</a><a href="../03-areas/index.html"><small>Próximo</small>Lab 03 — O que acontece com as áreas?</a></nav>
   </main>
-
-  <footer>
-    <p>MATHeu$ · Laboratório 02 · HTML autocontido, SVG calculado e funcionamento offline.</p>
-  </footer>
+  <footer><p>MATHeu$ · Laboratório 02 · SVG e Canvas calculados · funcionamento offline.</p></footer>
 
   <script>
-    (() => {
-      'use strict';
+  (()=>{'use strict';
+    const NS='http://www.w3.org/2000/svg',$=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+    const drawing=$('#drawing'),sides=$('#sides'),sidesOut=$('#sides-output');
+    const sections=['#derivation','#workbook','#errors','#curiosities','#finish'].map($);
+    const checkpoints={predicted:false,manipulated:false,revealed:false,error:false};const solved=new Set();
+    let derivStep=0,initialN=6;
+    const fmt=(v,d=4)=>new Intl.NumberFormat('pt-BR',{minimumFractionDigits:d,maximumFractionDigits:d}).format(v);
+    const svg=(name,attrs={},text='')=>{const n=document.createElementNS(NS,name);Object.entries(attrs).forEach(([k,v])=>n.setAttribute(k,v));if(text)n.textContent=text;return n};
+    const polar=(cx,cy,r,a)=>[cx+r*Math.cos(a),cy+r*Math.sin(a)];
+    const pin=n=>2*n*Math.sin(Math.PI/n),pout=n=>2*n*Math.tan(Math.PI/n);
 
-      const NS = 'http://www.w3.org/2000/svg';
-      const cx = 320;
-      const cy = 330;
-      const circleR = 150;
+    function progress(){const total=(checkpoints.predicted?1:0)+(checkpoints.manipulated?1:0)+(checkpoints.revealed?1:0)+solved.size+(checkpoints.error?1:0);$('#progress-fill').style.width=`${total/8*100}%`;$('#progress-text').textContent=`${total}/8`;$('.track').setAttribute('aria-valuenow',total);$('#finish-status').textContent=total===8?'8/8. Você percorreu o laboratório inteiro.':`${total}/8 movimentos concluídos.`}
+    function label(g,x,y,t,a='start',size=18){g.append(svg('text',{x,y,'text-anchor':a,'font-family':'system-ui','font-size':size,'font-weight':800,fill:'currentColor'},t))}
+    function poly(cx,cy,r,n,start){return Array.from({length:n},(_,i)=>polar(cx,cy,r,start+2*Math.PI*i/n))}
 
-      const drawing = document.getElementById('drawing');
-      const sides = document.getElementById('sides');
-      const sidesOutput = document.getElementById('sides-output');
-      const sideValue = document.getElementById('side-value');
-      const pIn = document.getElementById('p-in');
-      const pOut = document.getElementById('p-out');
-      const errIn = document.getElementById('err-in');
-      const errOut = document.getElementById('err-out');
-      const ratioValue = document.getElementById('ratio-value');
-      const reveal = document.getElementById('reveal');
-      const revealStatus = document.getElementById('reveal-status');
-      const formulaCard = document.getElementById('formula-card');
-      const challenge = document.getElementById('challenge');
-      const archimedes = document.getElementById('archimedes');
-      const predictionFeedback = document.getElementById('prediction-feedback');
-      const challengeFeedback = document.getElementById('challenge-feedback');
+    function renderGeometry(){
+      const n=+sides.value,theta=Math.PI/n,cx=320,cy=330,R=150,outR=R/Math.cos(theta),start=-Math.PI/2+theta;
+      const PIn=pin(n),POut=pout(n),C=2*Math.PI,eIn=C-PIn,eOut=POut-C;
+      sidesOut.value=sidesOut.textContent=String(n);$('#p-in').textContent=fmt(PIn);$('#p-out').textContent=fmt(POut);$('#side-in').textContent=fmt(2*Math.sin(theta));$('#err-in').textContent=fmt(eIn);$('#err-out').textContent=fmt(eOut);$('#error-ratio').textContent=fmt(eOut/eIn);$('#side-ratio').textContent=fmt(1/Math.cos(theta));
+      drawing.replaceChildren();drawing.append(svg('polygon',{points:poly(cx,cy,outR,n,start).map(p=>p.join(',')).join(' '),fill:'color-mix(in srgb,var(--accent2) 6%,transparent)',stroke:'var(--accent2)','stroke-width':4,'stroke-dasharray':'12 8'}));drawing.append(svg('circle',{cx,cy,r:R,fill:'none',stroke:'currentColor','stroke-width':3,'stroke-dasharray':'3 8',opacity:.8}));drawing.append(svg('polygon',{points:poly(cx,cy,R,n,start).map(p=>p.join(',')).join(' '),fill:'color-mix(in srgb,var(--accent) 8%,transparent)',stroke:'var(--accent)','stroke-width':4}));
+      const O=[cx,cy],M=polar(cx,cy,R*Math.cos(theta),-Math.PI/2),V=polar(cx,cy,R,start);
+      drawing.append(svg('polygon',{points:[O,M,V].map(p=>p.join(',')).join(' '),fill:'color-mix(in srgb,var(--focus) 18%,transparent)',stroke:'var(--focus)','stroke-width':4}));
+      [[O,'O'],[M,'M'],[V,'V']].forEach(([p,t])=>{drawing.append(svg('circle',{cx:p[0],cy:p[1],r:6,fill:'currentColor'}));label(drawing,p[0]+10,p[1]-8,t)});
+      label(drawing,(O[0]+V[0])/2+10,(O[1]+V[1])/2,'R');if(n<=12)label(drawing,(M[0]+V[0])/2,(M[1]+V[1])/2-10,'Lᵢₙ/2','middle');label(drawing,cx,34,`n = ${n}`,'middle');label(drawing,cx,650,`Pᵢₙ < 2πR < Pₒᵤₜ`,'middle');
+      renderPerimeterChart();if(checkpoints.revealed)renderDeriv();
+    }
 
-      let predicted = false;
-      let manipulated = false;
-      const initialN = Number(sides.value);
+    function canvasSetup(id,h){const c=$(id),r=c.getBoundingClientRect(),dpr=Math.min(2,devicePixelRatio||1);c.width=r.width*dpr;c.height=h*dpr;const x=c.getContext('2d');x.setTransform(dpr,0,0,dpr,0,0);x.clearRect(0,0,r.width,h);return[c,x,r.width,h]}
+    function css(name){return getComputedStyle(document.documentElement).getPropertyValue(name)}
+    function renderPerimeterChart(){const[,x,W,H]=canvasSetup('#perimeter-chart',230),p=26,mapX=n=>p+(n-3)/93*(W-2*p),mapY=v=>H-p-(v-5.1)/(2.1)*(H-2*p);x.strokeStyle=css('--line');x.beginPath();x.moveTo(p,p);x.lineTo(p,H-p);x.lineTo(W-p,H-p);x.stroke();const draw=(fn,color)=>{x.strokeStyle=color;x.lineWidth=2;x.beginPath();for(let n=3;n<=96;n++){const X=mapX(n),Y=mapY(fn(n));n===3?x.moveTo(X,Y):x.lineTo(X,Y)}x.stroke()};draw(pin,css('--accent'));draw(()=>2*Math.PI,css('--ink'));draw(pout,css('--accent2'));const n=+sides.value;[[pin(n),css('--accent')],[2*Math.PI,css('--ink')],[pout(n),css('--accent2')]].forEach(([v,c])=>{x.fillStyle=c;x.beginPath();x.arc(mapX(n),mapY(v),5,0,Math.PI*2);x.fill()});x.fillStyle=css('--ink');x.font='700 12px system-ui';x.fillText('3',p-3,H-7);x.fillText('96',W-p-15,H-7);x.fillText('P fora',W-70,18);x.fillText('círculo',W-70,42);x.fillText('P dentro',W-70,66)}
 
-      function fmt(value, digits = 4) {
-        return new Intl.NumberFormat('pt-BR', {
-          minimumFractionDigits: digits,
-          maximumFractionDigits: digits
-        }).format(value);
-      }
+    function updateReveal(){if(!checkpoints.predicted){$('#reveal').textContent='1. Faça uma aposta acima';$('#reveal-status').textContent='Depois da aposta, o botão abre a dedução inteira.'}else if(!checkpoints.revealed){$('#reveal').textContent='2. Abrir a construção';$('#reveal-status').textContent=checkpoints.manipulated?'Aposta e experimento feitos.':'Aposta feita. Mexer em n ajuda, mas não bloqueia.'}else{$('#reveal').textContent='Construção aberta abaixo ↓';$('#reveal-status').textContent='Agora existem dedução, exercícios, erros, curiosidades e fechamento.'}}
+    $$('[data-prediction]').forEach(b=>b.onclick=()=>{$$('[data-prediction]').forEach(q=>q.setAttribute('aria-pressed','false'));b.setAttribute('aria-pressed','true');checkpoints.predicted=true;$('#prediction-feedback').textContent=b.dataset.prediction==='inside'?'Boa hipótese. Agora faça-a sobreviver aos números.':'Hipótese registrada. O gráfico dará o veredito.';updateReveal();progress()});
+    sides.oninput=()=>{if(+sides.value!==initialN)checkpoints.manipulated=true;renderGeometry();progress()};$$('[data-n]').forEach(b=>b.onclick=()=>{sides.value=b.dataset.n;if(+sides.value!==initialN)checkpoints.manipulated=true;renderGeometry();progress()});
+    $('#reveal').onclick=()=>{if(!checkpoints.predicted){$('#bet').scrollIntoView({behavior:'smooth',block:'start'});$('#prediction-feedback').textContent='Escolha qualquer hipótese antes de abrir a construção.';return}sections.forEach(s=>s.hidden=false);checkpoints.revealed=true;updateReveal();renderDeriv();renderErrors();progress();$('#derivation').scrollIntoView({behavior:'smooth',block:'start'})};
 
-      function el(name, attrs = {}, text = '') {
-        const node = document.createElementNS(NS, name);
-        for (const [key, value] of Object.entries(attrs)) node.setAttribute(key, value);
-        if (text) node.textContent = text;
-        return node;
-      }
+    const chain=$$('#chain>li'),dots=$('#step-dots');chain.forEach((_,i)=>{const b=document.createElement('button');b.type='button';b.textContent=String(i+1);b.setAttribute('aria-label',`Ir ao passo ${i+1}`);b.onclick=()=>{derivStep=i;renderDeriv()};dots.append(b)});
+    function arc(g,cx,cy,r,a1,a2,color='var(--focus)',w=4){const A=polar(cx,cy,r,a1),B=polar(cx,cy,r,a2);g.append(svg('path',{d:`M ${A[0]} ${A[1]} A ${r} ${r} 0 0 1 ${B[0]} ${B[1]}`,fill:'none',stroke:color,'stroke-width':w}))}
+    function renderDeriv(){chain.forEach((li,i)=>li.hidden=i!==derivStep);$$('#step-dots button').forEach((b,i)=>{if(i===derivStep)b.setAttribute('aria-current','step');else b.removeAttribute('aria-current')});$('#prev-step').disabled=derivStep===0;$('#next-step').disabled=derivStep===7;$('#step-status').textContent=`Passo ${derivStep+1} de 8${derivStep===7?' — dois cercos fechados.':''}`;
+      const g=$('#deriv-drawing'),cx=240,cy=245,R=155,n=Math.min(+sides.value,18),t=Math.PI/n,start=-Math.PI/2+t,outR=R/Math.cos(t);g.replaceChildren();
+      const O=[cx,cy],A=polar(cx,cy,R,-Math.PI/2-t),V=polar(cx,cy,R,-Math.PI/2+t),M=polar(cx,cy,R*Math.cos(t),-Math.PI/2),T=polar(cx,cy,R,-Math.PI/2),E=polar(cx,cy,outR,-Math.PI/2+t);
+      g.append(svg('circle',{cx,cy,r:R,fill:'none',stroke:'currentColor','stroke-width':2,'stroke-dasharray':'3 7',opacity:.55}));
+      if(derivStep<=3){g.append(svg('line',{x1:cx,y1:cy,x2:A[0],y2:A[1],stroke:'var(--accent)','stroke-width':4}));g.append(svg('line',{x1:cx,y1:cy,x2:V[0],y2:V[1],stroke:'var(--accent)','stroke-width':4}));g.append(svg('line',{x1:A[0],y1:A[1],x2:V[0],y2:V[1],stroke:'var(--accent)','stroke-width':5}));arc(g,cx,cy,54,-Math.PI/2-t,-Math.PI/2+t);label(g,cx,cy-66,'2π/n','middle')}
+      if(derivStep>=1&&derivStep<=3){g.append(svg('line',{x1:cx,y1:cy,x2:M[0],y2:M[1],stroke:'var(--focus)','stroke-width':5}));g.append(svg('circle',{cx:M[0],cy:M[1],r:6,fill:'var(--focus)'}));label(g,M[0]+10,M[1]-8,'M');arc(g,cx,cy,82,-Math.PI/2,-Math.PI/2+t,'var(--accent2)',3);label(g,cx+38,cy-82,'π/n')}
+      if(derivStep>=2&&derivStep<=3){g.append(svg('polygon',{points:[O,M,V].map(p=>p.join(',')).join(' '),fill:'color-mix(in srgb,var(--focus) 18%,transparent)',stroke:'var(--focus)','stroke-width':3}));label(g,(M[0]+V[0])/2+5,(M[1]+V[1])/2-8,'Lᵢₙ/2');label(g,(O[0]+V[0])/2+10,(O[1]+V[1])/2,'R')}
+      if(derivStep===3){label(g,cx,438,'Pᵢₙ = 2nR·sen(π/n)','middle',19)}
+      if(derivStep>=4){g.append(svg('polygon',{points:poly(cx,cy,outR,n,start).map(p=>p.join(',')).join(' '),fill:'color-mix(in srgb,var(--accent2) 7%,transparent)',stroke:'var(--accent2)','stroke-width':3}));g.append(svg('line',{x1:cx,y1:cy,x2:T[0],y2:T[1],stroke:'var(--focus)','stroke-width':5}));g.append(svg('line',{x1:T[0],y1:T[1],x2:E[0],y2:E[1],stroke:'var(--accent2)','stroke-width':6}));g.append(svg('line',{x1:cx,y1:cy,x2:E[0],y2:E[1],stroke:'currentColor','stroke-width':3,opacity:.75}));label(g,T[0]+10,T[1]-8,'T');label(g,E[0]+9,E[1]-8,'E');arc(g,cx,cy,72,-Math.PI/2,-Math.PI/2+t);label(g,cx+34,cy-76,'π/n')}
+      if(derivStep>=5){label(g,(O[0]+T[0])/2-10,(O[1]+T[1])/2,'R','end');label(g,(T[0]+E[0])/2+5,(T[1]+E[1])/2-8,'Lₒᵤₜ/2')}
+      if(derivStep===6)label(g,cx,438,'Pₒᵤₜ = 2nR·tg(π/n)','middle',19);
+      if(derivStep===7){g.replaceChildren();g.append(svg('polygon',{points:poly(cx,cy,outR,n,start).map(p=>p.join(',')).join(' '),fill:'none',stroke:'var(--accent2)','stroke-width':4}));g.append(svg('circle',{cx,cy,r:R,fill:'none',stroke:'currentColor','stroke-width':3,'stroke-dasharray':'3 7'}));g.append(svg('polygon',{points:poly(cx,cy,R,n,start).map(p=>p.join(',')).join(' '),fill:'none',stroke:'var(--accent)','stroke-width':4}));label(g,cx,438,'Pᵢₙ < 2πR < Pₒᵤₜ','middle',21)}
+      $('#deriv-result').hidden=derivStep!==7
+    }
+    $('#prev-step').onclick=()=>{derivStep=Math.max(0,derivStep-1);renderDeriv()};$('#next-step').onclick=()=>{derivStep=Math.min(7,derivStep+1);renderDeriv()};
 
-      function polar(radius, angle) {
-        return [cx + radius * Math.cos(angle), cy + radius * Math.sin(angle)];
-      }
+    const answers={hex:'6',threshold:'12',side:'1',arch:'bounds'},messages={hex:'Exato: 2·6·sen(π/6)=6.',threshold:'Exato: n=11 ainda fica em 6,1981; n=12 chega a 6,2117.',side:'Exato: 1/cos(π/n) tende a 1, embora a razão dos erros tenda a 2.',arch:'Exato: 3,14103 < π < 3,14271.'};
+    $$('[data-ex]').forEach(b=>b.onclick=()=>{const k=b.dataset.ex,ok=b.dataset.answer===answers[k],f=$(`[data-feedback="${k}"]`);f.textContent=ok?messages[k]:'Ainda não. Abra a pista e volte à figura.';if(ok&&!solved.has(k)){solved.add(k);$$(`[data-ex="${k}"]`).forEach(q=>{q.disabled=true;q.setAttribute('aria-pressed',q===b?'true':'false')});progress()}});
 
-      function polygonPoints(radius, n, start) {
-        return Array.from({ length: n }, (_, i) => polar(radius, start + (2 * Math.PI * i) / n));
-      }
-
-      function addLabel(x, y, text, anchor = 'start') {
-        drawing.appendChild(el('text', {
-          x, y,
-          'text-anchor': anchor,
-          'font-family': 'ui-sans-serif, system-ui, sans-serif',
-          'font-size': '18',
-          'font-weight': '750',
-          fill: 'currentColor'
-        }, text));
-      }
-
-      function updateReadiness() {
-        const ready = predicted && manipulated;
-        reveal.disabled = !ready;
-        revealStatus.textContent = ready
-          ? 'Agora as fórmulas podem aparecer sem cair do céu.'
-          : 'Faça uma previsão e altere o número de lados.';
-      }
-
-      function render() {
-        const n = Number(sides.value);
-        const theta = Math.PI / n;
-        const side = 2 * Math.sin(theta);
-        const perimeterIn = n * side;
-        const perimeterOut = 2 * n * Math.tan(theta);
-        const circle = 2 * Math.PI;
-        const errorIn = circle - perimeterIn;
-        const errorOut = perimeterOut - circle;
-        const ratio = errorOut / errorIn;
-
-        sidesOutput.value = String(n);
-        sidesOutput.textContent = String(n);
-        sideValue.textContent = fmt(side);
-        pIn.textContent = fmt(perimeterIn);
-        pOut.textContent = fmt(perimeterOut);
-        errIn.textContent = fmt(errorIn);
-        errOut.textContent = fmt(errorOut);
-        ratioValue.textContent = fmt(ratio);
-
-        drawing.replaceChildren();
-
-        const vertexStart = -Math.PI / 2 + theta;
-        const outerR = circleR / Math.cos(theta);
-
-        drawing.appendChild(el('polygon', {
-          points: polygonPoints(outerR, n, vertexStart).map(point => point.join(',')).join(' '),
-          fill: 'color-mix(in srgb, var(--accent-2) 6%, transparent)',
-          stroke: 'var(--accent-2)',
-          'stroke-width': '4',
-          'stroke-dasharray': '12 8',
-          'stroke-linejoin': 'round'
-        }));
-
-        drawing.appendChild(el('circle', {
-          cx, cy, r: circleR,
-          fill: 'none',
-          stroke: 'var(--circle)',
-          'stroke-width': '3',
-          'stroke-dasharray': '3 8'
-        }));
-
-        drawing.appendChild(el('polygon', {
-          points: polygonPoints(circleR, n, vertexStart).map(point => point.join(',')).join(' '),
-          fill: 'color-mix(in srgb, var(--accent) 8%, transparent)',
-          stroke: 'var(--accent)',
-          'stroke-width': '4',
-          'stroke-linejoin': 'round'
-        }));
-
-        const O = [cx, cy];
-        const M = polar(circleR * Math.cos(theta), -Math.PI / 2);
-        const V = polar(circleR, vertexStart);
-
-        drawing.appendChild(el('polygon', {
-          points: [O, M, V].map(point => point.join(',')).join(' '),
-          fill: 'color-mix(in srgb, var(--focus) 18%, transparent)',
-          stroke: 'var(--focus)',
-          'stroke-width': '4',
-          'stroke-linejoin': 'round'
-        }));
-
-        drawing.appendChild(el('line', {
-          x1: M[0], y1: M[1], x2: V[0], y2: V[1],
-          stroke: 'var(--focus)', 'stroke-width': '6'
-        }));
-
-        const roomy = n <= 24;
-
-        for (const [point, label] of [[O, 'O'], [M, 'M'], [V, 'V']]) {
-          drawing.appendChild(el('circle', { cx: point[0], cy: point[1], r: 6, fill: 'var(--ink)' }));
-          if (label === 'O' || roomy) {
-            addLabel(point[0] + (label === 'M' ? -20 : 11), point[1] - 9, label);
-          }
-        }
-
-        addLabel((O[0] + V[0]) / 2 + 12, (O[1] + V[1]) / 2 + 4, 'R');
-        if (n <= 10) {
-          addLabel((M[0] + V[0]) / 2 + 4, (M[1] + V[1]) / 2 - 12, 'L/2', 'middle');
-        }
-
-        if (roomy) {
-          const arcRadius = 46;
-          const arcStart = polar(arcRadius, -Math.PI / 2);
-          const arcEnd = polar(arcRadius, vertexStart);
-          drawing.appendChild(el('path', {
-            d: `M ${arcStart[0]} ${arcStart[1]} A ${arcRadius} ${arcRadius} 0 0 1 ${arcEnd[0]} ${arcEnd[1]}`,
-            fill: 'none', stroke: 'var(--focus)', 'stroke-width': '4'
-          }));
-          const angleLabel = polar(74, -Math.PI / 2 + theta / 2);
-          addLabel(angleLabel[0], angleLabel[1], 'π/n', 'middle');
-        }
-
-        addLabel(cx, 34, `n = ${n}`, 'middle');
-        addLabel(cx, 654, `erro fora ÷ erro dentro = ${fmt(ratio, 3)}`, 'middle');
-      }
-
-      document.querySelectorAll('[data-prediction]').forEach(button => {
-        button.addEventListener('click', () => {
-          document.querySelectorAll('[data-prediction]').forEach(item => item.setAttribute('aria-pressed', 'false'));
-          button.setAttribute('aria-pressed', 'true');
-          predicted = true;
-          const correct = button.dataset.prediction === 'inside';
-          predictionFeedback.textContent = correct
-            ? 'Boa aposta. Agora aperte o cerco e acompanhe os dois erros no painel.'
-            : 'Aposta registrada. Aperte o cerco e compare os dois erros no painel.';
-          updateReadiness();
-        });
-      });
-
-      sides.addEventListener('input', () => {
-        manipulated = manipulated || Number(sides.value) !== initialN;
-        render();
-        updateReadiness();
-      });
-
-      document.querySelectorAll('[data-n]').forEach(button => {
-        button.addEventListener('click', () => {
-          sides.value = button.dataset.n;
-          manipulated = manipulated || Number(sides.value) !== initialN;
-          render();
-          updateReadiness();
-        });
-      });
-
-      reveal.addEventListener('click', () => {
-        formulaCard.hidden = false;
-        challenge.hidden = false;
-        reveal.textContent = 'Fórmulas reveladas';
-        reveal.disabled = true;
-        formulaCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      });
-
-      document.querySelectorAll('[data-answer]').forEach(button => {
-        button.addEventListener('click', () => {
-          const answer = Number(button.dataset.answer);
-          if (answer === 12) {
-            challengeFeedback.textContent = 'Exato. Com 12 lados, 2 · 12 · sen(π/12) ≈ 6,2117 > 6,2 — e com 11 lados ainda dá ≈ 6,1981. Doze é o menor que basta.';
-            if (archimedes.hidden) archimedes.hidden = false;
-          } else if (answer === 20) {
-            challengeFeedback.textContent = '20 lados passam de 6,2, mas a pergunta pede o menor número. Experimente valores menores no laboratório.';
-          } else {
-            challengeFeedback.textContent = 'Ainda não. Com 8 lados o contorno de dentro fica em ≈ 6,1229. Use o controle e observe onde a barreira de 6,2 é cruzada.';
-          }
-        });
-      });
-
-      const sideFeedback = document.getElementById('side-feedback');
-      document.querySelectorAll('[data-ex-side]').forEach(button => {
-        button.addEventListener('click', () => {
-          const value = button.dataset.exSide;
-          if (value === 'close') {
-            sideFeedback.textContent = 'Exato. Em n = 12, lado de fora ÷ lado de dentro ≈ 1,0353 — a mesma razão R/r do Laboratório 01. Os erros vão a 2; os lados, a 1.';
-          } else if (value === 'right') {
-            sideFeedback.textContent = 'Calcule: com n = 12, o lado de dentro vale ≈ 0,5176 e o de fora ≈ 0,5359. Isso não é o dobro — é a razão R/r do Laboratório 01.';
-          } else {
-            sideFeedback.textContent = 'O lado de fora é sempre maior que o de dentro (ele encosta no círculo pelo meio, não pelos vértices) — só que por pouco, não pelo dobro.';
-          }
-        });
-      });
-
-      render();
-      updateReadiness();
-    })();
-  </script>
-  <script>
-    document.getElementById('restart-lab').addEventListener('click', () => {
-      document.querySelectorAll('input, select, textarea').forEach((el) => {
-        if (el.type === 'checkbox' || el.type === 'radio') el.checked = el.defaultChecked;
-        else el.value = el.defaultValue;
-      });
-      if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
-      location.replace(location.pathname);
-    });
+    function renderErrors(){const n=+$('#error-n').value,eIn=2*Math.PI-pin(n),eOut=pout(n)-2*Math.PI;$('#error-n-output').value=$('#error-n-output').textContent=String(n);$('#error-in-value').textContent=fmt(eIn,6);$('#error-out-value').textContent=fmt(eOut,6);$('#error-ratio-value').textContent=fmt(eOut/eIn,4);$('#error-feedback').textContent=`Em n=${n}, dobrar para ${2*n} deve reduzir cada erro para perto de um quarto.`;
+      const[,x,W,H]=canvasSetup('#error-chart',300),L=38,R=W-22,T=18,B=H-36,mapX=k=>L+(Math.log(k)-Math.log(3))/(Math.log(192)-Math.log(3))*(R-L),all=[];for(let k=3;k<=192;k++){all.push(2*Math.PI-pin(k),pout(k)-2*Math.PI)}const lo=Math.log10(Math.min(...all)),hi=Math.log10(Math.max(...all)),mapY=v=>B-(Math.log10(v)-lo)/(hi-lo)*(B-T);
+      x.strokeStyle=css('--line');x.beginPath();x.moveTo(L,T);x.lineTo(L,B);x.lineTo(R,B);x.stroke();const draw=(fn,c)=>{x.strokeStyle=c;x.lineWidth=2;x.beginPath();for(let k=3;k<=192;k++){const X=mapX(k),Y=mapY(fn(k));k===3?x.moveTo(X,Y):x.lineTo(X,Y)}x.stroke()};draw(k=>2*Math.PI-pin(k),css('--accent'));draw(k=>pout(k)-2*Math.PI,css('--accent2'));[[eIn,css('--accent')],[eOut,css('--accent2')]].forEach(([v,c])=>{x.fillStyle=c;x.beginPath();x.arc(mapX(n),mapY(v),6,0,Math.PI*2);x.fill()});x.fillStyle=css('--ink');x.font='700 12px system-ui';x.fillText('erro externo',W-105,18);x.fillText('erro interno',W-105,38);[3,6,12,24,48,96,192].forEach(k=>x.fillText(String(k),mapX(k)-7,H-12))}
+    $('#error-n').oninput=()=>{checkpoints.error=true;renderErrors();progress()};$$('[data-error-n]').forEach(b=>b.onclick=()=>{$('#error-n').value=b.dataset.errorN;checkpoints.error=true;renderErrors();progress()});
+    $('#restart').onclick=()=>location.replace(location.pathname);
+    addEventListener('resize',()=>{renderPerimeterChart();if(!$('#errors').hidden)renderErrors()});
+    renderGeometry();updateReveal();progress();
+  })();
   </script>
 </body>
 </html>
