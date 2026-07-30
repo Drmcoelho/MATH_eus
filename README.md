@@ -21,6 +21,11 @@ Publicação esperada:
 - Laboratório 03: `https://drmcoelho.github.io/MATH_eus/modules/03-areas/`
 - Laboratório 04: `https://drmcoelho.github.io/MATH_eus/modules/04-erro/`
 - Laboratório 05: `https://drmcoelho.github.io/MATH_eus/modules/05-limite/`
+- Laboratório 06: `https://drmcoelho.github.io/MATH_eus/modules/06-prismas/`
+- Laboratório 07: `https://drmcoelho.github.io/MATH_eus/modules/07-rotacao/`
+- Laboratório 08: `https://drmcoelho.github.io/MATH_eus/modules/08-integral/`
+- Laboratório 09: `https://drmcoelho.github.io/MATH_eus/modules/09-derivada/`
+- Laboratório 10: `https://drmcoelho.github.io/MATH_eus/modules/10-reciprocidade/`
 
 O repositório é um site estático puro. A fonte do GitHub Pages deve ser configurada como:
 
@@ -32,19 +37,26 @@ A raiz contém `index.html`, `.nojekyll` e `404.html`; não há build de publica
 
 ## Primeira temporada
 
-**O cerco do círculo**
+**O cerco do círculo — completa**
 
-1. [Duas circunferências, um polígono](modules/01-duas-circunferencias/index.html) — fatia vertical disponível
-   - [Interlúdio 01·B — O polígono escondido](modules/01b-poligono-escondido/index.html) — fatia vertical disponível
-2. [Quanto mede o contorno?](modules/02-perimetros/index.html) — fatia vertical disponível
-3. [O que acontece com as áreas?](modules/03-areas/index.html) — fatia vertical disponível
-4. [O erro também tem forma](modules/04-erro/index.html) — fatia vertical disponível
-5. [Quando “chegar perto” vira limite?](modules/05-limite/index.html) — fatia vertical disponível
-6. Do polígono ao prisma
-7. Girar cria espaço
-8. Acumular é integrar
-9. Mudar é derivar
-10. Derivar e integrar são movimentos inversos
+1. [Duas circunferências, um polígono](modules/01-duas-circunferencias/index.html)
+   - [Interlúdio 01·B — O polígono escondido](modules/01b-poligono-escondido/index.html)
+2. [Quanto mede o contorno?](modules/02-perimetros/index.html)
+3. [O que acontece com as áreas?](modules/03-areas/index.html)
+4. [O erro também tem forma](modules/04-erro/index.html)
+5. [Quando “chegar perto” vira limite?](modules/05-limite/index.html)
+6. [Do polígono ao prisma](modules/06-prismas/index.html)
+7. [Girar cria espaço](modules/07-rotacao/index.html)
+8. [Acumular é integrar](modules/08-integral/index.html)
+9. [Mudar é derivar](modules/09-derivada/index.html)
+10. [Derivar e integrar são movimentos inversos](modules/10-reciprocidade/index.html)
+
+Arco cognitivo:
+
+```text
+forma → medida → comparação → erro → garantia → limite
+→ espaço → acumulação → variação → reciprocidade
+```
 
 ## Verificação dos laboratórios
 
@@ -54,7 +66,13 @@ Cada módulo possui um verificador matemático independente, sem dependências e
 for checker in modules/*/check-math.mjs; do node "$checker"; done
 ```
 
-O do Lab 01 confere a identidade pitagórica, a monotonicidade de `r/R`, a construção pelo ponto médio, a inferência inversa de `n` e, para a parte de ruído, os intervalos de compatibilidade e o alcance do instrumento em cada tolerância. O do Interlúdio 01·B constrói o polígono escondido por coordenadas e confere o circunraio `r`, a semelhança `L'/L = r/R`, o raio e o giro após `k` repetições, a identidade da coroa `π(R² − r²) = π(L/2)²`, a tabela de repetições até a metade e o produto de Kepler–Bouwkamp. O do Lab 02 confere o cerco (interno < círculo < externo), as monotonicidades, a razão dos erros descendo para 2, o desafio da barreira de 6,2 e as cotas de Arquimedes com n = 96. O do Lab 03 confere a fórmula do leque (exata para os dois polígonos), o empate exato entre os excessos de área e de contorno do circunscrito, a razão dos erros relativos internos subindo para 4 e os valores citados na página. O do Lab 04 confere, para as quatro séries de erro, a convergência de `n² × erro` às constantes `π³/3` e `2π³/3`, a contração rumo a 1/4 ao dobrar `n` e o desafio dos cem vezes menos. O do Lab 05 confere as monotonias do cerco até `n = 5000`, o menor `N` de cada tolerância (sem recaída em 3000 valores seguintes) e a previsão `N ≈ √(π³/ε)` acertando o `N` exato.
+Os Labs 06–10 acrescentam verificações de:
+
+- cerco espacial entre prismas e cilindro, extrusão e leis de escala `λ`, `λ²` e `λ³`;
+- volumes de cilindro, cone e esfera, fração angular e escala cúbica;
+- soma de discos para a esfera, erro exato `2πR³/(3N²)` e contração por `1/4`;
+- identidade da coroa, aproximação linear, resto quadrático e `dA/dr = 2πr`;
+- somas interna, média e externa das coroas, cerco final e reciprocidade derivada–integral.
 
 ## Princípios
 
