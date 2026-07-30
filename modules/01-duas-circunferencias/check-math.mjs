@@ -114,4 +114,12 @@ for (let n = 3; n <= 30; n += 1) {
   assert.deepEqual(range, [n, n], `medida perfeita deve denunciar n=${n} sem ambiguidade`);
 }
 
-console.log('Lab 01: geometria (118 casos), alcances por tolerância e intervalos de compatibilidade verificados sem divergência.');
+// exercício "quebre a regra": r/R = cos(pi/n) nunca atinge 1 para n finito,
+// mas se aproxima arbitrariamente — inclusive em n=1.000.000.
+for (let n = 3; n <= 100000; n += 1) {
+  assert.ok(Math.cos(Math.PI / n) < 1, `cos(pi/n) deve ficar estritamente abaixo de 1 em n=${n}`);
+}
+close(Math.cos(Math.PI / 1000000), 0.9999999999951, 5e-13, 'valor citado no exercício para n=1.000.000');
+assert.ok(1 - Math.cos(Math.PI / 1000000) > 0, 'a folga nunca fecha, mesmo em n=1.000.000');
+
+console.log('Lab 01: geometria (118 casos), alcances por tolerância, intervalos de compatibilidade e o exercício de r/R nunca atingir 1 verificados sem divergência.');
