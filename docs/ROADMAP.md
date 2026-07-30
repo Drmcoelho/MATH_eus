@@ -26,10 +26,10 @@ seguintes.
 ### PR A1 — Fluxo editorial
 
 - [x] Navegação "Anterior / Temporada / Próximo" (já presente em todos os labs).
-- [ ] Barra de progresso ("Lab 2 de 10").
-- [ ] Tempo estimado do caminho principal.
-- [ ] Indicador de dificuldade.
-- [ ] Botão "Recomeçar laboratório" (reset do estado interativo).
+- [x] Barra de progresso ("Lab 2 de 10") — Labs 01, 01·B e 02.
+- [x] Tempo estimado do caminho principal — Labs 01, 01·B e 02.
+- [x] Indicador de dificuldade — Labs 01, 01·B e 02.
+- [x] Botão "Recomeçar laboratório" (reset do estado interativo) — Labs 01, 01·B e 02.
 
 ### PR A2 — Visualizações
 
