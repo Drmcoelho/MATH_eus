@@ -127,7 +127,7 @@ assert.ok(html.includes('id="deriv-caption"'), 'figura deve explicar visualmente
 assert.ok(html.includes('id="deriv-conclusion" hidden'), 'fórmula e prova devem nascer ocultas');
 assert.ok(html.includes("$('#deriv-conclusion').hidden=derivStep!==6"), 'conclusão só deve abrir no passo 7');
 assert.ok(html.includes('li.hidden=i!==derivStep'), 'somente o passo ativo deve permanecer visível');
-assert.ok(html.includes('const V1=polar') && html.includes('const V2=polar'), 'ângulo central deve ter dois raios reais');
+assert.ok(/const V1=polar[\s\S]*?V2=polar/.test(html), 'ângulo central deve ter dois raios reais');
 assert.ok(html.includes('arcPath(72,-Math.PI/2-t,-Math.PI/2+t)'), 'arco 2π/n deve ser desenhado, não apenas rotulado');
 assert.ok(html.includes('L/2') && html.includes('hipotenusa = R'), 'ponto médio e triângulo devem ter testemunhas visuais');
 
