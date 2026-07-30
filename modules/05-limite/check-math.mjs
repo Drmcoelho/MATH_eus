@@ -91,6 +91,7 @@ close(findN(0.0001), 557, 0, 'N citado no exercício para ε=0,0001 (100× menor
 const ratio10x = findN(0.001) / findN(0.01);
 const ratio100x = findN(0.0001) / findN(0.01);
 assert.ok(ratio10x < 4, 'reduzir ε por 10× não deve nem quadruplicar N');
-assert.ok(ratio100x > 9 && ratio100x < 11, 'reduzir ε por 100× deve decuplicar N (raiz quadrada)');
+assert.ok(ratio100x > 9 && ratio100x < 11, 'reduzir ε por 100× deve tornar N aproximadamente 10× maior');
+assert.notEqual(findN(0.0001), 10 * findN(0.01), 'o menor N inteiro não obedece proporcionalidade exata');
 
-console.log('Lab 05: monotonias até n=5000, a máquina de garantias em cinco tolerâncias, a previsão exata pela forma, o desafio dos 31 milionésimos e o exercício da escala 1/√ε verificados sem divergência.');
+console.log('Lab 05: monotonias até n=5000, a máquina de garantias em cinco tolerâncias, a previsão assintótica pela forma, o desafio dos 31 milionésimos e o exercício da escala 1/√ε verificados sem divergência.');
