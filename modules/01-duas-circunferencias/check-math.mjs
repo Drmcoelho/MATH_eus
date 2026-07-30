@@ -119,4 +119,16 @@ assert.doesNotThrow(() => new Function(script), 'JavaScript do laboratório deve
 const ids = [...html.matchAll(/\bid="([^"]+)"/g)].map(match => match[1]);
 assert.equal(new Set(ids).size, ids.length, 'IDs HTML devem ser únicos');
 
+
+const chainBlock = html.match(/<ol id="chain" class="chain">([\s\S]*?)<\/ol>/)?.[1] || '';
+assert.equal((chainBlock.match(/<li>/g) || []).length, 7, 'Ato 3 deve conter sete passos');
+assert.ok(html.indexOf('id="step-dots"') < html.indexOf('<ol id="chain"'), 'navegação deve aparecer antes do cartão ativo');
+assert.ok(html.includes('id="deriv-caption"'), 'figura deve explicar visualmente cada passo');
+assert.ok(html.includes('id="deriv-conclusion" hidden'), 'fórmula e prova devem nascer ocultas');
+assert.ok(html.includes("$('#deriv-conclusion').hidden=derivStep!==6"), 'conclusão só deve abrir no passo 7');
+assert.ok(html.includes('li.hidden=i!==derivStep'), 'somente o passo ativo deve permanecer visível');
+assert.ok(html.includes('const V1=polar') && html.includes('const V2=polar'), 'ângulo central deve ter dois raios reais');
+assert.ok(html.includes('arcPath(72,-Math.PI/2-t,-Math.PI/2+t)'), 'arco 2π/n deve ser desenhado, não apenas rotulado');
+assert.ok(html.includes('L/2') && html.includes('hipotenusa = R'), 'ponto médio e triângulo devem ter testemunhas visuais');
+
 console.log('Lab 01: 118 geometrias, inferência inversa, ruído, alcance, 4 exercícios, 4 curiosidades, dois Canvas, sintaxe JS e contrato sem porta falsa verificados.');
