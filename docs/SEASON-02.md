@@ -77,7 +77,9 @@ Comparar: bordas da grade × interior (onde moram Plimpton 322 e os
 catetos quase gêmeos).
 
 Interações: grade navegável, cor por diferença hipotenusa − cateto maior,
-filtro primitiva/múltiplo.
+leitura de cópias nas casas inválidas, a volta terna → endereço.
+
+Estado: fatia vertical disponível.
 
 ### 03 — Que números entram em ternas?
 
