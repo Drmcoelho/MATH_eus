@@ -350,6 +350,37 @@
       html { scroll-behavior: auto; }
       * { transition: none !important; }
     }
+
+    .lab-nav {
+      margin-top: 48px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
+      font-family: ui-sans-serif, system-ui, sans-serif;
+    }
+
+    .lab-nav a, .lab-nav .soon {
+      display: block;
+      padding: 16px 18px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: var(--paper);
+      color: var(--ink);
+      text-decoration: none;
+    }
+
+    .lab-nav a:hover { border-color: var(--accent); }
+
+    .lab-nav small {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--accent);
+      font: 800 .7rem/1.2 ui-sans-serif, system-ui, sans-serif;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+    }
+
+    .lab-nav .soon { color: var(--muted); }
   </style>
 </head>
 <body>
@@ -482,6 +513,12 @@
       <p><strong>Área de fora.</strong> Com apótema R e lado 2R·tg(π/n), o leque dá área de fora = n·R²·tg(π/n) — exatamente contorno de fora × R / 2.</p>
       <p><strong>As três folgas.</strong> Para o ângulo θ = π/n pequeno: o seno fica abaixo de θ por cerca de θ³/6; o cosseno fica abaixo de 1 por cerca de θ²/2; a tangente fica acima de θ por cerca de θ³/3. Em percentual, o contorno de dentro erra ~θ²/6, o apótema ~θ²/2 (o triplo) e a área de dentro soma as duas dívidas: ~2θ²/3, quase quatro vezes o contorno. Do lado de fora, área e contorno erram o mesmo percentual — igualdade exata, não aproximação. O verificador do módulo confere tudo isso numericamente até n = 1000.</p>
     </details>
+
+    <nav class="lab-nav" aria-label="Continuar no MATHeu$">
+      <a href="../02-perimetros/index.html"><small>Anterior</small>Lab 02 — Quanto mede o contorno?</a>
+      <a href="../../index.html"><small>Índice</small>Todos os laboratórios</a>
+      <a href="../04-erro/index.html"><small>Próximo</small>Lab 04 — O erro também tem forma</a>
+    </nav>
   </main>
 
   <footer>

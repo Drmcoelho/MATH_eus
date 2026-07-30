@@ -291,6 +291,37 @@
       html { scroll-behavior: auto; }
       * { transition: none !important; }
     }
+
+    .lab-nav {
+      margin-top: 48px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
+      font-family: ui-sans-serif, system-ui, sans-serif;
+    }
+
+    .lab-nav a, .lab-nav .soon {
+      display: block;
+      padding: 16px 18px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: var(--paper);
+      color: var(--ink);
+      text-decoration: none;
+    }
+
+    .lab-nav a:hover { border-color: var(--accent); }
+
+    .lab-nav small {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--accent);
+      font: 800 .7rem/1.2 ui-sans-serif, system-ui, sans-serif;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+    }
+
+    .lab-nav .soon { color: var(--muted); }
   </style>
 </head>
 <body>
@@ -402,6 +433,12 @@
       <p><strong>De onde vem a previsão.</strong> A largura do cerco é a soma dos dois erros de contorno, e o Lab 04 deu as constantes deles: π³/3 + 2π³/3 = π³ ≈ 31,006. Logo largura ≈ π³/n², e exigir π³/n² &lt; ε dá n &gt; √(π³/ε) — a conta de cabeça N ≈ √(31/ε) do desafio.</p>
       <p><strong>Finitos testes não provam.</strong> A varredura "sem recaída até N + 3000" é evidência; a garantia para todo n é a monotonia acima, que uma demonstração completa fecha com as desigualdades de sen e tg do intervalo (0, π/3].</p>
     </details>
+
+    <nav class="lab-nav" aria-label="Continuar no MATHeu$">
+      <a href="../04-erro/index.html"><small>Anterior</small>Lab 04 — O erro também tem forma</a>
+      <a href="../../index.html"><small>Índice</small>Todos os laboratórios</a>
+      <span class="soon"><small>Próximo</small>Lab 06 — Do polígono ao prisma (em construção)</span>
+    </nav>
   </main>
 
   <footer>
