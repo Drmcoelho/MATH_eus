@@ -243,8 +243,10 @@ Regras:
   PRs: quando dois PRs implementam o mesmo escopo, vence o que estiver mais
   alinhado com o estado publicado aqui, e o outro é fechado como superado
   (não deletado — o trabalho fica no branch para consulta).
-- **Status atual, resumido** (a fonte de verdade continua sendo este
-  arquivo e o README, não esta tabela — atualizar os três juntos):
+- **Status atual, resumido** (este arquivo é a única autoridade; a tabela
+  abaixo e as listas de temporada no README são resumos derivados dela —
+  se algum dia divergirem, vale o texto deste arquivo, e o resumo deve ser
+  corrigido para bater com ele, nunca o contrário):
 
 | Temporada | Estado | Onde |
 |---|---|---|

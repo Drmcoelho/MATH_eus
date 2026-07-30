@@ -67,15 +67,19 @@ comparando com a multiplicação escalar já conhecida.
 i · i = (0,1) · (0,1) = (−1, 0)
 ```
 
-Comparar: multiplicar por um número real (só estica) × multiplicar por i
-(só gira 90°).
+Comparar: multiplicar por um número real positivo (só estica) × multiplicar
+por i (só gira 90°) — com dois casos à parte que a régua arrastável vai
+encontrar sozinha: um real negativo também gira (180°, não "só" estica) e
+zero colapsa qualquer ponto na origem, onde nenhum ângulo sobrevive.
 
 Interações: ponto arrastável, multiplicador arrastável, trilha do produto.
 
 ### 02 — O mapa dos giros
 
 Entrega cognitiva: trocar (x, y) por (raio, ângulo) — a forma polar — e
-enxergar que todo ponto do plano é "um giro e um tamanho".
+enxergar que todo ponto do plano, exceto a própria origem, é "um giro e um
+tamanho": em (0, 0) o módulo é zero mas o ângulo não existe — não há giro
+que precise ser lido quando não há seta a apontar.
 
 Construção: ler o mesmo ponto nas duas coordenadas e alternar entre elas.
 
@@ -207,10 +211,12 @@ Entrega cognitiva: isolar o parâmetro que Lab 06–08 deixaram fixo — a fase
 — e ver que atrasar um giro antes de somá-lo muda o resultado tanto quanto
 mudar sua amplitude, mesmo sem tocar em nenhum módulo.
 
-Construção: reintroduzir o ângulo inicial do Lab 02 como atraso de tempo.
+Construção: reintroduzir o ângulo inicial do Lab 02 como atraso de tempo —
+subtrair φ dentro do seno é o que empurra a onda para depois no tempo, não
+somar.
 
 ```text
-sen(ωt + φ)
+sen(ωt − φ) = sen(ω(t − φ/ω))
 ```
 
 Comparar: mudar amplitude (estica a onda) × mudar fase (desloca a onda) —
