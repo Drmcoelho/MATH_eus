@@ -1,0 +1,819 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Laboratório 04 da Temporada 02 do MATHeu$: as diferenças possíveis entre hipotenusa e cateto maior — quadrados ímpares e dobros de quadrados.">
+  <title>T02 · Lab 04 — A diferença esconde um padrão · MATHeu$</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --bg: #f4f1e8;
+      --ink: #171713;
+      --muted: #666258;
+      --paper: rgba(255, 255, 255, .66);
+      --line: rgba(23, 23, 19, .15);
+      --accent: #246b52;
+      --accent-2: #9b3f31;
+      --circle: #252520;
+      --focus: #d4872d;
+      --shadow: 0 18px 60px rgba(48, 43, 31, .09);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #11130f;
+        --ink: #f0eee7;
+        --muted: #b8b3a8;
+        --paper: rgba(255, 255, 255, .055);
+        --line: rgba(255, 255, 255, .14);
+        --accent: #7bc5a3;
+        --accent-2: #ef9788;
+        --circle: #f0eee7;
+        --focus: #ffc267;
+        --shadow: none;
+      }
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font: 18px/1.55 ui-serif, Georgia, Cambria, "Times New Roman", serif;
+    }
+
+    button, input { font: inherit; }
+
+    a { color: var(--accent); }
+
+    :focus-visible {
+      outline: 3px solid var(--focus);
+      outline-offset: 3px;
+    }
+
+    .skip-link {
+      position: absolute;
+      left: 12px;
+      top: -80px;
+      padding: 10px 14px;
+      background: var(--ink);
+      color: var(--bg);
+      z-index: 20;
+    }
+
+    .skip-link:focus { top: 12px; }
+
+    header, main, footer {
+      width: min(1120px, calc(100% - 32px));
+      margin-inline: auto;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      padding: 22px 0;
+      border-bottom: 1px solid var(--line);
+      font-family: ui-sans-serif, system-ui, sans-serif;
+      font-size: .86rem;
+    }
+
+    header a { text-decoration: none; }
+
+    .brand { font-weight: 800; letter-spacing: -.02em; }
+
+    main { padding: 58px 0 88px; }
+
+    .eyebrow {
+      margin: 0 0 12px;
+      color: var(--accent);
+      font: 800 .76rem/1.2 ui-sans-serif, system-ui, sans-serif;
+      letter-spacing: .15em;
+      text-transform: uppercase;
+    }
+
+    h1, h2, h3 { line-height: 1.08; letter-spacing: -.035em; }
+
+    h1 {
+      max-width: 940px;
+      margin: 0;
+      font-size: clamp(2.7rem, 7.4vw, 6rem);
+    }
+
+    h2 { font-size: clamp(2rem, 5vw, 3.5rem); margin-top: 0; }
+
+    h3 { font-size: 1.25rem; }
+
+    .lead {
+      max-width: 800px;
+      margin: 24px 0 0;
+      color: var(--muted);
+      font-size: clamp(1.18rem, 2.8vw, 1.65rem);
+    }
+
+    .question-card, .lab-card, .formula-card, .challenge-card, details {
+      margin-top: 38px;
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      background: var(--paper);
+      box-shadow: var(--shadow);
+    }
+
+    .question-card, .formula-card, .challenge-card, details { padding: clamp(22px, 4vw, 38px); }
+
+    .question-card strong, .box-label {
+      display: block;
+      color: var(--accent);
+      font: 800 .76rem/1.2 ui-sans-serif, system-ui, sans-serif;
+      letter-spacing: .13em;
+      text-transform: uppercase;
+    }
+
+    .question-card p {
+      max-width: 850px;
+      margin: 12px 0 22px;
+      font-size: clamp(1.45rem, 4vw, 2.45rem);
+      line-height: 1.18;
+    }
+
+    .answer-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    button {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 12px 16px;
+      background: transparent;
+      color: var(--ink);
+      cursor: pointer;
+    }
+
+    button:hover { border-color: var(--accent); }
+
+    button[aria-pressed="true"], .primary {
+      border-color: var(--accent);
+      background: var(--accent);
+      color: var(--bg);
+    }
+
+    button:disabled { opacity: .45; cursor: not-allowed; }
+
+    .feedback {
+      min-height: 1.6em;
+      margin: 16px 0 0;
+      color: var(--muted);
+      font-family: ui-sans-serif, system-ui, sans-serif;
+    }
+
+    .lab-card { overflow: hidden; }
+
+    .lab-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.35fr) minmax(280px, .65fr);
+    }
+
+    .visual-panel {
+      min-height: 560px;
+      padding: 18px;
+      background:
+        linear-gradient(var(--line) 1px, transparent 1px),
+        linear-gradient(90deg, var(--line) 1px, transparent 1px);
+      background-size: 28px 28px;
+    }
+
+    svg { width: 100%; height: 100%; min-height: 520px; display: block; }
+
+    .control-panel {
+      padding: clamp(22px, 4vw, 34px);
+      border-left: 1px solid var(--line);
+    }
+
+    .control-panel h2 { font-size: 1.9rem; }
+
+    .control-panel label {
+      display: block;
+      margin-top: 26px;
+      font: 700 .86rem/1.3 ui-sans-serif, system-ui, sans-serif;
+    }
+
+    input[type="range"] { width: 100%; margin: 14px 0; accent-color: var(--accent); }
+
+    .quick-values {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .quick-values button { padding: 8px 12px; font-size: .88rem; }
+
+    .measurements {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin: 26px 0;
+    }
+
+    .measurement {
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+    }
+
+    .measurement dt {
+      color: var(--muted);
+      font: 700 .73rem/1.2 ui-sans-serif, system-ui, sans-serif;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+    }
+
+    .measurement dd { margin: 5px 0 0; font-size: 1.32rem; font-variant-numeric: tabular-nums; }
+
+    .measurement.inside dd { color: var(--accent); }
+
+    .measurement.outside dd { color: var(--accent-2); }
+
+    .measurement.wide { grid-column: 1 / -1; }
+
+    .measurement.wide dd { font-size: 1rem; line-height: 1.6; }
+
+    .hint {
+      padding: 16px;
+      border-left: 4px solid var(--accent);
+      background: color-mix(in srgb, var(--accent) 9%, transparent);
+      color: var(--muted);
+    }
+
+    .reveal-row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-top: 22px; }
+
+    .hint.secret { margin-top: 24px; }
+
+    .formula-card[hidden], .challenge-card[hidden] { display: none; }
+
+    .formula {
+      margin: 22px 0;
+      padding: 22px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      text-align: center;
+      font-size: clamp(1.3rem, 3.6vw, 2.1rem);
+      font-variant-numeric: lining-nums;
+      overflow-x: auto;
+    }
+
+    .derivation {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      counter-reset: step;
+    }
+
+    .step {
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+    }
+
+    .step::before {
+      counter-increment: step;
+      content: counter(step);
+      display: grid;
+      place-items: center;
+      width: 28px;
+      height: 28px;
+      margin-bottom: 12px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: var(--bg);
+      font: 800 .82rem/1 ui-sans-serif, system-ui, sans-serif;
+    }
+
+    .step p { margin: 0; }
+
+    .dictionary {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .dictionary div { padding: 14px; border-top: 1px solid var(--line); }
+
+    .challenge-options { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+
+    details summary {
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 1.25rem;
+    }
+
+    details p, details li { color: var(--muted); }
+
+    footer { padding: 28px 0 56px; border-top: 1px solid var(--line); color: var(--muted); }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    @media (max-width: 820px) {
+      .answer-grid, .derivation, .dictionary { grid-template-columns: 1fr; }
+      .lab-grid { grid-template-columns: 1fr; }
+      .control-panel { border-left: 0; border-top: 1px solid var(--line); }
+      .visual-panel { min-height: 440px; }
+      svg { min-height: 400px; }
+    }
+
+    @media (max-width: 480px) {
+      header { align-items: flex-start; flex-direction: column; }
+      main { padding-top: 38px; }
+      .measurements { grid-template-columns: 1fr; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      * { transition: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#conteudo">Pular para o laboratório</a>
+  <header>
+    <a class="brand" href="../../index.html">MATHeu$</a>
+    <span>Temporada 02 · Laboratório 04</span>
+  </header>
+
+  <main id="conteudo">
+    <p class="eyebrow">Números que constroem formas</p>
+    <h1>Quanto falta para a hipotenusa alcançar o cateto? A falta tem forma.</h1>
+    <p class="lead">No Laboratório 01, a diferença 1 marcou a fábrica dos ímpares. No 02, ela coloriu o mapa. Agora ela vira o objeto do laboratório: entre as ternas primitivas, quais valores a diferença hipotenusa − cateto maior consegue assumir — e quais são proibidos?</p>
+
+    <section class="question-card" aria-labelledby="aposta-titulo">
+      <strong id="aposta-titulo">Pare e aposte</strong>
+      <p>Existe alguma terna primitiva com diferença exatamente 3?</p>
+      <div class="answer-grid" role="group" aria-label="Escolha sua previsão">
+        <button type="button" data-prediction="many" aria-pressed="false">sim, várias</button>
+        <button type="button" data-prediction="one" aria-pressed="false">só uma</button>
+        <button type="button" data-prediction="none" aria-pressed="false">nenhuma</button>
+      </div>
+      <p id="prediction-feedback" class="feedback" aria-live="polite">Aposte antes de abrir o histograma. Os buracos vão dar o veredito.</p>
+    </section>
+
+    <section class="lab-card" aria-labelledby="histogram-title">
+      <div class="lab-grid">
+        <div class="visual-panel">
+          <svg id="histogram-svg" viewBox="0 0 640 560" role="img" aria-labelledby="histogram-svg-title histogram-svg-desc">
+            <title id="histogram-svg-title">Histograma das diferenças entre hipotenusa e cateto maior</title>
+            <desc id="histogram-svg-desc">Barras contam quantas ternas têm cada diferença de 1 a 50. No modo primitivas, o histograma é cheio de buracos: só alguns valores aparecem. Incluindo as cópias, os buracos se preenchem.</desc>
+            <g id="histogram-drawing"></g>
+          </svg>
+        </div>
+
+        <div class="control-panel">
+          <p class="box-label">Brinque</p>
+          <h2 id="histogram-title">O histograma das faltas</h2>
+          <p>Cada terna deposita um voto na sua diferença. Suba o teto da hipotenusa e alterne entre só primitivas e todas as ternas.</p>
+
+          <label for="ceiling">Teto da hipotenusa: <output id="ceiling-output" for="ceiling">500</output></label>
+          <input id="ceiling" type="range" min="100" max="2000" step="50" value="500">
+
+          <div class="quick-values" role="group" aria-label="Modo do histograma">
+            <button type="button" data-mode="prim" aria-pressed="true">só primitivas</button>
+            <button type="button" data-mode="all" aria-pressed="false">todas as ternas</button>
+          </div>
+
+          <dl class="measurements" aria-label="Leitura do histograma">
+            <div class="measurement"><dt>ternas contadas</dt><dd id="total">80</dd></div>
+            <div class="measurement inside"><dt>diferenças presentes (até 50)</dt><dd id="present-count">9</dd></div>
+            <div class="measurement outside"><dt>menor diferença ausente</dt><dd id="first-missing">3</dd></div>
+            <div class="measurement wide"><dt>as presentes</dt><dd id="present-list">1 · 2 · 8 · 9 · 18 · 25 · 32 · 49 · 50</dd></div>
+          </dl>
+
+          <p class="hint"><strong>Olhe de novo:</strong> os buracos das primitivas não se movem quando o teto sobe — e somem no instante em que as cópias entram. O padrão é uma impressão digital da primitividade.</p>
+
+          <div class="reveal-row">
+            <button id="reveal" type="button" class="primary" disabled>Revelar a regra das faltas</button>
+            <span id="reveal-status" class="feedback" aria-live="polite">Faça a aposta e mexa no teto ou no modo.</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="lab-card" aria-labelledby="tester-title">
+      <div class="lab-grid">
+        <div class="visual-panel">
+          <svg id="tester-svg" viewBox="0 0 640 560" role="img" aria-labelledby="tester-svg-title tester-svg-desc">
+            <title id="tester-svg-title">Comparação entre hipotenusa e cateto maior para a diferença testada</title>
+            <desc id="tester-svg-desc">Duas barras horizontais: o cateto maior e a hipotenusa da primeira terna com a diferença testada. A sobra da hipotenusa, destacada, é a falta. Quando a diferença é proibida entre primitivas, a terna mostrada é uma cópia.</desc>
+            <g id="tester-drawing"></g>
+          </svg>
+        </div>
+
+        <div class="control-panel">
+          <p class="box-label">Quebre a regra</p>
+          <h2 id="tester-title">O testador de faltas</h2>
+          <p>Escolha uma diferença candidata e procure a primeira terna que a realiza. Consegue achar uma primitiva com falta 3, 4 ou 12?</p>
+
+          <label for="candidate">Diferença candidata: <output id="candidate-output" for="candidate">8</output></label>
+          <input id="candidate" type="range" min="1" max="60" step="1" value="8">
+
+          <div class="quick-values" aria-label="Valores rápidos do testador">
+            <button type="button" data-candidate="3">3</button>
+            <button type="button" data-candidate="4">4</button>
+            <button type="button" data-candidate="18">18</button>
+            <button type="button" data-candidate="49">49</button>
+          </div>
+
+          <dl class="measurements" aria-label="Veredito do testador">
+            <div class="measurement wide inside"><dt>veredito</dt><dd id="verdict">8 aparece em primitivas — a primeira é (20, 21, 29), endereço (5, 2)</dd></div>
+          </dl>
+
+          <p class="hint"><strong>Olhe de novo:</strong> quando a falta é proibida, a terna que aparece é sempre uma cópia — e o fator da cópia é exatamente o que fabrica a falta.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="formula-card" class="formula-card" hidden aria-labelledby="formula-title">
+      <p class="box-label">Entenda</p>
+      <h2 id="formula-title">A falta é lida direto do endereço</h2>
+
+      <div class="derivation">
+        <div class="step"><p><strong>Todo endereço tem dois catetos candidatos.</strong> No mapa do Lab 02, a terna de (m, k) tem catetos 2mk e m² − k² — e o maior deles decide a conta.</p></div>
+        <div class="step"><p><strong>Se o maior é 2mk:</strong> a falta é c − 2mk = m² + k² − 2mk = (m − k)². E m − k é ímpar (paridades opostas!) — a falta é um quadrado ímpar.</p></div>
+        <div class="step"><p><strong>Se o maior é m² − k²:</strong> a falta é c − (m² − k²) = 2k² — o dobro de um quadrado. Não existe terceira opção.</p></div>
+      </div>
+
+      <div class="formula" aria-label="falta de uma primitiva é m menos k ao quadrado, ou duas vezes k ao quadrado">
+        falta de uma primitiva = (m − k)² &nbsp;&nbsp;ou&nbsp;&nbsp; 2k²
+      </div>
+
+      <div class="dictionary" aria-label="Dicionário da fórmula">
+        <div><strong>(m, k)</strong><br>o endereço da terna no mapa do Laboratório 02</div>
+        <div><strong>quadrados ímpares</strong><br>1, 9, 25, 49… — a via da diagonal e vizinhanças</div>
+        <div><strong>dobros de quadrados</strong><br>2, 8, 18, 32, 50… — a via das colunas baixas</div>
+      </div>
+
+      <p><strong>Exemplo por inspeção:</strong> (5, 12, 13) mora em (3, 2); o cateto maior é 12 = 2mk, então a falta é (3 − 2)² = 1. Já (20, 21, 29), em (5, 2), tem cateto maior 21 = m² − k² e falta 2 · 2² = 8.</p>
+
+      <p><strong>Por que 3, 4 e 12 são proibidos:</strong> 3 é ímpar mas não é quadrado; 4 = 2² pediria m − k par, o que as paridades opostas proíbem (e 2k² = 4 pediria k² = 2); 12 não é quadrado ímpar nem dobro de quadrado. Nenhum esforço de busca muda isso — é aritmética do endereço.</p>
+
+      <p><strong>E as cópias?</strong> Multiplicar a terna multiplica a falta: d × (3, 4, 5) tem falta d. Por isso o histograma de <em>todas</em> as ternas não tem buraco nenhum — cada valor v chega, no mínimo, pela cópia (3v, 4v, 5v).</p>
+
+      <p class="hint secret"><strong>Segredo de mestre:</strong> a lista das faltas — 1, 2, 8, 9, 18, 25, 32, 49, 50… — não muda quando o teto sobe: com hipotenusa até 500 ou até 2.000, as presentes até 50 são as mesmas nove. Padrão que não se mexe com o tamanho da amostra é teorema disfarçado.</p>
+    </section>
+
+    <section id="challenge" class="challenge-card" hidden aria-labelledby="challenge-title">
+      <p class="box-label">Agora use a fórmula</p>
+      <h2 id="challenge-title">Qual destas faltas aparece em alguma primitiva?</h2>
+      <p>Teste cada uma contra as duas vias: quadrado ímpar ou dobro de quadrado.</p>
+      <div class="challenge-options" role="group" aria-label="Escolha a falta possível">
+        <button type="button" data-answer="12">12</button>
+        <button type="button" data-answer="18">18</button>
+        <button type="button" data-answer="27">27</button>
+      </div>
+      <p id="challenge-feedback" class="feedback" aria-live="polite"></p>
+    </section>
+
+    <section id="twins" class="challenge-card" hidden aria-labelledby="twins-title">
+      <p class="box-label">Curiosidade</p>
+      <h2 id="twins-title">Os catetos quase gêmeos</h2>
+      <p>Vire a pergunta para o outro lado: e quando a falta entre os <em>catetos</em> é 1? As primitivas de catetos consecutivos são raríssimas: (3, 4, 5), (20, 21, 29), (119, 120, 169), (696, 697, 985) — e a quinta já salta para (4059, 4060, 5741). Cada hipotenusa é cerca de 5,83 vezes a anterior, e esse 5,83 não é acaso: é 3 + 2√2.</p>
+      <p><strong>Porta futura:</strong> nos endereços, catetos gêmeos exigem (m − k)² − 2k² = ±1 — uma equação de Pell. Essa porta abre na temporada "Números que não terminam".</p>
+    </section>
+
+    <details>
+      <summary>Oficina — as duas vias, os buracos e Pell</summary>
+      <p><strong>Por que m − k é ímpar.</strong> Numa casa válida do mapa, m e k têm paridades opostas; a diferença de um par com um ímpar é ímpar. Logo (m − k)² percorre exatamente os quadrados ímpares 1, 9, 25, 49…</p>
+      <p><strong>Por que toda falta permitida acontece de verdade.</strong> Para o quadrado ímpar (2t + 1)², tome m − k = 2t + 1 com k grande o bastante para o cateto maior ser 2mk (basta k &gt; (2t + 1)/√2, ajustando para coprimalidade) — por exemplo, falta 49 nasce em (12, 5), a terna de Plimpton 322. Para o dobro 2k², fixe k e tome m &gt; (1 + √2)k coprimo de paridade oposta — falta 18 nasce em (8, 3), a terna (48, 55, 73).</p>
+      <p><strong>Por que as cópias preenchem tudo.</strong> A falta escala junto com a terna: d × (a, b, c) tem falta d × (c − b). Como (3, 4, 5) tem falta 1, a cópia (3v, 4v, 5v) entrega qualquer falta v — os buracos do histograma são exclusividade das primitivas.</p>
+      <p><strong>Catetos gêmeos são Pell.</strong> Pedir |2mk − (m² − k²)| = 1 é pedir (m − k)² − 2k² = ±1: a equação de Pell com x = m − k e y = k. As soluções (1, 1), (3, 2), (7, 5), (17, 12)… dão os endereços (2, 1), (5, 2), (12, 5), (29, 12)… — exatamente as ternas da curiosidade, e a razão 3 + 2√2 é a unidade fundamental de Pell.</p>
+      <p><strong>O que o verificador confere.</strong> Toda primitiva com hipotenusa até 5.000 tem falta quadrado ímpar ou dobro de quadrado; as nove presentes até 50 aparecem já com teto 500 e nenhuma proibida aparece nunca; as primeiras ocorrências citadas (8, 18, 25, 49) conferem; as cópias (3v, 4v, 5v) cobrem toda falta v; e os catetos gêmeos até 5.000 são exatamente os quatro citados, com a quinta terna e a razão de Pell conferidas.</p>
+    </details>
+  </main>
+
+  <footer>
+    <p>MATHeu$ · Temporada 02, Laboratório 04 · HTML autocontido, SVG calculado e funcionamento offline.</p>
+  </footer>
+
+  <script>
+    (() => {
+      'use strict';
+
+      const NS = 'http://www.w3.org/2000/svg';
+      const MAX_C = 2000;
+      const MAX_DIFF = 50;
+
+      const histogramDrawing = document.getElementById('histogram-drawing');
+      const ceiling = document.getElementById('ceiling');
+      const ceilingOutput = document.getElementById('ceiling-output');
+      const totalOut = document.getElementById('total');
+      const presentCountOut = document.getElementById('present-count');
+      const firstMissingOut = document.getElementById('first-missing');
+      const presentListOut = document.getElementById('present-list');
+
+      const testerDrawing = document.getElementById('tester-drawing');
+      const candidate = document.getElementById('candidate');
+      const candidateOutput = document.getElementById('candidate-output');
+      const verdictOut = document.getElementById('verdict');
+
+      const reveal = document.getElementById('reveal');
+      const revealStatus = document.getElementById('reveal-status');
+      const formulaCard = document.getElementById('formula-card');
+      const challenge = document.getElementById('challenge');
+      const twins = document.getElementById('twins');
+      const predictionFeedback = document.getElementById('prediction-feedback');
+      const challengeFeedback = document.getElementById('challenge-feedback');
+
+      let predicted = false;
+      let moved = false;
+      let mode = 'prim';
+      const initialCeiling = Number(ceiling.value);
+
+      const fmtInt = value => new Intl.NumberFormat('pt-BR').format(value);
+      const gcd = (a, b) => (b ? gcd(b, a % b) : a);
+
+      function el(name, attrs = {}, text = '') {
+        const node = document.createElementNS(NS, name);
+        for (const [key, value] of Object.entries(attrs)) node.setAttribute(key, value);
+        if (text) node.textContent = text;
+        return node;
+      }
+
+      function addLabel(target, x, y, text, anchor = 'start', size = 15) {
+        target.appendChild(el('text', {
+          x, y,
+          'text-anchor': anchor,
+          'font-family': 'ui-sans-serif, system-ui, sans-serif',
+          'font-size': String(size),
+          'font-weight': '750',
+          fill: 'currentColor'
+        }, text));
+      }
+
+      // primitivas até MAX_C via Euclides, ordenadas por hipotenusa
+      const primitives = [];
+      for (let m = 2; m * m + 1 <= 5000; m += 1) {
+        for (let k = 1; k < m; k += 1) {
+          if (gcd(m, k) !== 1 || (m + k) % 2 === 0) continue;
+          const c = m * m + k * k;
+          if (c > 5000) continue;
+          const legs = [m * m - k * k, 2 * m * k].sort((p, q) => p - q);
+          primitives.push({ a: legs[0], b: legs[1], c, m, k, diff: c - legs[1] });
+        }
+      }
+      primitives.sort((p, q) => p.c - q.c);
+
+      const firstByDiff = new Map();
+      for (const t of primitives) {
+        if (!firstByDiff.has(t.diff)) firstByDiff.set(t.diff, t);
+      }
+
+      function isAllowed(v) {
+        const s = Math.round(Math.sqrt(v));
+        if (s * s === v && s % 2 === 1) return { yes: true, kind: `${v} = ${s}² (quadrado ímpar)` };
+        if (v % 2 === 0) {
+          const h = v / 2;
+          const r = Math.round(Math.sqrt(h));
+          if (r * r === h) return { yes: true, kind: `${v} = 2 · ${r}² (dobro de quadrado)` };
+        }
+        return { yes: false, kind: `${v} não é quadrado ímpar nem dobro de quadrado` };
+      }
+
+      function histogramCounts(ceilingC, includeCopies) {
+        const counts = new Array(MAX_DIFF + 1).fill(0);
+        let total = 0;
+        for (const t of primitives) {
+          if (t.c > ceilingC) continue;
+          if (includeCopies) {
+            for (let d = 1; d * t.c <= ceilingC; d += 1) {
+              total += 1;
+              const diff = d * t.diff;
+              if (diff <= MAX_DIFF) counts[diff] += 1;
+            }
+          } else {
+            total += 1;
+            if (t.diff <= MAX_DIFF) counts[t.diff] += 1;
+          }
+        }
+        return { counts, total };
+      }
+
+      function renderHistogram() {
+        const N = Number(ceiling.value);
+        const { counts, total } = histogramCounts(N, mode === 'all');
+
+        const present = [];
+        let firstMissing = null;
+        for (let v = 1; v <= MAX_DIFF; v += 1) {
+          if (counts[v] > 0) present.push(v);
+          else if (firstMissing === null) firstMissing = v;
+        }
+
+        ceilingOutput.value = String(N);
+        ceilingOutput.textContent = String(N);
+        totalOut.textContent = fmtInt(total);
+        presentCountOut.textContent = fmtInt(present.length);
+        firstMissingOut.textContent = firstMissing === null ? '—' : fmtInt(firstMissing);
+        presentListOut.textContent = mode === 'prim'
+          ? present.join(' · ')
+          : 'todas de 1 a 50 — os buracos sumiram';
+
+        histogramDrawing.replaceChildren();
+
+        const left = 50;
+        const right = 630;
+        const top = 60;
+        const bottom = 500;
+        const barW = (right - left) / MAX_DIFF;
+        const maxCount = Math.max(...counts, 1);
+
+        histogramDrawing.appendChild(el('line', {
+          x1: left, y1: bottom, x2: right, y2: bottom,
+          stroke: 'var(--circle)', 'stroke-width': '2'
+        }));
+
+        for (let v = 1; v <= MAX_DIFF; v += 1) {
+          if (counts[v] === 0) continue;
+          const h = Math.max(4, (counts[v] / maxCount) * (bottom - top));
+          histogramDrawing.appendChild(el('rect', {
+            x: left + (v - 1) * barW + 1.5,
+            y: bottom - h,
+            width: barW - 3,
+            height: h,
+            rx: 3,
+            fill: 'var(--accent)'
+          }));
+        }
+
+        for (const tick of [1, 10, 20, 30, 40, 50]) {
+          addLabel(histogramDrawing, left + (tick - 0.5) * barW, bottom + 24, String(tick), 'middle', 14);
+        }
+        addLabel(histogramDrawing, (left + right) / 2, 552, 'falta (hipotenusa − cateto maior) →', 'middle', 15);
+        addLabel(histogramDrawing, left, 30,
+          mode === 'prim' ? `só primitivas, hipotenusa até ${fmtInt(N)}` : `todas as ternas, hipotenusa até ${fmtInt(N)}`,
+          'start', 16);
+        addLabel(histogramDrawing, right, 30, `barra mais alta: ${fmtInt(maxCount)}`, 'end', 14);
+      }
+
+      function renderTester() {
+        const v = Number(candidate.value);
+        const allowed = isAllowed(v);
+        candidateOutput.value = String(v);
+        candidateOutput.textContent = String(v);
+
+        let triple;
+        let copyFactor = 1;
+        if (allowed.yes) {
+          triple = firstByDiff.get(v);
+          verdictOut.textContent =
+            `${allowed.kind} — aparece em primitivas; a primeira é (${fmtInt(triple.a)}, ${fmtInt(triple.b)}, ${fmtInt(triple.c)}), endereço (${triple.m}, ${triple.k})`;
+          verdictOut.parentElement.classList.add('inside');
+          verdictOut.parentElement.classList.remove('outside');
+        } else {
+          copyFactor = v;
+          triple = { a: 3 * v, b: 4 * v, c: 5 * v };
+          verdictOut.textContent =
+            `${allowed.kind} — nunca aparece numa primitiva; só em cópias, como (${fmtInt(3 * v)}, ${fmtInt(4 * v)}, ${fmtInt(5 * v)}) = ${fmtInt(v)} × (3, 4, 5)`;
+          verdictOut.parentElement.classList.add('outside');
+          verdictOut.parentElement.classList.remove('inside');
+        }
+
+        testerDrawing.replaceChildren();
+
+        const left = 60;
+        const maxW = 520;
+        const scale = maxW / triple.c;
+        const yLeg = 240;
+        const yHyp = 330;
+        const barH = 44;
+
+        addLabel(testerDrawing, 320, 60, `falta candidata: ${fmtInt(v)}`, 'middle', 18);
+        addLabel(testerDrawing, 320, 92,
+          copyFactor > 1 ? `terna exibida: cópia ${fmtInt(copyFactor)} × (3, 4, 5)` : 'terna exibida: primitiva',
+          'middle', 14);
+
+        addLabel(testerDrawing, left, yLeg - 12, 'cateto maior', 'start', 14);
+        testerDrawing.appendChild(el('rect', {
+          x: left, y: yLeg, width: triple.b * scale, height: barH, rx: 6,
+          fill: 'color-mix(in srgb, var(--accent) 55%, transparent)',
+          stroke: 'var(--accent)', 'stroke-width': '2'
+        }));
+        addLabel(testerDrawing, left + (triple.b * scale) / 2, yLeg + barH / 2 + 6, fmtInt(triple.b), 'middle', 16);
+
+        addLabel(testerDrawing, left, yHyp - 12, 'hipotenusa', 'start', 14);
+        testerDrawing.appendChild(el('rect', {
+          x: left, y: yHyp, width: triple.c * scale, height: barH, rx: 6,
+          fill: 'color-mix(in srgb, var(--circle) 25%, transparent)',
+          stroke: 'var(--circle)', 'stroke-width': '2'
+        }));
+        addLabel(testerDrawing, left + (triple.c * scale) / 2, yHyp + barH / 2 + 6, fmtInt(triple.c), 'middle', 16);
+
+        const overX = left + triple.b * scale;
+        const overW = Math.max(3, (triple.c - triple.b) * scale);
+        testerDrawing.appendChild(el('rect', {
+          x: overX, y: yHyp, width: overW, height: barH, rx: 6,
+          fill: 'var(--focus)'
+        }));
+        testerDrawing.appendChild(el('line', {
+          x1: overX, y1: yLeg + barH + 8, x2: overX, y2: yHyp - 8,
+          stroke: 'var(--focus)', 'stroke-width': '2', 'stroke-dasharray': '5 4'
+        }));
+        addLabel(testerDrawing, Math.min(overX + overW / 2, 620), yHyp + barH + 28, `falta = ${fmtInt(triple.c - triple.b)}`, 'middle', 15);
+
+        addLabel(testerDrawing, 320, 470,
+          `(${fmtInt(triple.a)}, ${fmtInt(triple.b)}, ${fmtInt(triple.c)})`,
+          'middle', 18);
+      }
+
+      function updateReadiness() {
+        const ready = predicted && moved;
+        reveal.disabled = !ready;
+        revealStatus.textContent = ready
+          ? 'Agora a regra das faltas pode aparecer.'
+          : 'Faça a aposta e mexa no teto ou no modo.';
+      }
+
+      document.querySelectorAll('[data-prediction]').forEach(button => {
+        button.addEventListener('click', () => {
+          document.querySelectorAll('[data-prediction]').forEach(item => item.setAttribute('aria-pressed', 'false'));
+          button.setAttribute('aria-pressed', 'true');
+          predicted = true;
+          const correct = button.dataset.prediction === 'none';
+          predictionFeedback.textContent = correct
+            ? 'Boa aposta. Agora procure o 3 no histograma — e tente fazê-lo aparecer.'
+            : 'Aposta registrada. Procure o 3 no histograma — e tente fazê-lo aparecer.';
+          updateReadiness();
+        });
+      });
+
+      ceiling.addEventListener('input', () => {
+        moved = moved || Number(ceiling.value) !== initialCeiling;
+        renderHistogram();
+        updateReadiness();
+      });
+
+      document.querySelectorAll('[data-mode]').forEach(button => {
+        button.addEventListener('click', () => {
+          document.querySelectorAll('[data-mode]').forEach(item => item.setAttribute('aria-pressed', 'false'));
+          button.setAttribute('aria-pressed', 'true');
+          mode = button.dataset.mode;
+          moved = true;
+          renderHistogram();
+          updateReadiness();
+        });
+      });
+
+      candidate.addEventListener('input', renderTester);
+      document.querySelectorAll('[data-candidate]').forEach(button => {
+        button.addEventListener('click', () => {
+          candidate.value = button.dataset.candidate;
+          renderTester();
+        });
+      });
+
+      reveal.addEventListener('click', () => {
+        formulaCard.hidden = false;
+        challenge.hidden = false;
+        reveal.textContent = 'Regra revelada';
+        reveal.disabled = true;
+        formulaCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+
+      document.querySelectorAll('[data-answer]').forEach(button => {
+        button.addEventListener('click', () => {
+          const answer = button.dataset.answer;
+          if (answer === '18') {
+            challengeFeedback.textContent =
+              'Isso: 18 = 2 · 3², a via do dobro de quadrado. A primeira é (48, 55, 73), no endereço (8, 3). As outras duas não passam em nenhuma das vias.';
+            if (twins.hidden) twins.hidden = false;
+          } else if (answer === '12') {
+            challengeFeedback.textContent =
+              '12 não passa: não é quadrado ímpar, e 12 = 2 · 6 pediria 6 = k², que não existe. Teste as duas vias com as outras opções.';
+          } else {
+            challengeFeedback.textContent =
+              '27 não passa: é ímpar mas não é quadrado (5² = 25, 7² = 49), e dobro de quadrado é sempre par. Teste as outras opções.';
+          }
+        });
+      });
+
+      renderHistogram();
+      renderTester();
+      updateReadiness();
+    })();
+  </script>
+</body>
+</html>

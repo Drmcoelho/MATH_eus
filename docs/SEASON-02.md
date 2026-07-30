@@ -119,8 +119,10 @@ cateto maior m² − k²:  c − b = 2k²
 Comparar: diferenças que ocorrem × diferenças proibidas (3, 4, 5, 6, 7…),
 histograma real × previsão.
 
-Interações: histograma das diferenças, teste de um valor qualquer, caça ao
-contraexemplo.
+Interações: histograma das faltas com alternância primitivas/todas,
+testador de valor com primeira ocorrência, caça ao contraexemplo.
+
+Estado: fatia vertical disponível.
 
 ### 05 — Quantas ternas existem até N?
 
