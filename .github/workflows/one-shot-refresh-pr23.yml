@@ -1,0 +1,27 @@
+name: One-shot atualiza PR 23
+on:
+  push:
+    branches:
+      - agent/lab02-canonico
+permissions:
+  contents: write
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Atualizar head após hotfix da base
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          path=Path('modules/02-perimetros/check-math.mjs')
+          text=path.read_text().rstrip()+"\n"
+          path.write_text(text)
+          Path('.github/workflows/one-shot-refresh-pr23.yml').unlink()
+          PY
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "revalida o Lab 02 sobre a base corrigida"
+          git push
