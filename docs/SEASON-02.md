@@ -97,8 +97,10 @@ cada fatoração de a² em dois fatores de mesma paridade → uma terna
 Comparar: números que aparecem em poucas ternas × campeões de aparição
 (o que a fatoração tem a ver com isso).
 
-Interações: busca por número, lista das ternas que o contêm, ranking de
-aparições até um teto.
+Interações: busca por número com leque de triângulos de cateto comum,
+lista das moradas com fatoração, ranking dos campeões até um teto.
+
+Estado: fatia vertical disponível.
 
 ### 04 — A diferença esconde um padrão
 
