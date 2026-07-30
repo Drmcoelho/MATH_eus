@@ -1,0 +1,122 @@
+name: One-shot hotfix assintótico
+
+on:
+  push:
+    branches:
+      - agent/hotfix-assintotica
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Corrigir texto e verificadores
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          def replace_once(path: str, old: str, new: str) -> None:
+              p = Path(path)
+              text = p.read_text()
+              count = text.count(old)
+              if count != 1:
+                  raise SystemExit(f'{path}: esperado 1 ocorrência, encontrado {count}: {old[:90]!r}')
+              p.write_text(text.replace(old, new))
+
+          lab3 = 'modules/03-areas/index.html'
+          replace_once(
+              lab3,
+              '<p>A razão entre os dois erros não muda com n — você já a viu no painel para n = 12.</p>',
+              '<p>A razão se aproxima rapidamente de 4 à medida que n cresce — use n = 12 como estimativa e depois confira n = 24.</p>'
+          )
+          replace_once(
+              lab3,
+              '<details><summary>Pista visual</summary><p>4,51 ÷ 1,14 ≈ 3,96. Aplique essa mesma razão ao erro de contorno de n = 24.</p></details>',
+              '<details><summary>Pista visual</summary><p>4,51 ÷ 1,14 ≈ 3,96. Isso sugere multiplicar por cerca de 4; em n = 24 a razão já fica ainda mais perto de 4.</p></details>'
+          )
+          replace_once(
+              lab3,
+              'A razão não é coincidência: vêm duas dívidas se somando.',
+              'O valor próximo de 4 não é coincidência: ele é o limite da razão entre duas dívidas que se somam.'
+          )
+          replace_once(
+              lab3,
+              'Essa mesma razão 4 vai reaparecer como a constante exata do Laboratório 04.',
+              'Esse limite 4 reaparece no Laboratório 04 como razão entre constantes assintóticas.'
+          )
+          replace_once(
+              lab3,
+              "quarterFeedback.textContent = 'Exato: ≈ 1,14% — quatro vezes o erro do contorno. Confira com n = 24 no painel.';",
+              "quarterFeedback.textContent = 'Exato: ≈ 1,14% — aproximadamente quatro vezes o erro do contorno. Em n = 24, a razão já está muito perto de 4.';"
+          )
+
+          check3 = 'modules/03-areas/check-math.mjs'
+          replace_once(
+              check3,
+              "close(errArea12 / errPerim12, 4, 5e-2, 'razão dos erros próxima de 4 em n=12');",
+              "const ratioAreaPerim12 = errArea12 / errPerim12;\nassert.ok(ratioAreaPerim12 < 4, 'a razão em n=12 deve estar abaixo do limite 4');"
+          )
+          replace_once(
+              check3,
+              "close(errArea24 / errPerim24, 4, 5e-2, 'razão dos erros próxima de 4 em n=24');",
+              "const ratioAreaPerim24 = errArea24 / errPerim24;\nassert.ok(ratioAreaPerim24 < 4, 'a razão em n=24 deve estar abaixo do limite 4');\nassert.ok(ratioAreaPerim24 > ratioAreaPerim12, 'a razão deve se aproximar de 4 quando n aumenta');\nassert.ok(4 - ratioAreaPerim24 < 4 - ratioAreaPerim12, 'n=24 deve estar mais perto de 4 que n=12');"
+          )
+
+          lab5 = 'modules/05-limite/index.html'
+          replace_once(
+              lab5,
+              '<button type="button" data-ex-scaling="hundred">errado: precisaria de ε cem vezes menor</button>',
+              '<button type="button" data-ex-scaling="hundred">errado: aproximadamente cem vezes menor</button>'
+          )
+          replace_once(
+              lab5,
+              'Errado: para multiplicar N por dez é preciso dividir ε por <strong>cem</strong>, não por dez. Vem direto da fórmula: N ∝ 1/√ε, então N₂/N₁ = √(ε₁/ε₂). Para N₂/N₁ = 10, é preciso ε₁/ε₂ = 100.',
+              'Errado: na escala assintótica, multiplicar N por dez exige dividir ε por aproximadamente <strong>cem</strong>, não por dez. A forma N ≈ √(π³/ε) dá N₂/N₁ ≈ √(ε₁/ε₂); por isso uma redução de 100 vezes em ε produz um N cerca de 10 vezes maior. O menor N é inteiro e a fórmula é assintótica, então não há igualdade exata: 56 vira 557, não 560.'
+          )
+          replace_once(
+              lab5,
+              'a previsão N ≈ √(31/ε) acertou a resposta exata da máquina em todas as tolerâncias do painel.',
+              'a previsão N ≈ √(31/ε) ficou muito próxima da resposta exata da máquina em todas as tolerâncias do painel.'
+          )
+          replace_once(
+              lab5,
+              "scalingFeedback.textContent = 'Exato. N ∝ 1/√ε: dividir ε por 100 multiplica N por √100 = 10. Confira no painel: ε = 0,01 → N = 56; ε = 0,0001 → N = 557.';",
+              "scalingFeedback.textContent = 'Exato na ordem de grandeza: como N ≈ constante/√ε, dividir ε por 100 torna N cerca de 10 vezes maior. O inteiro mínimo vai de 56 a 557, não exatamente a 560.';"
+          )
+
+          check5 = 'modules/05-limite/check-math.mjs'
+          replace_once(
+              check5,
+              "assert.ok(ratio100x > 9 && ratio100x < 11, 'reduzir ε por 100× deve decuplicar N (raiz quadrada)');",
+              "assert.ok(ratio100x > 9 && ratio100x < 11, 'reduzir ε por 100× deve tornar N aproximadamente 10× maior');\nassert.notEqual(findN(0.0001), 10 * findN(0.01), 'o menor N inteiro não obedece proporcionalidade exata');"
+          )
+          replace_once(
+              check5,
+              'a previsão exata pela forma',
+              'a previsão assintótica pela forma'
+          )
+          PY
+
+      - name: Executar verificadores afetados
+        run: |
+          node modules/03-areas/check-math.mjs
+          node modules/05-limite/check-math.mjs
+
+      - name: Commitar hotfix e remover workflow temporário
+        shell: bash
+        run: |
+          rm .github/workflows/one-shot-hotfix-asymptotics.yml
+          git config user.name "MATH_eus maintenance"
+          git config user.email "actions@users.noreply.github.com"
+          git add modules/03-areas/index.html modules/03-areas/check-math.mjs \
+                  modules/05-limite/index.html modules/05-limite/check-math.mjs \
+                  .github/workflows/one-shot-hotfix-asymptotics.yml
+          git commit -m "corrige relações assintóticas nos Labs 03 e 05"
+          git push origin HEAD:agent/hotfix-assintotica
