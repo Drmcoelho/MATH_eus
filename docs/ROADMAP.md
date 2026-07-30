@@ -2,12 +2,10 @@
 
 ## Decisão de escopo
 
-O escopo matemático da Temporada 01 **estará completo assim que o PR #14 for
-mesclado**: os Labs 01–05 (e o Interlúdio 01·B) já estão na `main`; os Labs
-06–10 chegam pelo PR #14, escolhido como implementação canônica da segunda
-metade (o PR #8, rascunho paralelo sobre base defasada, será fechado como
-superado nessa mesma ocasião — ainda aberto enquanto este texto não reflete
-o merge).
+O escopo matemático da Temporada 01 está **completo**: os Labs 01–10 e o
+Interlúdio 01·B estão na `main`. Os Labs 06–10 foram incorporados pelo PR
+#14 como implementação canônica da segunda metade; o PR #8, rascunho
+paralelo sobre base defasada, foi fechado como superado.
 
 A partir daqui vale um **gate de qualidade, não de escopo**: nenhum escopo
 matemático novo (temporadas ou laboratórios além dos planejados) é
