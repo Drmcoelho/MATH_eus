@@ -1,0 +1,164 @@
+name: One-shot integrate Atlas
+
+on:
+  push:
+    branches:
+      - canon/personalizacao-visual
+
+permissions:
+  contents: write
+
+jobs:
+  integrate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Integrar main e corrigir Atlas
+        shell: bash
+        run: |
+          git config user.name "MATH_eus maintenance"
+          git config user.email "actions@users.noreply.github.com"
+          git fetch origin main
+          git merge --no-commit --no-ff -X theirs origin/main
+
+          python - <<'PY'
+          from pathlib import Path
+
+          def replace_once(text: str, old: str, new: str, label: str) -> str:
+              count = text.count(old)
+              if count != 1:
+                  raise SystemExit(f'{label}: esperado 1, encontrado {count}')
+              return text.replace(old, new, 1)
+
+          # Portal: preservar a main atual e inserir somente a entrada do Atlas.
+          portal = Path('index.html')
+          text = portal.read_text()
+          if '.atlas-entry {' not in text:
+              css = '''
+    .atlas-entry {
+      display:grid; grid-template-columns:1fr auto; gap:20px; align-items:center;
+      margin:20px 0 54px; padding:26px 30px; border-radius:24px;
+      background:linear-gradient(135deg,#102a32,#071217); color:#edf7f5;
+      text-decoration:none; box-shadow:0 18px 50px #0003;
+    }
+    .atlas-entry small { display:block; color:#50d2a4; font:800 .72rem/1 ui-sans-serif,system-ui; letter-spacing:.13em; text-transform:uppercase; }
+    .atlas-entry strong { display:block; font-size:clamp(1.4rem,3vw,2rem); margin:.35rem 0; }
+    .atlas-entry span { color:#b7cbc7; }
+    .atlas-entry b { font:800 1.6rem ui-sans-serif,system-ui; }
+    .atlas-entry:hover { transform:translateY(-2px); }
+    @media(max-width:620px){.atlas-entry{grid-template-columns:1fr}.atlas-entry b{display:none}}
+'''
+              text = replace_once(text, '  </style>', css + '  </style>', 'CSS do portal')
+          if 'href="atlas/index.html"' not in text:
+              marker = '  <h2 class="season" id="temporada-01">'
+              entry = '''  <a class="atlas-entry" href="atlas/index.html"><div><small>Dossiê 0 · entrada pessoal</small><strong>Atlas do Resto</strong><span>Veja a obra como quatro movimentos: sistemas que não fecham, operações que quebram, famílias escondidas e prova contra aparência.</span></div><b>→</b></a>
+
+'''
+              text = replace_once(text, marker, entry + marker, 'entrada do Atlas')
+          portal.write_text(text)
+
+          atlas = Path('atlas/index.html')
+          text = atlas.read_text()
+
+          # Material já publicado após a criação do Atlas.
+          future = '<article class="site" data-state="future"><strong>Operações que quebram</strong><small>zero, infinito, wheel e esfera de Riemann</small><p>próxima temporada estrutural</p></article>'
+          additions = '''<article class="site"><strong>Do polígono ao prisma</strong><small>extrusão, escala e cerco espacial</small><a href="../modules/06-prisma/index.html">abrir Lab 06 →</a></article>
+<article class="site"><strong>Girar cria espaço</strong><small>revolução, cilindro, cone e esfera</small><a href="../modules/07-revolucao/index.html">abrir Lab 07 →</a></article>
+<article class="site"><strong>Acumular é integrar</strong><small>anéis, discos e soma refinável</small><a href="../modules/08-integral/index.html">abrir Lab 08 →</a></article>
+<article class="site"><strong>Mudar é derivar</strong><small>coroa fina, taxa e resto quadrático</small><a href="../modules/09-derivada/index.html">abrir Lab 09 →</a></article>
+<article class="site"><strong>Derivar e integrar são inversos</strong><small>reciprocidade e fechamento da temporada</small><a href="../modules/10-reciprocidade/index.html">abrir Lab 10 →</a></article>
+<article class="site"><strong>A diferença esconde um padrão</strong><small>quadrados, dobros de quadrados e Pell</small><a href="../modules/s02-04-diferencas/index.html">abrir T02·04 →</a></article>
+'''
+          if '../modules/06-prisma/index.html' not in text:
+              text = replace_once(text, future, additions + future, 'novos sítios materializados')
+
+          # Um único ciclo de animação finito, sem cadeias concorrentes durante o arrasto.
+          text = replace_once(
+              text,
+              "requestAnimationFrame(()=>{pulse+=.025;if(drag)draw()})",
+              "",
+              'remoção do rAF recursivo em draw'
+          )
+          breathe = '''function breathe(){
+  const started=performance.now();
+  function frame(now){pulse=(now-started)*.008;draw();if(now-started<1200)requestAnimationFrame(frame)}
+  requestAnimationFrame(frame)
+}
+'''
+          if 'function breathe()' not in text:
+              text = replace_once(text, 'function hit(x,y)', breathe + 'function hit(x,y)', 'função breathe')
+          old_pulse = "document.getElementById('pulse').onclick=()=>{pulse+=Math.PI;draw()}"
+          count = text.count(old_pulse)
+          if count != 2:
+              raise SystemExit(f'handlers pulse: esperado 2, encontrado {count}')
+          text = text.replace(old_pulse, "document.getElementById('pulse').onclick=breathe")
+
+          old_keyboard = "let keyIndex=0;canvas.tabIndex=0;canvas.addEventListener('keydown',e=>{const arr=nodes.filter(visible);if(['ArrowRight','ArrowDown'].includes(e.key)){keyIndex=(keyIndex+1)%arr.length;select(arr[keyIndex]);e.preventDefault()}if(['ArrowLeft','ArrowUp'].includes(e.key)){keyIndex=(keyIndex-1+arr.length)%arr.length;select(arr[keyIndex]);e.preventDefault()}if(e.key==='Enter')select(arr[keyIndex])});"
+          new_keyboard = '''let keyIndex=0;canvas.tabIndex=0;canvas.addEventListener('keydown',e=>{
+  const arr=nodes.filter(visible);if(!arr.length)return;keyIndex=Math.min(keyIndex,arr.length-1);
+  if(['ArrowRight','ArrowDown'].includes(e.key)){keyIndex=(keyIndex+1)%arr.length;select(arr[keyIndex]);e.preventDefault()}
+  if(['ArrowLeft','ArrowUp'].includes(e.key)){keyIndex=(keyIndex-1+arr.length)%arr.length;select(arr[keyIndex]);e.preventDefault()}
+  if(e.key==='Enter'){const node=arr[keyIndex];if(node)select(node);e.preventDefault()}
+});'''
+          text = replace_once(text, old_keyboard, new_keyboard, 'navegação por teclado')
+
+          old_filter = "document.querySelectorAll('[data-filter]').forEach(b=>b.onclick=()=>{const f=b.dataset.filter;if(filters.has(f)&&filters.size>1)filters.delete(f);else filters.add(f);b.setAttribute('aria-pressed',filters.has(f));if(selected&&!visible(selected))reset();draw()});"
+          new_filter = "document.querySelectorAll('[data-filter]').forEach(b=>b.onclick=()=>{const f=b.dataset.filter;if(filters.has(f)&&filters.size>1)filters.delete(f);else filters.add(f);b.setAttribute('aria-pressed',filters.has(f));keyIndex=0;if(selected&&!visible(selected))reset();draw()});"
+          text = replace_once(text, old_filter, new_filter, 'reset do índice ao filtrar')
+
+          old_quiz = "const labels={closure:'sistemas que não fecham',break:'operações que quebram',family:'famílias escondidas',proof:'prova contra aparência'};const cards=[...document.querySelectorAll('.quiz-card')];let qi=0,score=0;cards.forEach((card,i)=>{const box=card.querySelector('.choices');Object.entries(labels).forEach(([k,v])=>{const b=document.createElement('button');b.className='choice';b.textContent=v;b.onclick=()=>{const ok=k===card.dataset.answer;card.querySelector('.feedback').textContent=ok?'Correto. Você reconheceu a estrutura antes do vocabulário.':'Ainda não. Pergunte: há resto, axioma quebrado, máquina geradora ou falha de evidência?';if(ok){score++;setTimeout(()=>{card.classList.remove('active');qi++;document.getElementById('bar').style.width=`${Math.min(100,qi/cards.length*100)}%`;if(cards[qi])cards[qi].classList.add('active');else document.getElementById('quiz').insertAdjacentHTML('beforeend',`<p><strong>${score}/4.</strong> O atlas agora é uma lente, não um índice.</p>`);},550)}};box.appendChild(b)})});"
+          new_quiz = '''const labels={closure:'sistemas que não fecham',break:'operações que quebram',family:'famílias escondidas',proof:'prova contra aparência'};const cards=[...document.querySelectorAll('.quiz-card')];let qi=0,score=0;cards.forEach(card=>{const box=card.querySelector('.choices');Object.entries(labels).forEach(([k,v])=>{const b=document.createElement('button');b.className='choice';b.textContent=v;b.onclick=()=>{if(card.dataset.locked==='true')return;const ok=k===card.dataset.answer;card.querySelector('.feedback').textContent=ok?'Correto. Você reconheceu a estrutura antes do vocabulário.':'Ainda não. Pergunte: há resto, axioma quebrado, máquina geradora ou falha de evidência?';if(ok){card.dataset.locked='true';box.querySelectorAll('button').forEach(button=>button.disabled=true);score++;setTimeout(()=>{card.classList.remove('active');qi++;document.getElementById('bar').style.width=`${Math.min(100,qi/cards.length*100)}%`;if(cards[qi])cards[qi].classList.add('active');else document.getElementById('quiz').insertAdjacentHTML('beforeend',`<p><strong>${score}/4.</strong> O atlas agora é uma lente, não um índice.</p>`);},550)}};box.appendChild(b)})});'''
+          text = replace_once(text, old_quiz, new_quiz, 'travamento do quiz')
+          atlas.write_text(text)
+
+          checker = Path('atlas/check-math.mjs')
+          text = checker.read_text()
+          if '../modules/06-prisma/index.html' not in text:
+              text = replace_once(
+                  text,
+                  "  ['proof', '../modules/05-limite/index.html'],",
+                  "  ['proof', '../modules/05-limite/index.html'],\n  ['closure', '../modules/06-prisma/index.html'],\n  ['closure', '../modules/07-revolucao/index.html'],\n  ['proof', '../modules/08-integral/index.html'],\n  ['proof', '../modules/09-derivada/index.html'],\n  ['proof', '../modules/10-reciprocidade/index.html'],",
+                  'sites da segunda metade'
+              )
+              text = replace_once(
+                  text,
+                  "  ['family', '../modules/s02-03-que-numeros-entram/index.html'],",
+                  "  ['family', '../modules/s02-03-que-numeros-entram/index.html'],\n  ['family', '../modules/s02-04-diferencas/index.html'],",
+                  'T02 Lab 04'
+              )
+          text = replace_once(
+              text,
+              "for (const [, href] of sites) assert(html.includes(href), `laboratório não ligado: ${href}`);",
+              "const linkedHrefs = new Set([...html.matchAll(/<a\\b[^>]*href=\"([^\"]+)\"/g)].map(match => match[1]));\nfor (const [, href] of sites) assert(linkedHrefs.has(href), `laboratório não ligado por âncora real: ${href}`);",
+              'checagem real de links'
+          )
+          text = replace_once(
+              text,
+              "  'intuição → figura → manipulação',",
+              "  'intuição → figura → manipulação',\n  'function breathe()',\n  \"card.dataset.locked==='true'\",",
+              'sinais dos reparos interativos'
+          )
+          checker.write_text(text)
+
+          workflow = Path('.github/workflows/validate.yml')
+          text = workflow.read_text()
+          if "      - 'atlas/**'" not in text:
+              text = text.replace("      - 'modules/**'\n      - '.github/workflows/validate.yml'", "      - 'modules/**'\n      - 'atlas/**'\n      - 'index.html'\n      - '.github/workflows/validate.yml'")
+          if 'node atlas/check-math.mjs' not in text:
+              text = text.replace('            node "$checker"\n          done', '            node "$checker"\n          done\n          echo "== atlas/check-math.mjs"\n          node atlas/check-math.mjs')
+          workflow.write_text(text)
+          PY
+
+          grep -q 'href="atlas/index.html"' index.html
+          grep -q 'function breathe()' atlas/index.html
+          grep -q "card.dataset.locked==='true'" atlas/index.html
+          node atlas/check-math.mjs
+          for checker in modules/*/check-math.mjs; do node "$checker"; done
+
+          rm .github/workflows/one-shot-integrate-atlas.yml
+          git add -A
+          git commit -m "integra e fortalece o Atlas do Resto"
+          git push origin HEAD:canon/personalizacao-visual
