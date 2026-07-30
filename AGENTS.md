@@ -733,16 +733,38 @@ O Teorema Fundamental do Cálculo só é nomeado depois que a reciprocidade já 
 
 ---
 
-# 13. Temporadas futuras
+# 13. Segunda temporada — Números que constroem formas
 
-## Números que constroem formas
+A segunda temporada nasce de uma pergunta real do leitor primário:
 
-- ternas pitagóricas;
-- família dos ímpares;
-- medidas;
-- gráficos;
-- sólidos;
-- problemas inversos.
+> Dentre todas as ternas pitagóricas inteiras, quantas não seguem a regra do ímpar?
+
+Ela extrai o máximo de uma única configuração aritmética — a² + b² = c² com
+lados inteiros — em dez laboratórios, espelhando o arco da primeira:
+regra, mapa, inversão, padrão escondido, lei de contagem, espaço, círculo,
+acumulação, ruptura e reciprocidade.
+
+Cada laboratório segue o formato do Laboratório 6 da primeira temporada:
+partir de um objeto já conquistado, transformá-lo com uma construção
+mínima, deixar as fórmulas nascerem em blocos curtos e fechar com uma
+comparação dupla.
+
+O plano completo, laboratório a laboratório, está em `docs/SEASON-02.md`.
+
+1. A fábrica dos ímpares — a regra, o censo e quem escapa.
+2. O mapa de todas as ternas — a grade (m, k) como endereço único.
+3. Que números entram em ternas? — o problema inverso via fatoração.
+4. A diferença esconde um padrão — quadrados e dobros de quadrados.
+5. Quantas ternas existem até N? — a lei de contagem onde π aparece.
+6. Do esquadro ao tijolo — Pitágoras duas vezes e o tijolo perfeito.
+7. Ternas viram pontos no círculo — os pontos racionais da circunferência.
+8. Acumular quadrados — pontos inteiros no disco e a área recuperada.
+9. Quando o expoente sobe — Fermat, as quase-soluções e o táxi 1729.
+10. A grade e o círculo são o mesmo desenho — a reciprocidade final.
+
+---
+
+# 14. Temporadas futuras
 
 ## Números que não terminam
 
@@ -777,7 +799,7 @@ Condicionada a problemas concretos:
 
 ---
 
-# 14. Aplicabilidade
+# 15. Aplicabilidade
 
 Cada conceito recebe aplicação prática quando a transferência for legítima.
 
@@ -810,7 +832,7 @@ Cada aplicação responde:
 
 ---
 
-# 15. Honestidade matemática
+# 16. Honestidade matemática
 
 Simplificar apresentação não autoriza simplificar verdade.
 
@@ -840,7 +862,7 @@ A verificação não é opcional para o agente.
 
 ---
 
-# 16. Auditoria proporcional
+# 17. Auditoria proporcional
 
 Todo laboratório verifica:
 
@@ -866,7 +888,7 @@ A auditoria não deve produzir mais texto que o laboratório.
 
 ---
 
-# 17. Arquitetura técnica
+# 18. Arquitetura técnica
 
 ```text
 MATH_eus/
@@ -875,6 +897,7 @@ MATH_eus/
 ├── index.html
 ├── docs/
 │   ├── SEASON-01.md
+│   ├── SEASON-02.md
 │   └── MIGRATION.md
 ├── modules/
 │   ├── 01-duas-circunferencias/
@@ -913,7 +936,7 @@ Regras:
 
 ---
 
-# 18. Critério de conclusão
+# 19. Critério de conclusão
 
 Um laboratório está pronto quando:
 
@@ -942,7 +965,7 @@ Não está pronto quando:
 
 ---
 
-# 19. Regra final para agentes
+# 20. Regra final para agentes
 
 Antes de adicionar qualquer seção, perguntar:
 
