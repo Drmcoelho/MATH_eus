@@ -370,6 +370,48 @@
       html { scroll-behavior: auto; }
       * { transition: none !important; }
     }
+
+    .hint-ladder { margin-top: 20px; }
+
+    .hint-ladder details {
+      margin-top: 10px;
+      padding: 14px 18px;
+      border-radius: 14px;
+      box-shadow: none;
+    }
+
+    .hint-ladder summary { font-size: 1rem; }
+
+    .lab-nav {
+      margin-top: 48px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
+      font-family: ui-sans-serif, system-ui, sans-serif;
+    }
+
+    .lab-nav a, .lab-nav .soon {
+      display: block;
+      padding: 16px 18px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: var(--paper);
+      color: var(--ink);
+      text-decoration: none;
+    }
+
+    .lab-nav a:hover { border-color: var(--accent); }
+
+    .lab-nav small {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--accent);
+      font: 800 .7rem/1.2 ui-sans-serif, system-ui, sans-serif;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+    }
+
+    .lab-nav .soon { color: var(--muted); }
   </style>
 </head>
 <body>
@@ -512,6 +554,23 @@
       <p><strong>O que a fórmula mede:</strong> uma contagem — adimensional. Vale para todo n ≥ 3, contando as ternas em que n entra como cateto (entrar como hipotenusa é outra história).</p>
       <p><strong>Os únicos excluídos:</strong> 1 e 2. Para eles, a única fatoração possível é d = e — que força b = 0. Nenhum outro número fica de fora.</p>
 
+      <div id="exercise-parity" class="challenge-card" style="margin-top:26px; padding:0; border:0; box-shadow:none; background:transparent;">
+        <p class="box-label">Agora use a fórmula</p>
+        <h3>20 é par. Em quantas ternas ele mora como cateto?</h3>
+        <p>Número par: a fórmula troca n² por (n/2)². Não use o buscador — calcule.</p>
+        <div class="challenge-options" role="group" aria-label="Escolha a contagem">
+          <button type="button" data-ex-parity="4">4 ternas</button>
+          <button type="button" data-ex-parity="7">7 ternas</button>
+          <button type="button" data-ex-parity="9">9 ternas</button>
+        </div>
+        <p id="parity-feedback" class="feedback" aria-live="polite"></p>
+        <div class="hint-ladder">
+          <details><summary>Primeira pista</summary><p>20 é par — não fatore 20² = 400. Fatore (20/2)² = 100.</p></details>
+          <details><summary>Pista visual</summary><p>100 = 2² · 5². Quantos divisores tem 100? Depois aplique (divisores − 1)/2.</p></details>
+          <details><summary>Solução comentada</summary><p>divisores(100) = (2+1)(2+1) = 9; ternas = (9 − 1)/2 = 4. Confira no buscador: 20 mora em (15,20,25), (20,21,29), (20,48,52) e (20,99,101) — 4 ternas. Usar n² = 400 em vez de (n/2)² = 100 dá 15 divisores e 7 ternas — a armadilha exata que a paridade da Oficina avisa. E 9 é a contagem de divisores de 100 sem terminar a fórmula, o mesmo erro do desafio do 15 lá em cima.</p></details>
+        </div>
+      </div>
+
       <p class="hint secret"><strong>Segredo de mestre:</strong> até 300, o campeão é o 240, morando em 31 ternas — e o pódio é ocupado por números atulhados de divisores. Já entrar como <em>hipotenusa</em> é um clube bem mais seletivo: 5, 13 e 17 entram; 3, 4 e 6 nunca. Essa porta abre no Laboratório 08.</p>
     </section>
 
@@ -541,6 +600,12 @@
       <p><strong>Por que 1 e 2 ficam de fora até como hipotenusa.</strong> Uma hipotenusa c pede a² + b² = c² com a, b ≥ 1, logo c² ≥ 2 — e c = 1 ou 2 não comporta dois quadrados positivos. Como cateto, a fatoração degenera. São os dois únicos inteiros positivos sem morada nenhuma.</p>
       <p><strong>O que o verificador confere.</strong> A contagem por fatoração coincide com a busca por força bruta para todo n de 3 a 300; nenhum número devolve zero; 1 e 2 devolvem zero; a terna mais esticada de cada n é a da fábrica do ímpar ou da família do par; e todos os números citados na página (12, 15, 60, 84, 96, 97, 240) têm as contagens e ternas conferidas.</p>
     </details>
+
+    <nav class="lab-nav" aria-label="Continuar no MATHeu$">
+      <a href="../s02-02-mapa-das-ternas/index.html"><small>Anterior</small>T02 Lab 02 — O mapa de todas as ternas</a>
+      <a href="../../index.html#temporada-02"><small>Índice</small>Todos os laboratórios</a>
+      <span class="soon"><small>Próximo</small>T02 Lab 04 — A diferença esconde um padrão (em construção)</span>
+    </nav>
   </main>
 
   <footer>
@@ -788,6 +853,20 @@
           } else {
             challengeFeedback.textContent =
               'Quase. Conte de novo os divisores de 225 = 3² · 5²: são (2+1) × (2+1) = 9. Agora termine a fórmula.';
+          }
+        });
+      });
+
+      const parityFeedback = document.getElementById('parity-feedback');
+      document.querySelectorAll('[data-ex-parity]').forEach(button => {
+        button.addEventListener('click', () => {
+          const value = button.dataset.exParity;
+          if (value === '4') {
+            parityFeedback.textContent = 'Exato: divisores(100) = 9, ternas = (9 − 1)/2 = 4. Confira no buscador com o número 20.';
+          } else if (value === '7') {
+            parityFeedback.textContent = 'Isso sai de fatorar 400 = 20² em vez de 100 = (20/2)². Para n par, use a metade ao quadrado.';
+          } else {
+            parityFeedback.textContent = 'Esse é o número de divisores de 100 — falta descartar d = e e dividir por 2.';
           }
         });
       });

@@ -153,4 +153,11 @@ function isHypotenuse(c) {
 for (const yes of [5, 13, 17]) assert.ok(isHypotenuse(yes), `${yes} deve entrar como hipotenusa`);
 for (const no of [3, 4, 6]) assert.ok(!isHypotenuse(no), `${no} nunca entra como hipotenusa`);
 
-console.log('T02 Lab 03: fórmula × fatoração × força bruta idênticas de 3 a 300, exclusão de 1 e 2, famílias na ponta do leque, moradas de 12/15/97, campeões 60-84-96 e 240/31 verificados sem divergência.');
+// 9. Exercício "agora use a fórmula": n = 20 (par) usa (n/2)² = 100, não n² = 400.
+assert.equal(divisors(100), 9, '100 deve ter 9 divisores');
+assert.equal(countByFormula(20), 4, '20 deve morar em 4 ternas (via (n/2)²)');
+assert.deepEqual(findByFactoring(20).map(t => [t.b, t.c]), [[15, 25], [21, 29], [48, 52], [99, 101]], 'moradas do 20');
+assert.equal(divisors(400), 15, '400 (n² em vez de (n/2)²) tem 15 divisores — o distrator errado');
+assert.equal((15 - 1) / 2, 7, 'o distrator errado do exercício dá 7 ternas');
+
+console.log('T02 Lab 03: fórmula × fatoração × força bruta idênticas de 3 a 300, exclusão de 1 e 2, famílias na ponta do leque, moradas de 12/15/20/97, campeões 60-84-96 e 240/31 verificados sem divergência.');

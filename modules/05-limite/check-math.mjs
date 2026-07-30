@@ -84,4 +84,13 @@ assert.ok(width(1001) < 0.000031 && width(1000) >= 0.000031, 'fronteira do desaf
 close(width(100) / 0.000031, 100, 5, 'distrator n=100');
 assert.ok(width(31000) < 0.000031 / 900, 'distrator n=31000 é desperdício');
 
-console.log('Lab 05: monotonias até n=5000, a máquina de garantias em cinco tolerâncias, a previsão exata pela forma e o desafio dos 31 milionésimos verificados sem divergência.');
+// exercício "encontre o erro": N escala com 1/√ε, não linearmente com ε
+close(findN(0.01), 56, 0, 'N citado no exercício para ε=0,01');
+close(findN(0.001), 177, 0, 'N citado no exercício para ε=0,001 (10× menor, N não decuplica)');
+close(findN(0.0001), 557, 0, 'N citado no exercício para ε=0,0001 (100× menor, N decuplica)');
+const ratio10x = findN(0.001) / findN(0.01);
+const ratio100x = findN(0.0001) / findN(0.01);
+assert.ok(ratio10x < 4, 'reduzir ε por 10× não deve nem quadruplicar N');
+assert.ok(ratio100x > 9 && ratio100x < 11, 'reduzir ε por 100× deve decuplicar N (raiz quadrada)');
+
+console.log('Lab 05: monotonias até n=5000, a máquina de garantias em cinco tolerâncias, a previsão exata pela forma, o desafio dos 31 milionésimos e o exercício da escala 1/√ε verificados sem divergência.');

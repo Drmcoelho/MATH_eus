@@ -351,6 +351,17 @@
       * { transition: none !important; }
     }
 
+    .hint-ladder { margin-top: 20px; }
+
+    .hint-ladder details {
+      margin-top: 10px;
+      padding: 14px 18px;
+      border-radius: 14px;
+      box-shadow: none;
+    }
+
+    .hint-ladder summary { font-size: 1rem; }
+
     .lab-nav {
       margin-top: 48px;
       display: grid;
@@ -503,6 +514,24 @@
       <p>O polígono de fora encosta no círculo pelo meio de cada lado: seu apótema é <em>exatamente</em> R. Pela fórmula do leque, área de fora = contorno de fora × R / 2. Como o excesso vem só do contorno, o excesso percentual da área é <strong>o mesmo</strong> do contorno — igualdade exata, para todo n.</p>
       <p>O polígono de dentro paga duas vezes: o contorno é curto <em>e</em> o apótema é curto. Em percentual, o apótema sozinho erra cerca de três vezes mais que o contorno; somando as duas dívidas, a área de dentro erra quase <strong>quatro vezes</strong> o que o contorno erra — foi isso que a sua aposta mediu.</p>
       <p class="hint"><strong>Curiosidade:</strong> com n = 12 a área de dentro vale exatamente 3. Sem arredondamento: 6 · sen(30°) = 3.</p>
+
+      <div id="exercise-quarter" class="challenge-card" style="margin-top:26px; padding:0; border:0; box-shadow:none; background:transparent;">
+        <p class="box-label">Agora use a ideia</p>
+        <h3>Com n = 24, o contorno de dentro erra ≈ 0,285% do círculo. Sem abrir o painel, quanto erra a área de dentro?</h3>
+        <p>A razão entre os dois erros não muda com n — você já a viu no painel para n = 12.</p>
+        <div class="challenge-options" role="group" aria-label="Escolha o erro da área">
+          <button type="button" data-ex-quarter="same">≈ 0,285% (o mesmo)</button>
+          <button type="button" data-ex-quarter="double">≈ 0,57% (o dobro)</button>
+          <button type="button" data-ex-quarter="quad">≈ 1,14% (quatro vezes)</button>
+        </div>
+        <p id="quarter-feedback" class="feedback" aria-live="polite"></p>
+        <div class="hint-ladder">
+          <details><summary>Primeira pista</summary><p>Volte ao painel com n = 12: contorno errou 1,14%, área errou 4,51%. Calcule a razão entre os dois.</p></details>
+          <details><summary>Pista visual</summary><p>4,51 ÷ 1,14 ≈ 3,96. Aplique essa mesma razão ao erro de contorno de n = 24.</p></details>
+          <details><summary>Solução comentada</summary><p>0,285% × 4 ≈ 1,14% — bate com o que o painel mostra em n = 24. A razão não é coincidência: vêm duas dívidas se somando. O contorno curto sozinho custa ~θ²/6 (relativo); o apótema curto custa mais, ~θ²/2 — o triplo. Juntas, a área de dentro paga ~2θ²/3, que é quatro vezes ~θ²/6. A armadilha é achar que "área" e "contorno" erram igual só porque vêm do mesmo polígono — o de fora até faz isso (empate exato), mas o de dentro paga duas vezes. Essa mesma razão 4 vai reaparecer como a constante exata do Laboratório 04.</p></details>
+        </div>
+      </div>
+
       <p class="hint secret"><strong>Segredo de mestre:</strong> aplique o leque ao próprio círculo, como se ele fosse um polígono de "infinitos lados": área = contorno × raio / 2 = 2πR · R / 2 = πR². A frase "infinitos lados" esconde um salto — domar esse salto é o Laboratório 05.</p>
       <p><strong>Porta futura:</strong> três laboratórios acumularam números de erro — do contorno, do apótema, da área. Todos encolhem seguindo um mesmo padrão escondido. Medir a <em>forma</em> do erro é a pergunta que abre o <a href="../04-erro/index.html">Laboratório 04</a>.</p>
     </section>
@@ -835,6 +864,20 @@
             challengeFeedback.textContent = 'Isso é perímetro × apótema sem dividir por 2 — mas cada triângulo do leque tem área base × altura / 2.';
           } else {
             challengeFeedback.textContent = 'Pequeno demais. Monte o leque: seis triângulos de base 2 e altura 1,732.';
+          }
+        });
+      });
+
+      const quarterFeedback = document.getElementById('quarter-feedback');
+      document.querySelectorAll('[data-ex-quarter]').forEach(button => {
+        button.addEventListener('click', () => {
+          const value = button.dataset.exQuarter;
+          if (value === 'quad') {
+            quarterFeedback.textContent = 'Exato: ≈ 1,14% — quatro vezes o erro do contorno. Confira com n = 24 no painel.';
+          } else if (value === 'double') {
+            quarterFeedback.textContent = 'Essa seria a razão se só o apótema errasse. Mas o contorno também erra, e as duas dívidas se somam — compare n=12 e n=24 no painel.';
+          } else {
+            quarterFeedback.textContent = 'A área paga duas dívidas: contorno curto e apótema curto. Volte ao painel com n = 12 e compare as duas coberturas.';
           }
         });
       });

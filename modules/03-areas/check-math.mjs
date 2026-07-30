@@ -88,4 +88,17 @@ close(6 * hexSide, 12, 1e-12, 'perímetro do hexágono do desafio');
 close(hexAreaByFormula, 10.3923, 5e-5, 'área do hexágono do desafio');
 close(hexAreaByFormula, hexAreaByFan, 1e-12, 'leque do hexágono do desafio');
 
-console.log('Lab 03: 998 casos de área, o leque exato, o empate externo, a razão rumo a 4 e o hexágono do desafio verificados sem divergência.');
+// exercício "agora use a ideia": erro do contorno vs. erro da área em n=12 e n=24
+const errPerim12 = 1 - perimeterIn(12) / CIRCLE_LENGTH;
+const errArea12 = 1 - areaIn(12) / CIRCLE_AREA;
+close(errPerim12, 0.01138, 5e-5, 'erro do contorno citado no exercício (n=12)');
+close(errArea12, 0.04507, 5e-5, 'erro da área citado no exercício (n=12)');
+close(errArea12 / errPerim12, 4, 5e-2, 'razão dos erros próxima de 4 em n=12');
+
+const errPerim24 = 1 - perimeterIn(24) / CIRCLE_LENGTH;
+const errArea24 = 1 - areaIn(24) / CIRCLE_AREA;
+close(errPerim24, 0.00285, 5e-5, 'erro do contorno citado no exercício (n=24)');
+close(errArea24, 0.01138, 5e-5, 'erro da área citado no exercício (n=24)');
+close(errArea24 / errPerim24, 4, 5e-2, 'razão dos erros próxima de 4 em n=24');
+
+console.log('Lab 03: 998 casos de área, o leque exato, o empate externo, a razão rumo a 4, o hexágono do desafio e o exercício da razão em n=12/24 verificados sem divergência.');
