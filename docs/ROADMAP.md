@@ -2,10 +2,12 @@
 
 ## Decisão de escopo
 
-O escopo matemático da Temporada 01 está **completo**: os Labs 01–05 (e o
-Interlúdio 01·B) estão na `main`, e os Labs 06–10 chegam pelo PR #14, a
-implementação canônica da segunda metade (o PR #8, rascunho paralelo sobre
-base defasada, foi fechado como superado).
+O escopo matemático da Temporada 01 **estará completo assim que o PR #14 for
+mesclado**: os Labs 01–05 (e o Interlúdio 01·B) já estão na `main`; os Labs
+06–10 chegam pelo PR #14, escolhido como implementação canônica da segunda
+metade (o PR #8, rascunho paralelo sobre base defasada, será fechado como
+superado nessa mesma ocasião — ainda aberto enquanto este texto não reflete
+o merge).
 
 A partir daqui vale um **gate de qualidade, não de escopo**: nenhum escopo
 matemático novo (temporadas ou laboratórios além dos planejados) é
@@ -109,9 +111,9 @@ Interlúdio 01·B):
 - tempo real de leitura;
 - propagação do padrão ouro da Fase A (faixa de meta, gráficos, UX) aos
   Labs 03–10;
-- avaliação do piloto de reforma de profundidade do Lab 01
-  (`docs/REFORMA.md`), com o gate de validação do leitor primário antes de
-  propagar o padrão aos demais labs.
+- avaliação do piloto de reforma de profundidade do Lab 01 (`docs/REFORMA.md`
+  e a corrente de derivação do PR #17, ainda não mesclado), com o gate de
+  validação do leitor primário antes de propagar o padrão aos demais labs.
 
 Ao fim da Fase C, o gate de qualidade é levantado e escopos novos podem
 começar, já herdando o padrão ouro.
