@@ -308,6 +308,15 @@
 
     .deriv-grid svg { min-height: 0; height: auto; }
 
+    .deriv-figure {
+      position: sticky;
+      top: 12px;
+      align-self: start;
+      z-index: 2;
+      background: var(--bg);
+      border-radius: 18px;
+    }
+
     ol.chain { list-style: none; margin: 0; padding: 0; counter-reset: chainstep; }
 
     ol.chain li {
@@ -475,6 +484,8 @@
 
     @media (max-width: 820px) {
       .answer-grid, .derivation, .dictionary, .deriv-grid { grid-template-columns: 1fr; }
+      .deriv-figure { top: 0; }
+      .deriv-figure svg { max-height: 44vh; width: auto; max-width: 100%; margin-inline: auto; }
       .lab-grid { grid-template-columns: 1fr; }
       .control-panel { border-left: 0; border-top: 1px solid var(--line); }
       .visual-panel { min-height: 480px; }
@@ -566,7 +577,7 @@
       <p>Sete passos, cada um com a figura andando junto e com o seu porquê. A dedução usa o polígono que <em>você</em> deixou no controle acima — troque o n e repita: nenhum passo depende do número escolhido.</p>
 
       <div class="deriv-grid">
-        <svg id="deriv-svg" viewBox="0 0 480 470" aria-hidden="true"><g id="deriv-drawing"></g></svg>
+        <div class="deriv-figure"><svg id="deriv-svg" viewBox="0 0 480 470" aria-hidden="true"><g id="deriv-drawing"></g></svg></div>
         <div>
           <ol class="chain" id="chain">
             <li><p>Os n lados são iguais e têm o mesmo centro. A volta inteira se reparte em n fatias iguais: cada lado enxerga o centro sob o ângulo <strong>2π/n</strong>.</p>
@@ -581,7 +592,7 @@
               <details><summary>por quê?</summary><p>Nada novo aqui — este passo só reúne os três anteriores num mesmo lugar. Confira na figura: cada elemento do triângulo foi justificado antes de entrar.</p></details></li>
             <li><p>Num triângulo retângulo, a razão <em>cateto encostado ÷ hipotenusa</em> depende só do ângulo — e o nome que se dá a essa razão é <strong>cosseno</strong>.</p>
               <details><summary>por quê?</summary><p>Dois triângulos retângulos com o mesmo ângulo agudo são semelhantes (os três ângulos batem), então essa razão dá o mesmo número em qualquer tamanho. Uma razão que só depende do ângulo merece um nome próprio: cos. Não é um truque importado — é um batismo.</p></details></li>
-            <li><p>Aplicando o batismo ao nosso triângulo: <strong>cos(π/n) = OM/OV = r/R</strong>. Chegamos. A fórmula não foi usada — foi encontrada.</p>
+            <li><p>Aplique o batismo ao nosso triângulo e leia primeiro em voz alta: <em>o cosseno do ângulo π/n é o raio de dentro dividido pelo raio de fora</em>. Só então escreva a mesma frase em símbolos: <strong>cos(π/n) = OM/OV = r/R</strong>. Chegamos — a fórmula não foi usada, foi encontrada.</p>
               <details><summary>por quê?</summary><p>Substituição direta dos passos 2, 3 e 4 na definição do passo 6. Se qualquer passo anterior caísse, este cairia junto — é isso que "provar" quer dizer: a corrente inteira segura a conclusão.</p></details></li>
           </ol>
           <div class="stepper-row">
