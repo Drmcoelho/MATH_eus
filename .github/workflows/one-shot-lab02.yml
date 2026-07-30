@@ -1,0 +1,37 @@
+name: One-shot Lab 02 canônico
+on:
+  push:
+    branches:
+      - agent/lab02-canonico
+permissions:
+  contents: write
+jobs:
+  rebuild:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Reconstruir e validar o Lab 02
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import base64, zlib, re
+          html = zlib.decompress(base64.b64decode(Path('.tmp/lab02.html.zlib.b64').read_text())).decode()
+          checker = zlib.decompress(base64.b64decode(Path('.tmp/lab02.check.zlib.b64').read_text())).decode()
+          Path('modules/02-perimetros/index.html').write_text(html)
+          Path('modules/02-perimetros/check-math.mjs').write_text(checker)
+          script = re.search(r'<script>(.*?)</script>', html, re.S).group(1)
+          Path('/tmp/lab02-inline.js').write_text(script)
+          Path('.tmp/lab02.html.zlib.b64').unlink()
+          Path('.tmp/lab02.check.zlib.b64').unlink()
+          Path('.github/workflows/one-shot-lab02.yml').unlink()
+          PY
+          node --check /tmp/lab02-inline.js
+          node modules/02-perimetros/check-math.mjs
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "reconstrói o Lab 02 no formato canônico do Lab 01"
+          git push
