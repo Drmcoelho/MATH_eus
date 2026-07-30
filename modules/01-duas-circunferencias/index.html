@@ -1062,8 +1062,12 @@
   </script>
   <script>
     document.getElementById('restart-lab').addEventListener('click', () => {
+      document.querySelectorAll('input, select, textarea').forEach((el) => {
+        if (el.type === 'checkbox' || el.type === 'radio') el.checked = el.defaultChecked;
+        else el.value = el.defaultValue;
+      });
       if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
-      location.reload();
+      location.replace(location.pathname);
     });
   </script>
 </body>
