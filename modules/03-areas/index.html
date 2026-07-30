@@ -518,7 +518,7 @@
       <div id="exercise-quarter" class="challenge-card" style="margin-top:26px; padding:0; border:0; box-shadow:none; background:transparent;">
         <p class="box-label">Agora use a ideia</p>
         <h3>Com n = 24, o contorno de dentro erra ≈ 0,285% do círculo. Sem abrir o painel, quanto erra a área de dentro?</h3>
-        <p>A razão entre os dois erros não muda com n — você já a viu no painel para n = 12.</p>
+        <p>A razão se aproxima rapidamente de 4 à medida que n cresce — use n = 12 como estimativa e depois confira n = 24.</p>
         <div class="challenge-options" role="group" aria-label="Escolha o erro da área">
           <button type="button" data-ex-quarter="same">≈ 0,285% (o mesmo)</button>
           <button type="button" data-ex-quarter="double">≈ 0,57% (o dobro)</button>
@@ -527,8 +527,8 @@
         <p id="quarter-feedback" class="feedback" aria-live="polite"></p>
         <div class="hint-ladder">
           <details><summary>Primeira pista</summary><p>Volte ao painel com n = 12: contorno errou 1,14%, área errou 4,51%. Calcule a razão entre os dois.</p></details>
-          <details><summary>Pista visual</summary><p>4,51 ÷ 1,14 ≈ 3,96. Aplique essa mesma razão ao erro de contorno de n = 24.</p></details>
-          <details><summary>Solução comentada</summary><p>0,285% × 4 ≈ 1,14% — bate com o que o painel mostra em n = 24. A razão não é coincidência: vêm duas dívidas se somando. O contorno curto sozinho custa ~θ²/6 (relativo); o apótema curto custa mais, ~θ²/2 — o triplo. Juntas, a área de dentro paga ~2θ²/3, que é quatro vezes ~θ²/6. A armadilha é achar que "área" e "contorno" erram igual só porque vêm do mesmo polígono — o de fora até faz isso (empate exato), mas o de dentro paga duas vezes. Essa mesma razão 4 vai reaparecer como a constante exata do Laboratório 04.</p></details>
+          <details><summary>Pista visual</summary><p>4,51 ÷ 1,14 ≈ 3,96. Isso sugere multiplicar por cerca de 4; em n = 24 a razão já fica ainda mais perto de 4.</p></details>
+          <details><summary>Solução comentada</summary><p>0,285% × 4 ≈ 1,14% — bate com o que o painel mostra em n = 24. O valor próximo de 4 não é coincidência: ele é o limite da razão entre duas dívidas que se somam. O contorno curto sozinho custa ~θ²/6 (relativo); o apótema curto custa mais, ~θ²/2 — o triplo. Juntas, a área de dentro paga ~2θ²/3, que é quatro vezes ~θ²/6. A armadilha é achar que "área" e "contorno" erram igual só porque vêm do mesmo polígono — o de fora até faz isso (empate exato), mas o de dentro paga duas vezes. Esse limite 4 reaparece no Laboratório 04 como razão entre constantes assintóticas.</p></details>
         </div>
       </div>
 
@@ -873,7 +873,7 @@
         button.addEventListener('click', () => {
           const value = button.dataset.exQuarter;
           if (value === 'quad') {
-            quarterFeedback.textContent = 'Exato: ≈ 1,14% — quatro vezes o erro do contorno. Confira com n = 24 no painel.';
+            quarterFeedback.textContent = 'Exato: ≈ 1,14% — aproximadamente quatro vezes o erro do contorno. Em n = 24, a razão já está muito perto de 4.';
           } else if (value === 'double') {
             quarterFeedback.textContent = 'Essa seria a razão se só o apótema errasse. Mas o contorno também erra, e as duas dívidas se somam — compare n=12 e n=24 no painel.';
           } else {
