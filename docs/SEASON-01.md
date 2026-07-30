@@ -4,6 +4,10 @@
 
 Quanto de geometria, cálculo e inferência pode nascer de uma única configuração: um polígono regular preso entre duas circunferências concêntricas?
 
+## Estado
+
+**Temporada completa:** dez laboratórios e um interlúdio executáveis.
+
 ## Arco cognitivo
 
 ```text
@@ -21,68 +25,56 @@ forma
 
 ## Laboratórios
 
-### 01 — Duas circunferências, um polígono
+### 01 — [Duas circunferências, um polígono](../modules/01-duas-circunferencias/index.html)
 
 Entrega cognitiva: reconhecer o triângulo fundamental e deduzir `r/R = cos(π/n)`.
 
-Interações: número de lados, ruído de medição, inferência inversa.
+### 01·B — [O polígono escondido](../modules/01b-poligono-escondido/index.html)
 
-### 01·B — O polígono escondido (interlúdio)
+Entrega cognitiva: descobrir a autossimilaridade ao ligar os pontos de tangência.
 
-Entrega cognitiva: descobrir que ligar os pontos de tangência reproduz o mesmo polígono em escala `cos(π/n)`, girado `π/n` — a configuração é autossimilar, e a incircunferência do polígono menor obedece à mesma lei (`r' = r·cos(π/n)`).
-
-Interações: repetições da construção (espiral de polígonos aninhados), triângulos gêmeos `R,R,L` e `r,r,L'`, gráfico de `n` contra folga `R − r`, área da coroa `π(R² − r²) = π(L/2)²` e repetições até o raio cair à metade, com escala linear/log.
-
-### 02 — Quanto mede o contorno?
+### 02 — [Quanto mede o contorno?](../modules/02-perimetros/index.html)
 
 Entrega cognitiva: construir lado e perímetros interno/externo.
 
-Interações: `n`, normalização por `R` ou `r`, comparação de erros.
+### 03 — [O que acontece com as áreas?](../modules/03-areas/index.html)
 
-### 03 — O que acontece com as áreas?
+Entrega cognitiva: construir área por triângulos e comparar os cercos.
 
-Entrega cognitiva: construir área por triângulos e comparar os dois cercos.
+### 04 — [O erro também tem forma](../modules/04-erro/index.html)
 
-Interações: áreas, erros absoluto/relativo, escala linear/log.
+Entrega cognitiva: tratar erro como objeto e detectar ordem quadrática.
 
-### 04 — O erro também tem forma
-
-Entrega cognitiva: tratar erro como objeto e detectar ordem quadrática experimentalmente.
-
-Interações: `n² × erro`, razão de contração, duplicação de `n`.
-
-### 05 — Quando “chegar perto” vira limite?
+### 05 — [Quando “chegar perto” vira limite?](../modules/05-limite/index.html)
 
 Entrega cognitiva: transformar tolerância em garantia.
 
-Interações: escolha de erro máximo, busca do menor `n`, intervalo de cerco.
+### 06 — [Do polígono ao prisma](../modules/06-prismas/index.html)
 
-### 06 — Do polígono ao prisma
+Entrega cognitiva: entender como perímetro vira área lateral, área vira volume e escala linear vira potências `λ²` e `λ³`.
 
-Entrega cognitiva: entender como perímetro vira área lateral e área vira volume.
+Interações: lados, altura, escala global, prismas inscritos/circunscritos e cilindro.
 
-Interações: altura, extrusão, prismas inscritos/circunscritos.
+### 07 — [Girar cria espaço](../modules/07-rotacao/index.html)
 
-### 07 — Girar cria espaço
+Entrega cognitiva: distinguir extrusão de rotação e reconhecer cilindro, cone e esfera como sólidos de revolução.
 
-Entrega cognitiva: reconhecer sólidos de revolução e fatias.
+Interações: perfil, raio, altura e ângulo varrido.
 
-Interações: perfil, eixo, rotação, cortes.
+### 08 — [Acumular é integrar](../modules/08-integral/index.html)
 
-### 08 — Acumular é integrar
+Entrega cognitiva: compreender integral como soma refinável e controlar o erro da soma de discos.
 
-Entrega cognitiva: compreender integral como acumulação refinável.
+Interações: número de discos, raio, erro exato e tolerância.
 
-Interações: número de fatias, discos/anéis, erro de aproximação.
+### 09 — [Mudar é derivar](../modules/09-derivada/index.html)
 
-### 09 — Mudar é derivar
+Entrega cognitiva: compreender derivada como contribuição marginal da coroa e separar termo linear de resto quadrático.
 
-Entrega cognitiva: compreender derivada como contribuição marginal.
+Interações: raio, incremento, coroa e aproximação linear.
 
-Interações: raio, incremento, coroa, aproximação linear.
+### 10 — [Derivar e integrar são inversos](../modules/10-reciprocidade/index.html)
 
-### 10 — Derivar e integrar são inversos
+Entrega cognitiva: conectar mudança local e reconstrução global no mesmo círculo.
 
-Entrega cognitiva: conectar mudança local e reconstrução global.
-
-Interações: função, taxa, acumulação e recuperação.
+Interações: raio, número de coroas, somas interna/média/externa e cerco final.
