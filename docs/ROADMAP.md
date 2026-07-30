@@ -2,18 +2,22 @@
 
 ## Decisão de escopo
 
-O escopo matemático da Temporada 01 está **congelado**: nenhum laboratório
-novo (06–10) é iniciado antes de as Fases A, B e C abaixo terminarem.
+O escopo matemático da Temporada 01 está **completo**: os Labs 01–05 (e o
+Interlúdio 01·B) estão na `main`, e os Labs 06–10 chegam pelo PR #14, a
+implementação canônica da segunda metade (o PR #8, rascunho paralelo sobre
+base defasada, foi fechado como superado).
 
-Já existe material suficiente — Labs 01, 01·B, 02, 03, 04 e 05 como fatias
-verticais — para descobrir o que realmente funciona com um leitor. A
-prioridade agora é transformar esse material em padrão ouro, não produzir
-mais matemática.
+A partir daqui vale um **gate de qualidade, não de escopo**: nenhum escopo
+matemático novo (temporadas ou laboratórios além dos planejados) é
+iniciado antes de as Fases A, B e C abaixo terminarem sobre a temporada
+inteira. A prioridade é transformar o material existente em padrão ouro,
+não produzir mais matemática.
 
 > Nota de estado: o plano original congelava o escopo "após o Lab 03".
-> Como os Labs 04 e 05 já existem como fatias verticais, o congelamento
-> vale para os Labs 06–10; os Labs 04 e 05 entram na revisão da Fase C
-> como material existente, não como escopo novo.
+> Quando o roadmap foi escrito, os Labs 04 e 05 já existiam; em seguida os
+> Labs 06–10 se materializaram no PR #14. O congelamento foi então
+> convertido neste gate de qualidade — o documento não pode afirmar que um
+> trabalho já entregue ainda não começou.
 
 ---
 
@@ -95,16 +99,22 @@ Fechamento (o segredo que abre o Lab 04):
 
 ## Fase C — Revisão completa da Temporada
 
-Só depois das Fases A e B, revisar a temporada inteira (Labs 01–05):
+Só depois das Fases A e B, revisar a temporada inteira (Labs 01–10, com o
+Interlúdio 01·B):
 
 - ritmo;
 - excesso de texto;
 - acessibilidade;
 - mobile;
-- tempo real de leitura.
+- tempo real de leitura;
+- propagação do padrão ouro da Fase A (faixa de meta, gráficos, UX) aos
+  Labs 03–10;
+- avaliação do piloto de reforma de profundidade do Lab 01
+  (`docs/REFORMA.md`), com o gate de validação do leitor primário antes de
+  propagar o padrão aos demais labs.
 
-Ao fim da Fase C, o congelamento é levantado e os Labs 06–10 podem começar,
-já herdando o padrão ouro.
+Ao fim da Fase C, o gate de qualidade é levantado e escopos novos podem
+começar, já herdando o padrão ouro.
 
 ---
 
