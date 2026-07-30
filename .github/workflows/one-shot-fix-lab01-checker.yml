@@ -1,0 +1,35 @@
+name: One-shot corrige checker do Lab 01
+on:
+  push:
+    branches:
+      - hotfix/lab01-checker-declaracao-dupla
+permissions:
+  contents: write
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Corrigir falso negativo e validar
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          path = Path('modules/01-duas-circunferencias/check-math.mjs')
+          text = path.read_text()
+          old = "assert.ok(html.includes('const V1=polar') && html.includes('const V2=polar'), 'ângulo central deve ter dois raios reais');"
+          new = "assert.ok(/const V1=polar[\\s\\S]*?V2=polar/.test(html), 'ângulo central deve ter dois raios reais');"
+          if text.count(old) != 1:
+              raise SystemExit(f'alvo do checker: esperado 1, encontrado {text.count(old)}')
+          path.write_text(text.replace(old, new, 1))
+          Path('.github/workflows/one-shot-fix-lab01-checker.yml').unlink()
+          PY
+          for checker in modules/*/check-math.mjs; do node "$checker"; done
+          node atlas/check-math.mjs
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "corrige falso negativo do checker do Ato 3"
+          git push
