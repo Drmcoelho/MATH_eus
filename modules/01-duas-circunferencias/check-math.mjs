@@ -103,7 +103,7 @@ assert.ok(!/disabled/.test(revealTag), 'o botão principal não pode nascer desa
 assert.ok(html.includes('Isto não termina depois do primeiro desenho'), 'mapa do percurso deve ser visível');
 assert.ok(html.includes('<canvas id="ratio-chart"'), 'gráfico sincronizado deve existir');
 assert.ok(html.includes('Sete passos, nenhum salto clandestino'), 'dedução desenhada deve existir');
-assert.equal((html.match(/data-ex=/g) || []).length, 12, 'quatro exercícios com três alternativas cada');
+assert.equal((html.match(/<button\b[^>]*data-ex=/g) || []).length, 12, 'quatro exercícios com três alternativas cada');
 assert.equal((html.match(/class="curiosity"/g) || []).length, 4, 'quatro boxes de curiosidade');
 assert.ok(html.includes('Agora o laboratório termina de verdade'), 'fechamento explícito deve existir');
 assert.ok(html.includes('Sem uma segunda trava escondida'), 'a interface deve explicar a regra de revelação');
@@ -112,4 +112,11 @@ assert.ok(html.includes("sections.forEach(s=>s.hidden=false)"), 'uma única reve
 assert.ok(html.includes('role="progressbar"'), 'progresso real deve ser visível');
 assert.ok(html.includes('<canvas id="noise-chart"'), 'experimento com ruído deve ter figura própria');
 
-console.log('Lab 01: 118 geometrias, inferência inversa, ruído, alcance, 4 exercícios, 4 curiosidades, dois Canvas e contrato sem porta falsa verificados.');
+const script = html.match(/<script>([\s\S]*?)<\/script>/)?.[1] || '';
+assert.ok(script.length > 1000, 'script interativo principal deve existir');
+assert.doesNotThrow(() => new Function(script), 'JavaScript do laboratório deve ser sintaticamente válido');
+
+const ids = [...html.matchAll(/\bid="([^"]+)"/g)].map(match => match[1]);
+assert.equal(new Set(ids).size, ids.length, 'IDs HTML devem ser únicos');
+
+console.log('Lab 01: 118 geometrias, inferência inversa, ruído, alcance, 4 exercícios, 4 curiosidades, dois Canvas, sintaxe JS e contrato sem porta falsa verificados.');
