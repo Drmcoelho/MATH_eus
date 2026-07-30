@@ -1,0 +1,90 @@
+name: One-shot Lab 02 canônico
+on:
+  push:
+    branches:
+      - agent/lab02-canonico
+permissions:
+  contents: write
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Corrigir revisão e validar
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          html_path=Path('modules/02-perimetros/index.html')
+          text=html_path.read_text()
+          def repl(old,new,label):
+              global text
+              if text.count(old)!=1:
+                  raise SystemExit(f'{label}: esperado 1, encontrado {text.count(old)}')
+              text=text.replace(old,new,1)
+          repl('grid-template-columns:repeat(3,1fr);gap:10px}.dictionary','grid-template-columns:repeat(4,1fr);gap:10px}.dictionary','grade do dicionário')
+          repl('O círculo tem raio R=1 e contorno 2π≈6,2832. Mude n e acompanhe três contornos ao mesmo tempo.</p>','O círculo tem raio 1 e contorno 2π≈6,2832. Em relação ao polígono interno, esse raio é o circunraio <strong>R</strong>; em relação ao externo, é o apótema <strong>r</strong>. Mude n e acompanhe três contornos ao mesmo tempo.</p>','papéis do raio')
+          repl('<li data-step="5" hidden><p>Agora use o polígono externo. Seu lado tangencia o círculo; o raio até o ponto de tangência é perpendicular ao lado e o divide ao meio.</p>','<li data-step="5" hidden><p>Agora use o polígono externo. Seu lado tangencia o círculo; o raio até o ponto de tangência é o apótema <strong>r</strong>, perpendicular ao lado, e o divide ao meio.</p>','passo 5')
+          repl('<li data-step="6" hidden><p>No meio-triângulo externo, R é o cateto adjacente a π/n e L<sub>out</sub>/2 é o oposto. Logo <strong>tg(π/n)=(L<sub>out</sub>/2)/R</strong>.</p>','<li data-step="6" hidden><p>No meio-triângulo externo, <strong>r</strong> é o cateto adjacente a π/n e L<sub>out</sub>/2 é o oposto. Logo <strong>tg(π/n)=(L<sub>out</sub>/2)/r</strong>.</p>','passo 6')
+          repl('<li data-step="7" hidden><p>Isole e multiplique: <strong>L<sub>out</sub>=2R·tg(π/n)</strong> e <strong>P<sub>out</sub>=2nR·tg(π/n)</strong>.</p>','<li data-step="7" hidden><p>Isole e multiplique: <strong>L<sub>out</sub>=2r·tg(π/n)</strong> e <strong>P<sub>out</sub>=2nr·tg(π/n)</strong>.</p>','passo 7')
+          old='''      <div id="deriv-result" class="result-reveal" hidden>
+        <span class="label">Corrente fechada</span>
+        <div class="formula">P<sub>in</sub>=2nR·sen(π/n)</div>
+        <div class="formula">P<sub>out</sub>=2nR·tg(π/n)</div>
+        <div class="dictionary"><div><strong>R</strong><br>raio do círculo</div><div><strong>n</strong><br>número de lados</div><div><strong>sen e tg</strong><br>oposto/hipotenusa e oposto/adjacente</div></div>
+        <p><strong>Leitura:</strong> o mesmo setor angular produz duas aproximações porque o papel de R muda de hipotenusa para cateto adjacente.</p>
+        <details class="proof"><summary>Prova completa — o alicerce inteiro</summary><p>Para cada setor, a corda interna tem comprimento 2R·sen(π/n), enquanto o lado tangente externo tem comprimento 2R·tg(π/n). Multiplicando por n, obtemos os dois perímetros. A corda é menor que o arco correspondente e o segmento tangente que o envolve é maior; somando todos os setores, P<sub>in</sub>&lt;2πR&lt;P<sub>out</sub>.</p><p class="qed">∎</p></details>
+      </div>'''
+          new='''      <div id="deriv-result" class="result-reveal" hidden>
+        <span class="label">Corrente fechada</span>
+        <p><strong>Leia primeiro em voz natural:</strong> o perímetro interno é duas vezes o número de lados, vezes o circunraio R, vezes o seno da meia-fatia; o perímetro externo é duas vezes o número de lados, vezes o apótema r, vezes a tangente da mesma meia-fatia.</p>
+        <div class="formula">P<sub>in</sub>=2nR·sen(π/n)</div>
+        <div class="formula">P<sub>out</sub>=2nr·tg(π/n)</div>
+        <div class="dictionary"><div><strong>R</strong><br>circunraio do polígono interno</div><div><strong>r</strong><br>apótema do polígono externo</div><div><strong>n</strong><br>número de lados</div><div><strong>sen e tg</strong><br>oposto/hipotenusa e oposto/adjacente</div></div>
+        <p><strong>O que medem:</strong> os dois resultados são comprimentos, na mesma unidade usada para R e r. Neste laboratório normalizado, o mesmo círculo tem R=r=1 porque desempenha papéis diferentes nos dois polígonos.</p>
+        <p><strong>Quando valem:</strong> para polígonos regulares com n ≥ 3; o interno tem vértices no círculo e o externo tem lados tangentes ao círculo.</p>
+        <details class="proof"><summary>Prova completa — o alicerce inteiro</summary><p>Para cada setor, a corda interna tem comprimento 2R·sen(π/n), enquanto o lado tangente externo tem comprimento 2r·tg(π/n). Multiplicando por n, obtemos os dois perímetros. A corda é menor que o arco correspondente e o segmento tangente que o envolve é maior; somando todos os setores, P<sub>in</sub>&lt;2πρ&lt;P<sub>out</sub>, onde ρ é o raio físico do círculo e, neste par de construções, ρ=R=r.</p><p class="qed">∎</p></details>
+      </div>'''
+          repl(old,new,'protocolo das fórmulas')
+          repl('mapX=n=>p+(n-3)/93*(W-2*p),mapY=v=>H-p-(v-5.1)/(2.1)*(H-2*p)','mapX=n=>p+(n-3)/93*(W-2*p),yMin=5,yMax=10.7,mapY=v=>H-p-(v-yMin)/(yMax-yMin)*(H-2*p)','domínio do gráfico')
+          repl('R=155,n=Math.min(+sides.value,18),t=Math.PI/n','R=155,n=+sides.value,t=Math.PI/n','n integral na dedução')
+          repl("if(derivStep>=5){label(g,(O[0]+T[0])/2-10,(O[1]+T[1])/2,'R','end');", "if(derivStep>=5){label(g,(O[0]+T[0])/2-10,(O[1]+T[1])/2,'r','end');", 'rótulo externo')
+          repl("if(derivStep===6)label(g,cx,438,'Pₒᵤₜ = 2nR·tg(π/n)'", "if(derivStep===6)label(g,cx,438,'Pₒᵤₜ = 2nr·tg(π/n)'", 'fórmula visual externa')
+          html_path.write_text(text)
+          check_path=Path('modules/02-perimetros/check-math.mjs')
+          check=check_path.read_text()
+          marker="console.log('Lab 02: 998 cercos, assimetria dos erros, Arquimedes, quatro exercícios, dois Canvas e contrato canônico verificados.');"
+          extra='''const resultStart = html.indexOf('<div id="deriv-result"');
+const workbookStart = html.indexOf('<section id="workbook"');
+const resultBlock = html.slice(resultStart, workbookStart);
+assert.ok(resultBlock.indexOf('Leia primeiro em voz natural') < resultBlock.indexOf('P<sub>in</sub>=2nR'), 'leitura natural antes dos símbolos');
+assert.ok(resultBlock.includes('P<sub>out</sub>=2nr·tg(π/n)'), 'fórmula externa usa o apótema r');
+assert.ok(resultBlock.includes('na mesma unidade usada para R e r'), 'unidades explícitas');
+assert.ok(resultBlock.includes('n ≥ 3'), 'domínio de validade explícito');
+assert.ok(!html.includes('Math.min(+sides.value,18)'), 'dedução preserva o n selecionado');
+assert.ok(html.includes('yMin=5,yMax=10.7'), 'gráfico inclui os casos n=3 e n=4');
+
+'''+marker
+          if check.count(marker)!=1:
+              raise SystemExit('marcador do checker ausente')
+          check_path.write_text(check.replace(marker,extra,1))
+          Path('.github/workflows/one-shot-lab02.yml').unlink()
+          other=Path('.github/workflows/one-shot-fix-pr23-review.yml')
+          if other.exists(): other.unlink()
+          PY
+          node --check <(python3 - <<'PY'
+          from pathlib import Path
+          import re
+          text=Path('modules/02-perimetros/index.html').read_text()
+          Path('/tmp/lab02-inline.js').write_text(re.search(r'<script>(.*?)</script>',text,re.S).group(1))
+          print('/tmp/lab02-inline.js')
+          PY
+          ) || node --check /tmp/lab02-inline.js
+          node modules/02-perimetros/check-math.mjs
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "corrige símbolos, estados visuais e protocolo das fórmulas"
+          git push
