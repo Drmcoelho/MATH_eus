@@ -30,7 +30,8 @@ Um laboratório só recebe o estado **canônico** quando possui, de modo funcion
 | T01 · Lab 03 — Áreas | canônico | HTML autocontido; aposta protegida; nove passos e dez marcos reais de progresso. |
 | T01 · Lab 04 — Forma do erro | canônico | Ordens n⁻² e n⁻³ separadas; nove passos, três Canvas e quatro exercícios. |
 | T01 · Lab 05 — Garantia e limite | canônico | Busca exata, previsão assintótica e certificado rigoroso separados em nove passos. |
-| T01 · Labs 06–10 | funcionais, a reformar | Matemática e checkers preservados; arquitetura editorial anterior. |
+| T01 · Lab 06 — Prisma | canônico neste PR | Extrusão, erros absolutos/relativos, três Canvas, nove passos e auditoria de Cavalieri. |
+| T01 · Labs 07–10 | funcionais, a reformar | Matemática e checkers preservados; arquitetura editorial anterior. |
 | T02 · Labs 01–04 | funcionais, a reformar | Interações ricas, porém sem linguagem editorial unificada. |
 | Atlas do Resto | canônico como portal | Não é laboratório; cumpre seu próprio contrato de atlas interativo. |
 
@@ -39,7 +40,7 @@ Um laboratório só recebe o estado **canônico** quando possui, de modo funcion
 A reforma prossegue em PRs pequenos, cada um terminando um laboratório antes de tocar o seguinte:
 
 ```text
-06 → 07 → 08 → 09 → 10
+07 → 08 → 09 → 10
 → T02·01 → T02·02 → T02·03 → T02·04
 ```
 
@@ -64,6 +65,7 @@ O Lab 04 explica, sem duplicar o Lab 03, por que aparecem simultaneamente:
 - PR #28: canonização do Lab 04;
 - PR #29: canonização do Lab 05;
 - PR #30: canonização do Interlúdio 01·B e próximo gate no Lab 06.
+- PR #31: canonização do Lab 06 e próximo gate no Lab 07.
 
 ## Acabamento transversal já aplicado
 
