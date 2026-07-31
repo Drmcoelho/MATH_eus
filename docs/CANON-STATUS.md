@@ -26,7 +26,7 @@ Um laboratório só recebe o estado **canônico** quando possui, de modo funcion
 |---|---|---|
 | T01 · Lab 01 — Duas circunferências | canônico | Piloto validado e corrigido no uso real em iPhone. |
 | T01 · Lab 02 — Perímetros | canônico | Propagação completa do padrão, com oito passos e dois Canvas. |
-| T01 · Lab 03 — Áreas | canônico neste PR | Nove passos, três Canvas, três assimetrias do erro, escala quadrática e quatro exercícios. |
+| T01 · Lab 03 — Áreas | canônico neste PR | HTML autocontido; aposta protegida; nove passos, três Canvas, três assimetrias e quatro exercícios. |
 | Interlúdio 01·B | funcional, a reformar | Boa investigação, mas ainda sem o contrato completo. |
 | T01 · Labs 04–10 | funcionais, a reformar | Matemática e checkers preservados; arquitetura editorial anterior. |
 | T02 · Labs 01–04 | funcionais, a reformar | Interações ricas, porém sem linguagem editorial unificada. |
