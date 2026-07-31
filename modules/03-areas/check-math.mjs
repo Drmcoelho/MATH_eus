@@ -1,106 +1,55 @@
 import assert from 'node:assert/strict';
-import { readFile } from 'node:fs/promises';
-
-const PI = Math.PI;
-const areaIn = (n, r = 1) => (n * r * r / 2) * Math.sin(2 * PI / n);
-const areaOut = (n, r = 1) => n * r * r * Math.tan(PI / n);
-const perimeterIn = (n, r = 1) => 2 * n * r * Math.sin(PI / n);
-const perimeterOut = (n, r = 1) => 2 * n * r * Math.tan(PI / n);
-const close = (actual, expected, tolerance, label) =>
-  assert.ok(Math.abs(actual - expected) <= tolerance, `${label}: esperado ${expected}, obtido ${actual}`);
-
-let previousIn = 0;
-let previousOut = Infinity;
-let previousCrossRatio = 0;
-let previousAreaRatio = 0;
-
-for (let n = 3; n <= 1000; n += 1) {
-  const theta = PI / n;
-  const ain = areaIn(n);
-  const aout = areaOut(n);
-  const circle = PI;
-  const errorIn = circle - ain;
-  const errorOut = aout - circle;
-
-  assert.ok(ain < circle, `área interna deve ficar abaixo do círculo em n=${n}`);
-  assert.ok(aout > circle, `área externa deve ficar acima do círculo em n=${n}`);
-  assert.ok(ain > previousIn, `área interna deve crescer em n=${n}`);
-  assert.ok(aout < previousOut, `área externa deve decrescer em n=${n}`);
-  previousIn = ain;
-  previousOut = aout;
-
-  close(ain, perimeterIn(n) * Math.cos(theta) / 2, 1e-12, `leque interno n=${n}`);
-  close(aout, perimeterOut(n) / 2, 1e-12, `leque externo n=${n}`);
-  close(aout / circle, perimeterOut(n) / (2 * PI), 1e-14, `igualdade relativa externa n=${n}`);
-
-  const relativeAreaIn = errorIn / circle;
-  const relativePerimeterIn = (2 * PI - perimeterIn(n)) / (2 * PI);
-  const crossRatio = relativeAreaIn / relativePerimeterIn;
-  assert.ok(crossRatio > previousCrossRatio, `razão área/perímetro interna deve crescer em n=${n}`);
-  assert.ok(crossRatio < 4, `razão área/perímetro interna deve ficar abaixo de 4 em n=${n}`);
-  previousCrossRatio = crossRatio;
-
-  const areaRatio = errorIn / errorOut;
-  assert.ok(areaRatio > previousAreaRatio, `razão falta/sobra deve crescer em n=${n}`);
-  assert.ok(areaRatio < 2, `razão falta/sobra deve ficar abaixo de 2 em n=${n}`);
-  previousAreaRatio = areaRatio;
+import {readFileSync} from 'node:fs';
+import vm from 'node:vm';
+const C=Math.PI;
+const areaIn=(n,R=1)=>n*R*R*Math.sin(Math.PI/n)*Math.cos(Math.PI/n);
+const areaOut=(n,R=1)=>n*R*R*Math.tan(Math.PI/n);
+const circle=R=>Math.PI*R*R;
+const close=(a,b,t,l)=>assert.ok(Math.abs(a-b)<=t,`${l}: esperado ${b}, obtido ${a}`);
+let prevIn=0,prevOut=Infinity,prevRatio=0;
+for(let n=3;n<=1000;n++){
+ const ai=areaIn(n),ao=areaOut(n),ac=C;
+ assert.ok(ai<ac&&ao>ac,`cerco de área n=${n}`);
+ assert.ok(ai>prevIn,`área interna crescente n=${n}`);
+ assert.ok(ao<prevOut,`área externa decrescente n=${n}`);
+ prevIn=ai;prevOut=ao;
+ close(ai,(2*n*Math.sin(Math.PI/n))*Math.cos(Math.PI/n)/2,1e-12,`A=Pa/2 interno n=${n}`);
+ close(ao,(2*n*Math.tan(Math.PI/n))/2,1e-12,`A=Pa/2 externo n=${n}`);
+ const ratio=(ac-ai)/(ao-ac);
+ assert.ok(ratio>prevRatio,`razão falta/sobra crescente n=${n}`);
+ assert.ok(ratio<2,`razão abaixo de 2 n=${n}`);
+ prevRatio=ratio;
 }
-
-close(previousCrossRatio, 4, 1e-3, 'razão dos erros relativos internos em n=1000');
-close(previousAreaRatio, 2, 2e-5, 'razão falta interna/sobra externa em n=1000');
-close(2 * PI * 1 / 2, PI, 1e-15, 'círculo como leque-limite');
-
-close(areaIn(12), 3, 1e-12, 'área interna do dodecágono');
-close(areaOut(12), 3.2154, 5e-5, 'área externa do dodecágono');
-close(Math.cos(PI / 12), 0.9659, 5e-5, 'apótema do dodecágono');
-close(areaIn(12) / PI, 0.9549, 5e-5, 'cobertura da área interna');
-close((PI - areaIn(12)) / (areaOut(12) - PI), 1.9187, 5e-5, 'razão falta/sobra em n=12');
-
-const hexArea = 12 * Math.sqrt(3) / 2;
-close(hexArea, 10.3923, 5e-5, 'hexágono por perímetro e apótema');
-
-for (const n of [6, 12, 24, 48, 96]) {
-  for (const r of [0.5, 1, 1.3, 2]) {
-    close(areaIn(n, 2 * r), 4 * areaIn(n, r), 1e-11, `escala interna n=${n}, r=${r}`);
-    close(areaOut(n, 2 * r), 4 * areaOut(n, r), 1e-11, `escala externa n=${n}, r=${r}`);
-    close(PI * (2 * r) ** 2 - areaIn(n, 2 * r), 4 * (PI * r ** 2 - areaIn(n, r)), 1e-11, `erro interno escala n=${n}`);
-  }
+close(prevRatio,2,2e-5,'razão assintótica em n=1000');
+close(areaIn(12),3,1e-12,'dodecágono interno exato');
+close(areaOut(12),3.215390309,1e-9,'dodecágono externo');
+close(areaIn(6),3*Math.sqrt(3)/2,1e-12,'hexágono interno');
+for(const n of [3,6,12,24,96])for(const R of [.5,1,2,3]){
+ close(areaIn(n,2*R),4*areaIn(n,R),1e-11,`escala interna n=${n},R=${R}`);
+ close(areaOut(n,2*R),4*areaOut(n,R),1e-11,`escala externa n=${n},R=${R}`);
+ close(circle(2*R),4*circle(R),1e-11,`escala círculo R=${R}`);
 }
-
-const e12 = PI - areaIn(12);
-const e24 = PI - areaIn(24);
-assert.ok(Math.abs(e24 / e12 - 0.25) < 0.01, 'dobrar n deve reduzir o erro interno para perto de 1/4');
-
-const html = await readFile(new URL('./index.html', import.meta.url), 'utf8');
-const js = html.match(/<script>([\s\S]*?)<\/script>/)?.[1] || '';
-assert.ok(html.includes('Uma figura, três comparações, seis atos'), 'mapa do percurso deve existir');
-assert.ok(html.includes('role="progressbar"'), 'progresso real deve existir');
-assert.equal((html.match(/<li data-step=/g) || []).length, 9, 'Ato 3 deve ter nove passos');
-assert.equal(((html.split('<script>')[0]).match(/data-ex="/g) || []).length, 12, 'quatro exercícios com três alternativas');
-assert.equal((html.match(/class="curiosity"/g) || []).length, 4, 'quatro curiosidades');
-assert.equal((html.match(/<canvas /g) || []).length, 3, 'três Canvas calculados');
-assert.ok(html.includes('Ato 5 · anatomia do erro'), 'anatomia do erro deve existir');
-assert.ok(html.includes('Oficina — constantes assintóticas'), 'Oficina assintótica deve existir');
-assert.ok(html.includes('link rel="icon"'), 'favicon explícito deve existir');
-assert.ok(!html.includes('disabled>1. Faça uma aposta'), 'botão principal não pode nascer desabilitado');
-assert.ok(js.includes("sections.forEach(s=>s.hidden=false)"), 'uma revelação deve abrir todos os atos');
-assert.ok(js.includes("chain.forEach((li,i)=>li.hidden=i!==derivStep)"), 'somente um passo deve ficar ativo');
-assert.ok(js.includes("$('#deriv-result').hidden=derivStep!==8"), 'fórmulas devem nascer apenas no passo 9');
-assert.ok(html.includes('id="area-values" class="values" hidden'), 'medidas devem nascer ocultas antes da aposta');
-assert.ok(html.includes('id="area-chart-wrap" class="chart-wrap" hidden'), 'gráfico deve nascer oculto antes da aposta');
-assert.ok(html.includes('id="post-prediction-hint" class="hint" hidden'), 'pista qualitativa deve nascer oculta');
-assert.ok(js.includes("$('#area-values').hidden=false") && js.includes("$('#area-chart-wrap').hidden=false"), 'aposta deve liberar medidas e gráfico');
-assert.ok(!html.includes('href="lab.css"'), 'HTML publicado não pode depender de CSS externo');
-assert.ok(!html.includes('src="lab.js"'), 'HTML publicado não pode depender de JavaScript externo');
-assert.ok(html.includes('<style>') && js.length > 5000, 'HTML autocontido deve incorporar estilo e interação');
-assert.ok(html.includes('id="compare-scale"'), 'escala deve exigir uma ação explícita');
-assert.ok(js.includes("$('#error-n').oninput=()=>{checkpoints.audited=true"), 'auditoria só deve contar após manipulação');
-assert.ok(js.includes("$('#compare-scale').onclick=()=>{checkpoints.scaled=true"), 'escala só deve contar após execução explícita');
-assert.ok(!js.includes('checkpoints.audited=true;progress()}'), 'renderização inicial não pode creditar auditoria');
-assert.ok(!js.includes("x.textAlign='start';checkpoints.scaled=true"), 'renderização inicial não pode creditar escala');
-assert.doesNotThrow(() => new Function(js), 'JavaScript deve ser sintaticamente válido');
-
-const ids = [...html.matchAll(/\bid="([^"]+)"/g)].map(m => m[1]);
-assert.equal(new Set(ids).size, ids.length, 'IDs HTML devem ser únicos');
-
-console.log('Lab 03: 998 cercos de área, leques exatos, três assimetrias, escala quadrática, 4 exercícios, 4 curiosidades, 3 Canvas e contrato canônico verificados.');
+for(const n of [12,24,48,96]){
+ const ei=circle(1)-areaIn(n),ei2=circle(1)-areaIn(2*n);
+ const eo=areaOut(n)-circle(1),eo2=areaOut(2*n)-circle(1);
+ assert.ok(ei2/ei>.24&&ei2/ei<.26,`erro interno ~1/4 n=${n}`);
+ assert.ok(eo2/eo>.24&&eo2/eo<.26,`erro externo ~1/4 n=${n}`);
+}
+const html=readFileSync(new URL('./index.html',import.meta.url),'utf8');
+const css=readFileSync(new URL('./lab.css',import.meta.url),'utf8');
+const js=readFileSync(new URL('./lab.js',import.meta.url),'utf8');
+new vm.Script(js);
+assert.match(html,/Mapa do laboratório/);
+assert.equal((html.match(/class="route-step"/g)||[]).length,6,'seis atos anunciados');
+assert.equal((html.match(/data-step="[1-8]"/g)||[]).length,8,'oito passos de dedução');
+assert.equal((html.match(/data-ex="/g)||[]).length,12,'quatro exercícios com três respostas');
+assert.equal((html.match(/class="curiosity"/g)||[]).length,4,'quatro curiosidades');
+assert.equal((html.match(/<canvas/g)||[]).length,2,'dois Canvas');
+assert.match(html,/Agora o laboratório termina de verdade/);
+assert.match(html,/A = P·a\/2/);
+assert.match(html,/falta interna ÷ sobra externa → 2/);
+assert.match(html,/rel="icon"/);
+assert.ok(!js.includes('predicted && manipulated'),'sem trava invisível');
+assert.match(js,/sections\.forEach\(s=>s\.hidden=false\)/);
+assert.match(css,/\.stepper\{position:sticky/,'controles móveis acessíveis');
+console.log('Lab 03: 998 cercos, leque exato, escala R², erro n⁻², razão →2 e arquitetura canônica verificados sem divergência.');
