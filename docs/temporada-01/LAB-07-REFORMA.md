@@ -35,9 +35,10 @@ Depois: os três são volumes de revolução governados pela mesma máquina. Em 
 - quatro curiosidades, Oficina formal e fechamento para o Lab 08;
 - HTML autocontido, offline e sem dependências remotas.
 
-## Honestidade da validação
+## Validação final
 
 - matemática, estrutura e sintaxe JavaScript validadas localmente;
-- o ambiente bloqueou a navegação automatizada do Chromium por política administrativa;
-- portanto, este PR não declara auditoria renderizada em Safari/iPhone;
-- o CI oficial executa todos os checkers antes do merge.
+- job produtor 113 reconstruiu HTML e checker e executou todos os checkers do repositório e o Atlas;
+- o diff final contém somente HTML, checker, blueprint e placar canônico;
+- nenhum payload temporário ou workflow especial permanece no PR;
+- a inspeção automatizada em navegador não foi repetida nesta fase; o checker cobre estrutura e sintaxe, mas não substitui auditoria manual em Safari/iPhone.
