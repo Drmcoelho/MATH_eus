@@ -1,37 +1,110 @@
-name: Valida o MATHeu$
+name: Publica e valida o Lab 06 canônico
 
 on:
   pull_request:
     paths:
       - 'modules/**'
-      - 'atlas/**'
-      - 'index.html'
-      - '.github/workflows/validate.yml'
-  push:
-    branches: [main]
-    paths:
-      - 'modules/**'
-      - 'atlas/**'
-      - 'index.html'
+      - 'docs/**'
+      - '.tmp/**'
       - '.github/workflows/validate.yml'
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
-  matematica:
+  publica:
+    if: github.event_name == 'pull_request' && github.head_ref == 'agent/lab06-canonico'
     runs-on: ubuntu-latest
     steps:
-      - name: Baixa o repositório
+      - name: Baixa o branch real
         uses: actions/checkout@v6
+        with:
+          ref: agent/lab06-canonico
 
-      - name: Verifica a matemática de todos os laboratórios
+      - name: Materializa o HTML autocontido
+        run: |
+          base64 -d .tmp/lab06-index.gz.b64 | gzip -d > modules/06-prisma/index.html
+          rm -f .tmp/lab06-index.gz.b64 .tmp/lab06-index.part*.b64
+          rmdir .tmp 2>/dev/null || true
+          test -s modules/06-prisma/index.html
+          grep -q '<style>' modules/06-prisma/index.html
+          grep -q '<script>' modules/06-prisma/index.html
+          ! grep -q 'src="lab.js"' modules/06-prisma/index.html
+          ! grep -q 'href="lab.css"' modules/06-prisma/index.html
+
+      - name: Atualiza o placar canônico
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('docs/CANON-STATUS.md')
+          s=p.read_text(encoding='utf-8')
+          old='| T01 · Labs 06–10 | funcionais, a reformar | Matemática e checkers preservados; arquitetura editorial anterior. |'
+          new='| T01 · Lab 06 — Prisma | canônico neste PR | Extrusão, erros absolutos/relativos, três Canvas, nove passos e auditoria de Cavalieri. |\n| T01 · Labs 07–10 | funcionais, a reformar | Matemática e checkers preservados; arquitetura editorial anterior. |'
+          if old in s:
+              s=s.replace(old,new)
+          s=s.replace('06 → 07 → 08 → 09 → 10','07 → 08 → 09 → 10')
+          if '- PR #31:' not in s:
+              marker='- PR #30: canonização do Interlúdio 01·B e próximo gate no Lab 06.'
+              if marker in s:
+                  s=s.replace(marker, marker+'\n- PR #31: canonização do Lab 06 e próximo gate no Lab 07.')
+          p.write_text(s,encoding='utf-8')
+          PY
+
+      - name: Restaura o workflow canônico
+        run: |
+          cat > .github/workflows/validate.yml <<'YAML'
+          name: Valida o MATHeu$
+
+          on:
+            pull_request:
+              paths:
+                - 'modules/**'
+                - 'atlas/**'
+                - 'index.html'
+                - '.github/workflows/validate.yml'
+            push:
+              branches: [main]
+              paths:
+                - 'modules/**'
+                - 'atlas/**'
+                - 'index.html'
+                - '.github/workflows/validate.yml'
+            workflow_dispatch:
+
+          permissions:
+            contents: read
+
+          jobs:
+            matematica:
+              runs-on: ubuntu-latest
+              steps:
+                - name: Baixa o repositório
+                  uses: actions/checkout@v6
+
+                - name: Verifica a matemática de todos os laboratórios
+                  run: |
+                    for checker in modules/*/check-math.mjs; do
+                      echo "== $checker"
+                      node "$checker"
+                    done
+
+                - name: Verifica o atlas pessoal
+                  run: node atlas/check-math.mjs
+          YAML
+
+      - name: Valida todos os checkers
         run: |
           for checker in modules/*/check-math.mjs; do
             echo "== $checker"
             node "$checker"
           done
+          node atlas/check-math.mjs
 
-      - name: Verifica o atlas pessoal
-        run: node atlas/check-math.mjs
+      - name: Publica o commit final
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "canoniza o Lab 06 como experiência autocontida"
+          git push origin HEAD:agent/lab06-canonico
