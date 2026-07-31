@@ -50,8 +50,8 @@ close(product,.1149420448,1e-4,'Kepler–Bouwkamp');
 assert.ok(product>.11);
 
 const html=readFileSync(new URL('./index.html',import.meta.url),'utf8');
-const js=readFileSync(new URL('./lab.js',import.meta.url),'utf8');
-const css=readFileSync(new URL('./lab.css',import.meta.url),'utf8');
+const js=html.match(/<script>([\s\S]*?)<\/script>/)?.[1]||'';
+const css=html.match(/<style>([\s\S]*?)<\/style>/)?.[1]||'';
 new vm.Script(js);
 assert.equal((html.match(/class="route-step"/g)||[]).length,6,'seis atos');
 assert.equal((html.match(/data-step="[1-9]"/g)||[]).length,9,'nove passos');
@@ -68,5 +68,7 @@ assert.match(js,/if\(user&&step===8\)\{check\.derived=true/);
 assert.match(js,/check\.audited=true/);
 assert.match(js,/check\.certified=true/);
 assert.match(css,/\.stepper\{position:sticky/);
+assert.ok(!html.includes('href="lab.css"')&&!html.includes('src="lab.js"'),'HTML publicado deve ser autocontido');
+assert.ok(html.includes('<style>')&&js.length>8000,'CSS e JavaScript devem estar incorporados');
 
 console.log('Interlúdio 01·B: polígono escondido, iteração, coroa, meia-vida n², duas espirais e arquitetura canônica verificados sem divergência.');
