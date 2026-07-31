@@ -1,0 +1,55 @@
+name: Aplicar Lab 03 canônico
+on:
+  push:
+    branches: [agent/lab03-canonico]
+permissions:
+  contents: write
+jobs:
+  apply:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: agent/lab03-canonico
+          fetch-depth: 0
+      - name: Materializar e corrigir acabamento
+        shell: bash
+        run: |
+          mkdir -p /tmp/lab03new modules/03-areas
+          cat .tmp/lab03.part* | base64 -d > /tmp/lab03.tgz
+          tar -xzf /tmp/lab03.tgz -C /tmp/lab03new
+          cp /tmp/lab03new/index.html modules/03-areas/index.html
+          cp /tmp/lab03new/lab.css modules/03-areas/lab.css
+          cp /tmp/lab03new/lab.js modules/03-areas/lab.js
+          cp /tmp/lab03new/check-math.mjs modules/03-areas/check-math.mjs
+          cp /tmp/lab03new/favicon.ico favicon.ico
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('atlas/index.html')
+          s=p.read_text()
+          old='.site small{color:var(--muted)}'
+          new='.site small{display:block;color:var(--muted);margin-top:4px}'
+          assert old in s, 'seletor do Atlas não encontrado'
+          p.write_text(s.replace(old,new,1))
+
+          p=Path('modules/02-perimetros/lab.js')
+          s=p.read_text()
+          old="[[O,'O'],[M,'M'],[V,'V']].forEach(([p,q])=>{drawing.append(svg('circle',{cx:p[0],cy:p[1],r:6,fill:'currentColor'}));label(drawing,p[0]+10,p[1]-8,q)});label(drawing,(O[0]+V[0])/2+10,(O[1]+V[1])/2,'R');if(n<=12)label(drawing,(M[0]+V[0])/2,(M[1]+V[1])/2-10,'Lᵢₙ/2','middle');"
+          new="[O,M,V].forEach(p=>drawing.append(svg('circle',{cx:p[0],cy:p[1],r:6,fill:'currentColor'})));label(drawing,O[0]+10,O[1]+24,'O');label(drawing,M[0]-16,M[1]-18,'M','end');label(drawing,V[0]+12,V[1]-8,'V');label(drawing,(O[0]+V[0])/2+10,(O[1]+V[1])/2,'R');if(n<=12)label(drawing,(M[0]+V[0])/2+22,(M[1]+V[1])/2+10,'Lᵢₙ/2','middle');"
+          assert old in s, 'rótulos do Lab 02 não encontrados'
+          p.write_text(s.replace(old,new,1))
+          PY
+          rm -rf .tmp .github/workflows/apply-lab03-canonico.yml
+      - name: Verificar matemática e estrutura
+        run: |
+          test -s favicon.ico
+          node --check modules/03-areas/lab.js
+          for f in $(find modules atlas -name check-math.mjs | sort); do node "$f"; done
+      - name: Commit final
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add -A
+          git commit -m "reconstrói Lab 03 e corrige acabamento visual"
+          git push origin HEAD:agent/lab03-canonico
