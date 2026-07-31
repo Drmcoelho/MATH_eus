@@ -1,97 +1,61 @@
 import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
 
-// Lab 05: a largura do cerco, 2n·(tg(pi/n) - sen(pi/n)), é positiva,
-// estritamente decrescente e vence qualquer tolerância: para cada epsilon
-// existe um menor N com largura < epsilon, sem recaída depois dele. A forma
-// do Lab 04 prevê N ≈ raiz(pi³/epsilon).
+const PI=Math.PI;
+const width=n=>2*n*(Math.tan(PI/n)-Math.sin(PI/n));
+const findN=e=>{let n=3;while(width(n)>=e)n++;return n};
+const estimate=e=>Math.ceil(Math.sqrt(PI**3/e));
+const certified=e=>Math.floor(Math.sqrt(2*PI**3/e))+1;
+const close=(a,b,t,l)=>assert.ok(Math.abs(a-b)<=t,`${l}: esperado ${b}, obtido ${a}`);
 
-const CIRCLE = 2 * Math.PI;
-
-function close(actual, expected, tolerance, label) {
-  assert.ok(
-    Math.abs(actual - expected) <= tolerance,
-    `${label}: esperado ${expected}, obtido ${actual}`
-  );
+let previous=Infinity;
+for(let n=3;n<=5000;n++){
+  const pin=2*n*Math.sin(PI/n),pout=2*n*Math.tan(PI/n),w=width(n);
+  assert.ok(pin<2*PI&&2*PI<pout,`cerco contém 2π em n=${n}`);
+  assert.ok(w>0&&w<previous,`largura positiva e decrescente em n=${n}`);
+  assert.ok(w<2*PI**3/n**2,`cota rigorosa W<2π³/n² em n=${n}`);
+  previous=w;
 }
+close(3072**2*width(3072),PI**3,1e-2,'n²W em n=3072');
 
-function width(n) {
-  return 2 * n * (Math.tan(Math.PI / n) - Math.sin(Math.PI / n));
+const cases=[[.1,18],[.03,33],[.01,56],[.003,102],[.001,177],[.0003,322],[.0001,557],[.000031,1001],[.00001,1761]];
+for(const [e,N] of cases){
+  assert.equal(findN(e),N,`N exato para ε=${e}`);
+  assert.equal(estimate(e),N,`estimativa assintótica exibida para ε=${e}`);
+  assert.ok(width(N)<e&&width(N-1)>=e,`fronteira N−1/N em ε=${e}`);
+  const C=certified(e);
+  assert.ok(C>=N&&width(C)<e,`certificado suficiente para ε=${e}`);
+  for(let n=C;n<=C+3000;n++)assert.ok(width(n)<e,`sem recaída após certificado em ε=${e}, n=${n}`);
 }
+close(width(56),.0098950,5e-8,'W56');
+close(width(55),.0102584,5e-8,'W55');
+assert.equal(findN(.000031),1001,'desafio 31 milionésimos');
+close(Math.sqrt(PI**3/.000031),1000.1,.2,'estimativa mental do desafio');
+assert.ok(findN(.0001)/findN(.01)>9&&findN(.0001)/findN(.01)<11,'100× menos ε pede cerca de 10× N');
+assert.equal(certified(.01),79,'certificado citado para ε=.01');
 
-function findN(eps) {
-  let n = 3;
-  while (width(n) >= eps) n += 1;
-  return n;
-}
+const html=await readFile(new URL('./index.html',import.meta.url),'utf8');
+const js=html.match(/<script>([\s\S]*?)<\/script>/)?.[1]||'';
+const markup=html.split('<script>')[0];
+assert.ok(html.includes('Da aproximação à garantia'),'mapa do percurso');
+assert.ok(html.includes('aria-valuemax="10"')&&html.includes('>0/10</strong>'),'dez marcos reais');
+assert.equal((markup.match(/<li data-step=/g)||[]).length,9,'nove passos');
+assert.equal((markup.match(/data-ex="/g)||[]).length,12,'quatro exercícios com três alternativas');
+assert.equal((markup.match(/class="curiosity"/g)||[]).length,4,'quatro curiosidades');
+assert.equal((markup.match(/<canvas /g)||[]).length,3,'três Canvas');
+assert.ok(html.includes('id="dashboard" class="machine-grid" hidden'),'painel nasce oculto');
+assert.ok(html.includes('id="width-chart-wrap" class="chart-card" hidden'),'gráfico nasce oculto');
+assert.ok(html.includes('id="post-prediction-hint" class="hint" hidden'),'pista nasce oculta');
+assert.ok(js.includes("$('#dashboard').hidden=false")&&js.includes("$('#width-chart-wrap').hidden=false"),'aposta libera dados');
+assert.ok(js.includes('derived:false')&&js.includes('derivStep===8&&!checkpoints.derived'),'derivação só conta no passo final');
+assert.ok(js.includes("$('#candidate').oninput=()=>{checkpoints.audited=true"),'auditoria exige ação');
+assert.ok(js.includes("$('#certify').onclick=()=>")&&js.includes('checkpoints.certified=true'),'certificação exige ação');
+assert.ok(html.includes('N<sub>cert</sub>=⌊√(2π³/ε)⌋+1'),'fórmula certificada');
+assert.ok(html.includes('W<sub>n</sub>&lt;2π³/n²'),'cota rigorosa exposta');
+assert.ok(!html.includes('src="lab.js"')&&!html.includes('href="lab.css"'),'HTML autocontido');
+assert.ok(html.includes('<style>')&&js.length>8000,'estilo e interação incorporados');
+assert.doesNotThrow(()=>new Function(js),'JavaScript sintaticamente válido');
+const ids=[...html.matchAll(/\bid="([^"]+)"/g)].map(m=>m[1]);
+assert.equal(new Set(ids).size,ids.length,'IDs únicos');
 
-// positividade, cerco contendo 2π e as três monotonias até n = 5000
-let previousIn = 0;
-let previousOut = Infinity;
-let previousWidth = Infinity;
-for (let n = 3; n <= 5000; n += 1) {
-  const pin = 2 * n * Math.sin(Math.PI / n);
-  const pout = 2 * n * Math.tan(Math.PI / n);
-  const w = width(n);
-
-  assert.ok(pin < CIRCLE && CIRCLE < pout, `o cerco deve conter 2π em n=${n}`);
-  assert.ok(pin > previousIn, `contorno interno deve crescer; falhou em n=${n}`);
-  assert.ok(pout < previousOut, `contorno externo deve decrescer; falhou em n=${n}`);
-  assert.ok(w > 0, `largura deve ser positiva em n=${n}`);
-  assert.ok(w < previousWidth, `largura deve decrescer; falhou em n=${n}`);
-  previousIn = pin;
-  previousOut = pout;
-  previousWidth = w;
-}
-
-// n²·largura tende a π³
-close(3072 * 3072 * width(3072), Math.PI ** 3, 1e-2, 'n²·largura em n=3072 colado em π³');
-
-// a máquina de garantias: valores exibidos na página
-const expected = [
-  [0.1, 18],
-  [0.01, 56],
-  [0.001, 177],
-  [0.0001, 557],
-  [0.00001, 1761]
-];
-
-for (const [eps, expectedN] of expected) {
-  const N = findN(eps);
-  assert.equal(N, expectedN, `menor N para ε=${eps}`);
-  assert.ok(width(N) < eps, `largura em N deve vencer ε=${eps}`);
-  assert.ok(width(N - 1) >= eps, `largura em N-1 ainda deve falhar para ε=${eps}`);
-
-  // sem recaída: varredura além do que a página confere
-  for (let n = N; n <= N + 3000; n += 1) {
-    assert.ok(width(n) < eps, `recaída em n=${n} para ε=${eps}`);
-  }
-
-  // a previsão pela forma do Lab 04 acerta o N exato nessas tolerâncias
-  const estimate = Math.ceil(Math.sqrt(Math.PI ** 3 / eps));
-  assert.equal(estimate, N, `previsão √(π³/ε) para ε=${eps}`);
-}
-
-// valores citados no painel inicial (ε = 0,01)
-close(width(56), 0.0098950, 5e-8, 'largura citada em N=56');
-close(width(55), 0.0102584, 5e-8, 'largura citada em N=55');
-
-// desafio: 31 milionésimos
-assert.equal(findN(0.000031), 1001, 'N exato do desafio');
-close(Math.sqrt(Math.PI ** 3 / 0.000031), 1000.1, 0.2, 'conta de cabeça do desafio');
-assert.ok(width(1001) < 0.000031 && width(1000) >= 0.000031, 'fronteira do desafio');
-
-// distratores: n=100 falha por ~100×, n=31000 sobra por ~1000×
-close(width(100) / 0.000031, 100, 5, 'distrator n=100');
-assert.ok(width(31000) < 0.000031 / 900, 'distrator n=31000 é desperdício');
-
-// exercício "encontre o erro": N escala com 1/√ε, não linearmente com ε
-close(findN(0.01), 56, 0, 'N citado no exercício para ε=0,01');
-close(findN(0.001), 177, 0, 'N citado no exercício para ε=0,001 (10× menor, N não decuplica)');
-close(findN(0.0001), 557, 0, 'N citado no exercício para ε=0,0001 (100× menor, N decuplica)');
-const ratio10x = findN(0.001) / findN(0.01);
-const ratio100x = findN(0.0001) / findN(0.01);
-assert.ok(ratio10x < 4, 'reduzir ε por 10× não deve nem quadruplicar N');
-assert.ok(ratio100x > 9 && ratio100x < 11, 'reduzir ε por 100× deve tornar N aproximadamente 10× maior');
-assert.notEqual(findN(0.0001), 10 * findN(0.01), 'o menor N inteiro não obedece proporcionalidade exata');
-
-console.log('Lab 05: monotonias até n=5000, a máquina de garantias em cinco tolerâncias, a previsão assintótica pela forma, o desafio dos 31 milionésimos e o exercício da escala 1/√ε verificados sem divergência.');
+console.log('Lab 05: monotonicidade, fronteiras exatas, estimativas, certificados, 10 marcos, 4 exercícios, 3 Canvas e contrato canônico verificados.');

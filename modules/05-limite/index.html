@@ -1,702 +1,168 @@
-<!doctype html>
-<html lang="pt-BR">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Laboratório 05 do MATHeu$: escolha uma tolerância e receba uma garantia — o nascimento do limite.">
-  <title>Lab 05 — Quando “chegar perto” vira limite? · MATHeu$</title>
-  <style>
-    :root {
-      color-scheme: light dark;
-      --bg: #f4f1e8;
-      --ink: #171713;
-      --muted: #666258;
-      --paper: rgba(255, 255, 255, .66);
-      --line: rgba(23, 23, 19, .15);
-      --accent: #246b52;
-      --accent-2: #9b3f31;
-      --circle: #252520;
-      --focus: #d4872d;
-      --shadow: 0 18px 60px rgba(48, 43, 31, .09);
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Laboratório visual do MATHeu$: transforme aproximação em garantia, encontre o menor N e prove um limiar suficiente."><title>Lab 05 — Quando chegar perto vira limite? · MATHeu$</title><link rel="icon" href="../../favicon.svg" type="image/svg+xml"><style>:root{
+      color-scheme:light dark;
+      --bg:#f3f0e7;--ink:#171713;--muted:#68645b;--paper:#fffdf8cc;
+      --line:#17171324;--accent:#246b52;--accent2:#a04436;--focus:#d8892f;
+      --grid:#17171312;--shadow:0 18px 60px #302b1f16
     }
-
-    @media (prefers-color-scheme: dark) {
-      :root {
-        --bg: #11130f;
-        --ink: #f0eee7;
-        --muted: #b8b3a8;
-        --paper: rgba(255, 255, 255, .055);
-        --line: rgba(255, 255, 255, .14);
-        --accent: #7bc5a3;
-        --accent-2: #ef9788;
-        --circle: #f0eee7;
-        --focus: #ffc267;
-        --shadow: none;
-      }
-    }
-
-    * { box-sizing: border-box; }
-
-    html { scroll-behavior: smooth; }
-
-    body {
-      margin: 0;
-      background: var(--bg);
-      color: var(--ink);
-      font: 18px/1.55 ui-serif, Georgia, Cambria, "Times New Roman", serif;
-    }
-
-    button, input { font: inherit; }
-
-    a { color: var(--accent); }
-
-    :focus-visible {
-      outline: 3px solid var(--focus);
-      outline-offset: 3px;
-    }
-
-    .skip-link {
-      position: absolute;
-      left: 12px;
-      top: -80px;
-      padding: 10px 14px;
-      background: var(--ink);
-      color: var(--bg);
-      z-index: 20;
-    }
-
-    .skip-link:focus { top: 12px; }
-
-    header, main, footer {
-      width: min(1120px, calc(100% - 32px));
-      margin-inline: auto;
-    }
-
-    header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 16px;
-      padding: 22px 0;
-      border-bottom: 1px solid var(--line);
-      font-family: ui-sans-serif, system-ui, sans-serif;
-      font-size: .86rem;
-    }
-
-    header a { text-decoration: none; }
-
-    .brand { font-weight: 800; letter-spacing: -.02em; }
-
-    main { padding: 58px 0 88px; }
-
-    .eyebrow {
-      margin: 0 0 12px;
-      color: var(--accent);
-      font: 800 .76rem/1.2 ui-sans-serif, system-ui, sans-serif;
-      letter-spacing: .15em;
-      text-transform: uppercase;
-    }
-
-    h1, h2, h3 { line-height: 1.08; letter-spacing: -.035em; }
-
-    h1 {
-      max-width: 900px;
-      margin: 0;
-      font-size: clamp(2.9rem, 8vw, 6.6rem);
-    }
-
-    h2 { font-size: clamp(2rem, 5vw, 3.5rem); margin-top: 0; }
-
-    h3 { font-size: 1.25rem; }
-
-    .lead {
-      max-width: 780px;
-      margin: 24px 0 0;
-      color: var(--muted);
-      font-size: clamp(1.18rem, 2.8vw, 1.65rem);
-    }
-
-    .question-card, .lab-card, .formula-card, .challenge-card, details {
-      margin-top: 38px;
-      border: 1px solid var(--line);
-      border-radius: 24px;
-      background: var(--paper);
-      box-shadow: var(--shadow);
-    }
-
-    .question-card, .formula-card, .challenge-card, details { padding: clamp(22px, 4vw, 38px); }
-
-    .question-card strong, .box-label {
-      display: block;
-      color: var(--accent);
-      font: 800 .76rem/1.2 ui-sans-serif, system-ui, sans-serif;
-      letter-spacing: .13em;
-      text-transform: uppercase;
-    }
-
-    .question-card p {
-      max-width: 850px;
-      margin: 12px 0 22px;
-      font-size: clamp(1.45rem, 4vw, 2.45rem);
-      line-height: 1.18;
-    }
-
-    .answer-grid {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 10px;
-    }
-
-    button {
-      border: 1px solid var(--line);
-      border-radius: 999px;
-      padding: 12px 16px;
-      background: transparent;
-      color: var(--ink);
-      cursor: pointer;
-    }
-
-    button:hover { border-color: var(--accent); }
-
-    button[aria-pressed="true"], .primary {
-      border-color: var(--accent);
-      background: var(--accent);
-      color: var(--bg);
-    }
-
-    button:disabled { opacity: .45; cursor: not-allowed; }
-
-    .feedback {
-      min-height: 1.6em;
-      margin: 16px 0 0;
-      color: var(--muted);
-      font-family: ui-sans-serif, system-ui, sans-serif;
-    }
-
-    .lab-card { overflow: hidden; }
-
-    .lab-grid {
-      display: grid;
-      grid-template-columns: minmax(0, 1.35fr) minmax(280px, .65fr);
-    }
-
-    .chart-panel {
-      padding: clamp(18px, 3vw, 30px);
-    }
-
-    .chart-panel svg { width: 100%; height: auto; display: block; }
-
-    .control-panel {
-      padding: clamp(22px, 4vw, 34px);
-      border-left: 1px solid var(--line);
-    }
-
-    .control-panel h2 { font-size: 1.9rem; }
-
-    .control-label {
-      display: block;
-      margin-top: 26px;
-      margin-bottom: 8px;
-      font: 700 .86rem/1.3 ui-sans-serif, system-ui, sans-serif;
-    }
-
-    .quick-values {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-
-    .quick-values button { padding: 8px 12px; font-size: .88rem; }
-
-    .measurements {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      margin: 26px 0;
-    }
-
-    .measurement {
-      padding: 14px;
-      border: 1px solid var(--line);
-      border-radius: 16px;
-    }
-
-    .measurement dt {
-      color: var(--muted);
-      font: 700 .73rem/1.2 ui-sans-serif, system-ui, sans-serif;
-      text-transform: uppercase;
-      letter-spacing: .08em;
-    }
-
-    .measurement dd { margin: 5px 0 0; font-size: 1.32rem; font-variant-numeric: tabular-nums; }
-
-    .hint {
-      padding: 16px;
-      border-left: 4px solid var(--accent);
-      background: color-mix(in srgb, var(--accent) 9%, transparent);
-      color: var(--muted);
-    }
-
-    .reveal-row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-top: 22px; }
-
-    .hint.secret { margin-top: 24px; }
-
-    .formula-card[hidden] { display: none; }
-
-    .formula {
-      margin: 22px 0;
-      padding: 22px;
-      border: 1px solid var(--line);
-      border-radius: 18px;
-      text-align: center;
-      font-size: clamp(1.4rem, 4vw, 2.3rem);
-      font-variant-numeric: lining-nums;
-      overflow-x: auto;
-    }
-
-    .dictionary {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
-      margin-top: 18px;
-    }
-
-    .dictionary div { padding: 14px; border-top: 1px solid var(--line); }
-
-    .challenge-options { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
-
-    details summary {
-      cursor: pointer;
-      font-weight: 700;
-      font-size: 1.25rem;
-    }
-
-    details p, details li { color: var(--muted); }
-
-    footer { padding: 28px 0 56px; border-top: 1px solid var(--line); color: var(--muted); }
-
-    @media (max-width: 820px) {
-      .answer-grid, .dictionary { grid-template-columns: 1fr; }
-      .lab-grid { grid-template-columns: 1fr; }
-      .control-panel { border-left: 0; border-top: 1px solid var(--line); }
-    }
-
-    @media (max-width: 480px) {
-      header { align-items: flex-start; flex-direction: column; }
-      main { padding-top: 38px; }
-      .measurements { grid-template-columns: 1fr; }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      html { scroll-behavior: auto; }
-      * { transition: none !important; }
-    }
-
-    .hint-ladder { margin-top: 20px; }
-
-    .hint-ladder details {
-      margin-top: 10px;
-      padding: 14px 18px;
-      border-radius: 14px;
-      box-shadow: none;
-    }
-
-    .hint-ladder summary { font-size: 1rem; }
-
-    .lab-nav {
-      margin-top: 48px;
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 12px;
-      font-family: ui-sans-serif, system-ui, sans-serif;
-    }
-
-    .lab-nav a, .lab-nav .soon {
-      display: block;
-      padding: 16px 18px;
-      border: 1px solid var(--line);
-      border-radius: 18px;
-      background: var(--paper);
-      color: var(--ink);
-      text-decoration: none;
-    }
-
-    .lab-nav a:hover { border-color: var(--accent); }
-
-    .lab-nav small {
-      display: block;
-      margin-bottom: 6px;
-      color: var(--accent);
-      font: 800 .7rem/1.2 ui-sans-serif, system-ui, sans-serif;
-      letter-spacing: .1em;
-      text-transform: uppercase;
-    }
-
-    .lab-nav .soon { color: var(--muted); }
-  </style>
-<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
-</head>
-<body>
-  <a class="skip-link" href="#conteudo">Pular para o laboratório</a>
-  <header>
-    <a class="brand" href="../../index.html">MATHeu$</a>
-    <span>Temporada 01 · Laboratório 05</span>
-  </header>
-
-  <main id="conteudo">
-    <p class="eyebrow">Quando “chegar perto” vira limite?</p>
-    <h1>Escolha um erro. Eu te devolvo uma garantia.</h1>
-    <p class="lead">O Laboratório 04 descobriu a forma do erro. Agora ela vira contrato: você escolhe a tolerância, a máquina entrega o número de lados que basta — e promete que, dali em diante, nunca mais falha.</p>
-
-    <section class="question-card" aria-labelledby="aposta-titulo">
-      <strong id="aposta-titulo">Pare e aposte</strong>
-      <p>Existe uma tolerância pequena demais — um ponto em que o cerco empaca e não consegue mais encolher?</p>
-      <div class="answer-grid" role="group" aria-label="Escolha sua previsão">
-        <button type="button" data-prediction="floor" aria-pressed="false">sim, existe um piso</button>
-        <button type="button" data-prediction="always" aria-pressed="false">não: toda tolerância é vencível</button>
-        <button type="button" data-prediction="test" aria-pressed="false">só testando para saber</button>
-      </div>
-      <p id="prediction-feedback" class="feedback" aria-live="polite">Escolha antes de acionar a máquina de garantias.</p>
-    </section>
-
-    <section class="lab-card" aria-labelledby="lab-title">
-      <div class="lab-grid">
-        <div class="chart-panel">
-          <svg id="chart" viewBox="0 0 640 320" aria-hidden="true"><g id="chart-drawing"></g></svg>
-        </div>
-
-        <div class="control-panel">
-          <p class="box-label">Brinque</p>
-          <h2 id="lab-title">A máquina de garantias</h2>
-          <p>O objeto é a <strong>largura do cerco</strong>: contorno de fora menos contorno de dentro. O círculo (2π) vive sempre lá dentro.</p>
-
-          <span class="control-label" id="eps-label">Tolerância ε — o erro máximo que você aceita</span>
-          <div class="quick-values" role="group" aria-labelledby="eps-label">
-            <button type="button" data-eps="0.1" aria-pressed="false">0,1</button>
-            <button type="button" data-eps="0.01" aria-pressed="true">0,01</button>
-            <button type="button" data-eps="0.001" aria-pressed="false">0,001</button>
-            <button type="button" data-eps="0.0001" aria-pressed="false">0,0001</button>
-            <button type="button" data-eps="0.00001" aria-pressed="false">0,00001</button>
-          </div>
-
-          <dl class="measurements" aria-label="Resultado da máquina de garantias">
-            <div class="measurement"><dt>N — o menor n que basta</dt><dd id="n-value">56</dd></div>
-            <div class="measurement"><dt>largura do cerco em N</dt><dd id="w-value">0,0098950</dd></div>
-            <div class="measurement"><dt>largura em N − 1 (ainda falha)</dt><dd id="w-prev-value">0,0102584</dd></div>
-            <div class="measurement"><dt>previsão pela forma do Lab 04</dt><dd id="est-value">56</dd></div>
-          </dl>
-
-          <p id="relapse-status" class="feedback" aria-live="polite">Conferido de n = 56 até 3056: nenhuma recaída acima de ε.</p>
-
-          <p class="hint"><strong>Olhe de novo:</strong> no gráfico, a curva cruza a linha de ε exatamente em N — e nunca mais volta. A zona verde é a promessa cumprida.</p>
-
-          <div class="reveal-row">
-            <button id="reveal" type="button" class="primary" disabled>Dar nome à promessa</button>
-            <span id="reveal-status" class="feedback" aria-live="polite">Aposte e experimente pelo menos duas tolerâncias.</span>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section id="formula-card" class="formula-card" hidden aria-labelledby="formula-title">
-      <p class="box-label">Entenda</p>
-      <h2 id="formula-title">Essa promessa tem nome: limite</h2>
-      <p>Você viu o contrato funcionar: qualquer tolerância, por menor que fosse, ganhou um N — e depois de N o cerco nunca mais saiu da faixa. Em linguagem corrida:</p>
-
-      <div class="formula" aria-label="todo epsilon ganha um N, e depois de N o cerco fica para sempre a menos de epsilon do círculo">
-        todo ε ganha um N — e, de N em diante, o cerco fica a menos de ε do círculo, para sempre
-      </div>
-
-      <div class="dictionary" aria-label="Dicionário da promessa">
-        <div><strong>ε</strong><br>a tolerância que <em>você</em> escolhe, sempre por atacar</div>
-        <div><strong>N</strong><br>a resposta da máquina: o ponto da garantia</div>
-        <div><strong>para sempre</strong><br>todo n ≥ N, sem exceção e sem recaída</div>
-      </div>
-
-      <p><strong>Isso é exatamente o que significa dizer</strong> que os cercos têm <em>limite</em> 2π. Limite não é "chegar lá": é vencer todas as tolerâncias, uma a uma, com garantia.</p>
-      <p><strong>Honestidade:</strong> a máquina testa finitos n. A promessa vale para <em>todos</em> porque a largura do cerco só faz descer — a monotonia está verificada numericamente no módulo e demonstrada na Oficina.</p>
-    </section>
-
-    <section id="challenge" class="challenge-card" hidden aria-labelledby="challenge-title">
-      <p class="box-label">Agora use a forma</p>
-      <h2 id="challenge-title">Por volta de qual n o cerco encolhe abaixo de 31 milionésimos (0,000031)?</h2>
-      <p>Sem apertar botão: a forma do Lab 04 — largura ≈ 31 / n² — responde de cabeça.</p>
-      <div class="challenge-options" role="group" aria-label="Escolha a ordem de grandeza">
-        <button type="button" data-answer="100">n ≈ 100</button>
-        <button type="button" data-answer="1000">n ≈ 1000</button>
-        <button type="button" data-answer="31000">n ≈ 31 000</button>
-      </div>
-      <p id="challenge-feedback" class="feedback" aria-live="polite"></p>
-    </section>
-
-    <section id="limit-card" class="formula-card" hidden aria-labelledby="limit-title">
-      <p class="box-label">Entenda até o fim</p>
-      <h2 id="limit-title">O limite é o único sobrevivente do cerco</h2>
-      <p>Cada cerco é um intervalo que contém 2π. Conforme n cresce, os intervalos encaixam uns nos outros e a largura vence toda tolerância. Pergunta decisiva: <strong>que números sobrevivem dentro de todos os cercos?</strong> Só um. Qualquer outro número fica a uma distância fixa de 2π — e algum cerco, cedo ou tarde, fica mais estreito que essa distância e o expulsa.</p>
-      <p>Por isso o limite não é um "quase": é o único número que o cerco infinito não consegue expulsar. Foi assim que, sem medir círculo nenhum, encurralamos 2π.</p>
-
-      <div id="exercise-scaling" class="challenge-card" style="margin-top:26px; padding:0; border:0; box-shadow:none; background:transparent;">
-        <p class="box-label">Encontre o erro</p>
-        <h3>"Se eu quiser um N dez vezes maior, basta pedir uma tolerância ε dez vezes menor."</h3>
-        <p>Essa frase parece razoável — mas a tabela do painel já teve tudo que você precisa para julgá-la.</p>
-        <div class="challenge-options" role="group" aria-label="Julgue a afirmação">
-          <button type="button" data-ex-scaling="right">está certo</button>
-          <button type="button" data-ex-scaling="hundred">errado: aproximadamente cem vezes menor</button>
-          <button type="button" data-ex-scaling="ten">errado: N não depende de ε assim</button>
-        </div>
-        <p id="scaling-feedback" class="feedback" aria-live="polite"></p>
-        <div class="hint-ladder">
-          <details><summary>Primeira pista</summary><p>N ≈ √(π³/ε). Não é uma proporção direta com ε — é uma raiz quadrada.</p></details>
-          <details><summary>Pista visual</summary><p>Compare no painel: ε = 0,01 dá N = 56; ε = 0,0001 (cem vezes menor) dá N = 557 — cerca de dez vezes maior. E ε = 0,001 (só dez vezes menor) dá N = 177, menos de quatro vezes maior.</p></details>
-          <details><summary>Solução comentada</summary><p>Errado: na escala assintótica, multiplicar N por dez exige dividir ε por aproximadamente <strong>cem</strong>, não por dez. A forma N ≈ √(π³/ε) dá N₂/N₁ ≈ √(ε₁/ε₂); por isso uma redução de 100 vezes em ε produz um N cerca de 10 vezes maior. O menor N é inteiro e a fórmula é assintótica, então não há igualdade exata: 56 vira 557, não 560. A armadilha é tratar uma relação de raiz quadrada como se fosse linear — o mesmo tipo de erro que apareceu no Laboratório 04 ao confundir "dobrar n" com "dobrar a precisão". Essa raiz quadrada vai reaparecer sempre que uma garantia depender de uma forma quadrática.</p></details>
-        </div>
-      </div>
-
-      <p class="hint secret"><strong>Segredo de mestre:</strong> a previsão N ≈ √(31/ε) ficou muito próxima da resposta exata da máquina em todas as tolerâncias do painel. Conhecer a forma do erro transforma busca em cálculo — guarde isso: vai voltar quando formos fatiar áreas e volumes.</p>
-      <p><strong>Porta futura:</strong> com o limite no bolso, o plano ficou pequeno. No <a href="../06-prisma/index.html">Laboratório 06</a>, o polígono ganha altura e vira prisma — e o cerco inteiro vai junto.</p>
-    </section>
-
-    <details>
-      <summary>Oficina — a frase formal, a monotonia e a estimativa de N</summary>
-      <p><strong>A frase oficial.</strong> "A sequência dos cercos tem limite 2π" escreve-se: para todo ε &gt; 0 existe N tal que, para todo n ≥ N, |cerco(n) − 2π| &lt; ε. É letra por letra o contrato do laboratório: ε é a tolerância escolhida, N é a resposta da máquina, e o "para todo n ≥ N" é a cláusula sem recaída. A notação só comprime a experiência que você acabou de ter.</p>
-      <p><strong>Por que não há recaída.</strong> O contorno de dentro, 2nR·sen(π/n), só cresce com n; o de fora, 2nR·tg(π/n), só decresce. Logo a largura do cerco, a diferença dos dois, é estritamente decrescente: uma vez abaixo de ε, abaixo para sempre. O verificador do módulo confere as três monotonias até n = 5000.</p>
-      <p><strong>De onde vem a previsão.</strong> A largura do cerco é a soma dos dois erros de contorno, e o Lab 04 deu as constantes deles: π³/3 + 2π³/3 = π³ ≈ 31,006. Logo largura ≈ π³/n², e exigir π³/n² &lt; ε dá n &gt; √(π³/ε) — a conta de cabeça N ≈ √(31/ε) do desafio.</p>
-      <p><strong>Finitos testes não provam.</strong> A varredura "sem recaída até N + 3000" é evidência; a garantia para todo n é a monotonia acima, que uma demonstração completa fecha com as desigualdades de sen e tg do intervalo (0, π/3].</p>
-    </details>
-
-    <nav class="lab-nav" aria-label="Continuar no MATHeu$">
-      <a href="../04-erro/index.html"><small>Anterior</small>Lab 04 — O erro também tem forma</a>
-      <a href="../../index.html"><small>Índice</small>Todos os laboratórios</a>
-      <a href="../06-prisma/index.html"><small>Próximo</small>Lab 06 — Do polígono ao prisma</a>
-    </nav>
-  </main>
-
-  <footer>
-    <p>MATHeu$ · Laboratório 05 · HTML autocontido, SVG calculado e funcionamento offline.</p>
-  </footer>
-
-  <script>
-    (() => {
-      'use strict';
-
-      const NS = 'http://www.w3.org/2000/svg';
-      const N_MAX = 3072;
-
-      function width(n) {
-        return 2 * n * (Math.tan(Math.PI / n) - Math.sin(Math.PI / n));
-      }
-
-      function findN(eps) {
-        let n = 3;
-        while (width(n) >= eps) n += 1;
-        return n;
-      }
-
-      const chartDrawing = document.getElementById('chart-drawing');
-      const nValue = document.getElementById('n-value');
-      const wValue = document.getElementById('w-value');
-      const wPrevValue = document.getElementById('w-prev-value');
-      const estValue = document.getElementById('est-value');
-      const relapseStatus = document.getElementById('relapse-status');
-      const reveal = document.getElementById('reveal');
-      const revealStatus = document.getElementById('reveal-status');
-      const formulaCard = document.getElementById('formula-card');
-      const challenge = document.getElementById('challenge');
-      const limitCard = document.getElementById('limit-card');
-      const predictionFeedback = document.getElementById('prediction-feedback');
-      const challengeFeedback = document.getElementById('challenge-feedback');
-
-      let eps = 0.01;
-      let predicted = false;
-      const epsTried = new Set([eps]);
-
-      function fmt(value, digits = 4) {
-        return new Intl.NumberFormat('pt-BR', {
-          minimumFractionDigits: digits,
-          maximumFractionDigits: digits
-        }).format(value);
-      }
-
-      function el(name, attrs = {}, text = '') {
-        const node = document.createElementNS(NS, name);
-        for (const [key, value] of Object.entries(attrs)) node.setAttribute(key, value);
-        if (text) node.textContent = text;
-        return node;
-      }
-
-      // gráfico log-log: n em [3, 3072], largura em [1e-6, 10]
-      const PLOT = { left: 70, right: 620, top: 20, bottom: 274 };
-
-      function x(n) {
-        const t = (Math.log10(n) - Math.log10(3)) / (Math.log10(N_MAX) - Math.log10(3));
-        return PLOT.left + t * (PLOT.right - PLOT.left);
-      }
-
-      function y(value) {
-        const t = (1 - Math.log10(value)) / 7;
-        return PLOT.top + t * (PLOT.bottom - PLOT.top);
-      }
-
-      function chartLabel(cx, cy, text, anchor = 'middle', fill = 'var(--muted)') {
-        chartDrawing.appendChild(el('text', {
-          x: cx, y: cy,
-          'text-anchor': anchor,
-          'font-family': 'ui-sans-serif, system-ui, sans-serif',
-          'font-size': '13',
-          'font-weight': '600',
-          fill
-        }, text));
-      }
-
-      function renderChart(N) {
-        chartDrawing.replaceChildren();
-
-        for (let exp = 0; exp >= -6; exp -= 1) {
-          const gy = y(10 ** exp);
-          chartDrawing.appendChild(el('line', {
-            x1: PLOT.left, y1: gy, x2: PLOT.right, y2: gy,
-            stroke: 'var(--line)', 'stroke-width': exp % 2 === 0 ? '1.4' : '.7'
-          }));
-          if (exp % 2 === 0) {
-            chartLabel(PLOT.left - 8, gy + 4, exp === 0 ? '1' : `10${exp === -2 ? '⁻²' : exp === -4 ? '⁻⁴' : '⁻⁶'}`, 'end');
-          }
-        }
-
-        for (const gn of [3, 12, 48, 192, 768, 3072]) {
-          chartLabel(x(gn), PLOT.bottom + 20, String(gn));
-        }
-        chartLabel((PLOT.left + PLOT.right) / 2, PLOT.bottom + 40, 'n — número de lados (escala log)');
-        chartLabel(8, PLOT.top - 6, 'largura do cerco (escala log)', 'start');
-
-        // zona da promessa: n ≥ N e largura < ε
-        chartDrawing.appendChild(el('rect', {
-          x: x(N), y: y(eps),
-          width: PLOT.right - x(N), height: PLOT.bottom - y(eps),
-          fill: 'color-mix(in srgb, var(--accent) 10%, transparent)'
-        }));
-
-        chartDrawing.appendChild(el('line', {
-          x1: PLOT.left, y1: y(eps), x2: PLOT.right, y2: y(eps),
-          stroke: 'var(--focus)', 'stroke-width': '2.5', 'stroke-dasharray': '8 6'
-        }));
-        chartLabel(PLOT.right - 4, y(eps) - 8, `ε = ${fmt(eps, eps < 0.001 ? 5 : 3)}`, 'end');
-
-        chartDrawing.appendChild(el('line', {
-          x1: x(N), y1: PLOT.top, x2: x(N), y2: PLOT.bottom,
-          stroke: 'var(--accent-2)', 'stroke-width': '2', 'stroke-dasharray': '4 5'
-        }));
-        chartLabel(x(N), PLOT.top + 12, `N = ${N}`, N > 700 ? 'end' : 'start', 'var(--accent-2)');
-
-        const points = [];
-        for (let n = 3; n <= N_MAX; n = Math.max(n + 1, Math.round(n * 1.04))) {
-          points.push(`${x(n)},${y(width(n))}`);
-        }
-        points.push(`${x(N_MAX)},${y(width(N_MAX))}`);
-        chartDrawing.appendChild(el('polyline', {
-          points: points.join(' '),
-          fill: 'none', stroke: 'var(--accent)', 'stroke-width': '2'
-        }));
-
-        const dot = el('circle', {
-          cx: x(N), cy: y(width(N)), r: 6,
-          fill: 'var(--accent-2)', stroke: 'var(--bg)', 'stroke-width': '2'
-        });
-        dot.appendChild(el('title', {}, `N = ${N} · largura = ${fmt(width(N), 7)}`));
-        chartDrawing.appendChild(dot);
-
-        chartLabel(x(4), y(10 ** -4.6), 'cruzou ε e nunca mais volta', 'start');
-      }
-
-      function render() {
-        const N = findN(eps);
-        const estimate = Math.ceil(Math.sqrt(Math.PI ** 3 / eps));
-
-        nValue.textContent = String(N);
-        wValue.textContent = fmt(width(N), 7);
-        wPrevValue.textContent = fmt(width(N - 1), 7);
-        estValue.textContent = String(estimate);
-
-        let worst = 0;
-        for (let n = N; n <= N + 3000; n += 1) worst = Math.max(worst, width(n));
-        relapseStatus.textContent = worst < eps
-          ? `Conferido de n = ${N} até ${N + 3000}: nenhuma recaída acima de ε.`
-          : 'Recaída detectada — isso não deveria acontecer.';
-
-        renderChart(N);
-      }
-
-      function updateReadiness() {
-        const ready = predicted && epsTried.size >= 2;
-        reveal.disabled = !ready || !formulaCard.hidden;
-        if (formulaCard.hidden) {
-          revealStatus.textContent = ready
-            ? 'A promessa já se cumpriu diante de você.'
-            : 'Aposte e experimente pelo menos duas tolerâncias.';
-        }
-      }
-
-      document.querySelectorAll('[data-prediction]').forEach(button => {
-        button.addEventListener('click', () => {
-          document.querySelectorAll('[data-prediction]').forEach(item => item.setAttribute('aria-pressed', 'false'));
-          button.setAttribute('aria-pressed', 'true');
-          predicted = true;
-          predictionFeedback.textContent = button.dataset.prediction === 'always'
-            ? 'Boa aposta. Agora aperte a máquina: desça a tolerância e veja se algum ε resiste.'
-            : 'Aposta registrada. Desça a tolerância e veja se algum ε resiste à máquina.';
-          updateReadiness();
-        });
-      });
-
-      document.querySelectorAll('[data-eps]').forEach(button => {
-        button.addEventListener('click', () => {
-          document.querySelectorAll('[data-eps]').forEach(item => item.setAttribute('aria-pressed', 'false'));
-          button.setAttribute('aria-pressed', 'true');
-          eps = Number(button.dataset.eps);
-          epsTried.add(eps);
-          render();
-          updateReadiness();
-        });
-      });
-
-      reveal.addEventListener('click', () => {
-        formulaCard.hidden = false;
-        challenge.hidden = false;
-        reveal.textContent = 'Promessa nomeada';
-        reveal.disabled = true;
-        formulaCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      });
-
-      document.querySelectorAll('[data-answer]').forEach(button => {
-        button.addEventListener('click', () => {
-          const answer = button.dataset.answer;
-          if (answer === '1000') {
-            challengeFeedback.textContent = 'Exato: √(31 / 0,000031) = √1 000 000 = 1000. A máquina crava N = 1001 — a previsão de cabeça errou por um.';
-            if (limitCard.hidden) limitCard.hidden = false;
-          } else if (answer === '100') {
-            challengeFeedback.textContent = 'Com n = 100, a forma dá 31 / 100² ≈ 0,0031 — cem vezes maior que o pedido.';
-          } else {
-            challengeFeedback.textContent = 'Com n = 31 000, o cerco ficaria quase mil vezes mais estreito que o pedido — garantia com desperdício.';
-          }
-        });
-      });
-
-      const scalingFeedback = document.getElementById('scaling-feedback');
-      document.querySelectorAll('[data-ex-scaling]').forEach(button => {
-        button.addEventListener('click', () => {
-          const value = button.dataset.exScaling;
-          if (value === 'hundred') {
-            scalingFeedback.textContent = 'Exato na ordem de grandeza: como N ≈ constante/√ε, dividir ε por 100 torna N cerca de 10 vezes maior. O inteiro mínimo vai de 56 a 557, não exatamente a 560.';
-          } else if (value === 'right') {
-            scalingFeedback.textContent = 'Compare ε = 0,01 (N=56) com ε = 0,001, dez vezes menor: N = 177, menos de 4× maior — não 10×.';
-          } else {
-            scalingFeedback.textContent = 'N depende de ε, sim — mas não linearmente. A relação é N ≈ √(π³/ε), uma raiz quadrada.';
-          }
-        });
-      });
-
-      render();
-      updateReadiness();
-    })();
-  </script>
-</body>
-</html>
+    @media(prefers-color-scheme:dark){:root{
+      --bg:#10120e;--ink:#f1eee6;--muted:#b9b3a8;--paper:#ffffff0d;
+      --line:#ffffff24;--accent:#78c7a3;--accent2:#f19a8c;--focus:#ffc46d;
+      --grid:#ffffff12;--shadow:none
+    }}
+    *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--ink);font:18px/1.55 ui-serif,Georgia,Cambria,serif}
+    button,input{font:inherit}button{color:inherit}a{color:var(--accent)}[hidden]{display:none!important}
+    :focus-visible{outline:3px solid var(--focus);outline-offset:3px}
+    .skip{position:absolute;left:12px;top:-80px;padding:10px 14px;background:var(--ink);color:var(--bg);z-index:40}.skip:focus{top:12px}
+    header,.meta,main,footer{width:min(1120px,calc(100% - 28px));margin-inline:auto}
+    header{display:flex;justify-content:space-between;gap:16px;align-items:center;padding:20px 0;border-bottom:1px solid var(--line);font:700 .84rem/1.2 ui-sans-serif,system-ui}
+    header a{text-decoration:none}.brand{font-weight:900}
+    .meta{display:flex;flex-wrap:wrap;gap:10px 20px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line);color:var(--muted);font:700 .78rem/1.2 ui-sans-serif,system-ui}
+    .meta button{margin-left:auto}.progress-mini{display:flex;gap:10px;align-items:center}.track{width:120px;height:7px;border-radius:99px;background:var(--line);overflow:hidden}.track span{display:block;height:100%;width:0;background:var(--accent);transition:width .25s}
+    main{padding:54px 0 88px}.eyebrow{margin:0 0 12px;color:var(--accent);font:900 .75rem/1.2 ui-sans-serif,system-ui;letter-spacing:.15em;text-transform:uppercase}
+    h1,h2,h3{line-height:1.06;letter-spacing:-.035em}h1{max-width:930px;margin:0;font-size:clamp(3rem,9vw,7rem)}h2{font-size:clamp(2rem,5vw,3.6rem);margin:0 0 14px}h3{font-size:1.25rem;margin:0 0 10px}
+    .lead{max-width:820px;margin:24px 0 0;color:var(--muted);font-size:clamp(1.15rem,2.7vw,1.65rem)}
+    .question,.act,.proof,.work-card,.curiosity,.finish-item,.lab{border:1px solid var(--line);background:var(--paper);box-shadow:var(--shadow)}
+    .question,.act,.proof{margin-top:34px;border-radius:26px;padding:clamp(22px,4vw,38px)}
+    .label{display:block;color:var(--accent);font:900 .74rem/1.2 ui-sans-serif,system-ui;letter-spacing:.13em;text-transform:uppercase}
+    .question>p{max-width:850px;margin:12px 0 22px;font-size:clamp(1.4rem,4vw,2.4rem);line-height:1.18}
+    .options,.quick,.stepper,.step-dots{display:flex;flex-wrap:wrap;gap:10px}.options button,.primary,.ghost,.quick button,.meta button,.step-dots button{border:1px solid var(--line);border-radius:999px;padding:11px 15px;background:transparent;cursor:pointer}
+    .options button:hover,.primary:hover,.ghost:hover,.quick button:hover,.step-dots button:hover{border-color:var(--accent)}
+    button[aria-pressed=true],.primary,.step-dots button[aria-current=step]{border-color:var(--accent);background:var(--accent);color:var(--bg)}
+    button:disabled{opacity:.48;cursor:not-allowed}.feedback{min-height:1.5em;margin:14px 0 0;color:var(--muted);font:600 .91rem/1.45 ui-sans-serif,system-ui}
+    .route{margin-top:30px;padding:22px;border:1px dashed var(--line);border-radius:24px;background:color-mix(in srgb,var(--accent) 6%,transparent)}
+    .route h2{font-size:1.45rem}.route-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.route-step{padding:14px;border:1px solid var(--line);border-radius:16px}.route-step strong{display:block;color:var(--accent);font:800 .78rem/1.2 ui-sans-serif,system-ui}.route-step span{color:var(--muted);font-size:.92rem}
+    .lab{margin-top:34px;border-radius:28px;overflow:hidden}.lab-grid{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(290px,.75fr)}
+    .visual{min-height:650px;padding:16px;background:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:28px 28px}.visual svg{width:100%;height:100%;min-height:610px;display:block}
+    .controls{padding:clamp(22px,4vw,36px);border-left:1px solid var(--line)}.controls label{display:block;margin-top:24px;font:800 .86rem/1.3 ui-sans-serif,system-ui}.controls input[type=range]{width:100%;margin:14px 0;accent-color:var(--accent)}.quick button{padding:8px 12px;font-size:.86rem}
+    .values{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:24px 0}.value{padding:13px;border:1px solid var(--line);border-radius:15px}.value dt{color:var(--muted);font:800 .7rem/1.2 ui-sans-serif,system-ui;letter-spacing:.08em;text-transform:uppercase}.value dd{margin:5px 0 0;font-size:1.25rem;font-variant-numeric:tabular-nums}.inside dd{color:var(--accent)}.outside dd{color:var(--accent2)}
+    .hint{padding:15px;border-left:4px solid var(--accent);background:color-mix(in srgb,var(--accent) 9%,transparent);color:var(--muted)}.reveal-row{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:20px}
+    .chart-wrap{margin-top:18px;padding:13px;border:1px solid var(--line);border-radius:18px}.chart-wrap canvas{display:block;width:100%;height:230px}.chart-wrap small{color:var(--muted);font:700 .76rem/1.3 ui-sans-serif,system-ui}
+    .deriv-grid{display:grid;grid-template-columns:minmax(0,.95fr) minmax(0,1.05fr);gap:24px;align-items:start;margin-top:22px}.deriv-figure{position:sticky;top:12px;padding:12px;border:1px solid var(--line);border-radius:20px;background:var(--bg)}.deriv-figure svg{width:100%;height:auto;display:block}
+    .stepper{align-items:center;margin:14px 0 12px}.step-dots{margin-bottom:12px}.step-dots button{width:38px;height:38px;padding:0;font:900 .8rem/1 ui-sans-serif,system-ui}
+    .chain{list-style:none;margin:0;padding:0}.chain li{position:relative;padding:18px 18px 18px 56px;border:1px solid var(--focus);border-radius:18px;background:color-mix(in srgb,var(--focus) 8%,transparent)}.chain li::before{content:attr(data-step);position:absolute;left:16px;top:18px;display:grid;place-items:center;width:27px;height:27px;border-radius:50%;background:var(--focus);color:var(--bg);font:900 .78rem/1 ui-sans-serif,system-ui}.chain p{margin:0}.chain details{margin-top:12px;padding:11px 13px;border:1px solid var(--line);border-radius:13px}.chain summary{cursor:pointer;font-weight:800}
+    .result-reveal{margin-top:22px;padding:20px;border:1px solid var(--accent);border-radius:20px;background:color-mix(in srgb,var(--accent) 8%,transparent)}.formula{margin:14px 0;padding:18px;border:1px solid var(--line);border-radius:18px;text-align:center;font-size:clamp(1.55rem,4.5vw,2.8rem);overflow:auto}.dictionary{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.dictionary div{padding:14px;border-top:1px solid var(--line)}
+    .proof{box-shadow:none}.proof summary{cursor:pointer;font-weight:900;font-size:1.15rem}.proof p{color:var(--muted)}.qed{text-align:right;color:var(--accent)!important;font-weight:900}
+    .work-grid,.curiosity-grid,.finish-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:22px}.work-card,.curiosity,.finish-item{border-radius:20px;padding:20px;box-shadow:none}.work-card details{margin-top:14px;padding:11px 13px;border:1px solid var(--line);border-radius:13px}.work-card summary{cursor:pointer;font-weight:800}.number{display:inline-grid;place-items:center;width:34px;height:34px;margin-bottom:12px;border-radius:50%;background:var(--accent);color:var(--bg);font:900 .82rem/1 ui-sans-serif,system-ui}
+    .error-grid{display:grid;grid-template-columns:.75fr 1.25fr;gap:14px;align-items:start}.error-controls{padding:18px;border:1px solid var(--line);border-radius:18px}.error-controls label{font:800 .86rem/1.3 ui-sans-serif,system-ui}.error-controls input{width:100%;margin:12px 0}.error-canvas{padding:14px;border:1px solid var(--line);border-radius:18px}.error-canvas canvas{width:100%;height:300px;display:block}.error-result{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:14px}
+    .finish-item strong{display:block;color:var(--accent);font:900 .78rem/1.2 ui-sans-serif,system-ui;text-transform:uppercase;letter-spacing:.08em}.finish-item p{margin:7px 0 0;color:var(--muted)}
+    .lab-nav{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-top:40px;font-family:ui-sans-serif,system-ui}.lab-nav a{display:block;padding:16px 18px;border:1px solid var(--line);border-radius:18px;background:var(--paper);color:var(--ink);text-decoration:none}.lab-nav small{display:block;margin-bottom:5px;color:var(--accent);font:900 .68rem/1.2 ui-sans-serif,system-ui;letter-spacing:.1em;text-transform:uppercase}
+    footer{padding:28px 0 54px;border-top:1px solid var(--line);color:var(--muted)}
+    @media(max-width:840px){.route-grid{grid-template-columns:1fr 1fr}.lab-grid,.deriv-grid,.error-grid{grid-template-columns:1fr}.controls{border-left:0;border-top:1px solid var(--line)}.deriv-figure{position:relative;top:0}.work-grid,.curiosity-grid,.finish-grid{grid-template-columns:1fr}.visual{min-height:480px}.visual svg{min-height:450px}.stepper{position:sticky;bottom:8px;z-index:5;padding:10px;border:1px solid var(--line);border-radius:18px;background:color-mix(in srgb,var(--bg) 92%,transparent);backdrop-filter:blur(10px)}}
+    @media(max-width:520px){header{align-items:flex-start;flex-direction:column}.meta button{margin-left:0}.route-grid,.values,.dictionary,.error-result{grid-template-columns:1fr}main{padding-top:38px}}
+    @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
+
+/* Lab 04 */
+
+.mode-row,.series-row{display:flex;flex-wrap:wrap;gap:9px;margin-top:16px}
+.mode-row button,.series-row button{border:1px solid var(--line);border-radius:999px;padding:8px 12px;background:transparent;color:inherit;cursor:pointer;font:750 .82rem/1.2 ui-sans-serif,system-ui}
+.mode-row button[aria-pressed=true],.series-row button[aria-pressed=true]{background:var(--accent);border-color:var(--accent);color:var(--bg)}
+.dashboard{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:22px 0}.dashboard div{padding:13px;border:1px solid var(--line);border-radius:15px}.dashboard dt{color:var(--muted);font:800 .68rem/1.2 ui-sans-serif,system-ui;text-transform:uppercase;letter-spacing:.07em}.dashboard dd{margin:5px 0 0;font-variant-numeric:tabular-nums;font-size:1.12rem}
+.chart-stack{display:grid;gap:14px}.chart-card{padding:15px;border:1px solid var(--line);border-radius:18px}.chart-card canvas{display:block;width:100%;height:290px}.chart-card small{color:var(--muted);font:700 .75rem/1.35 ui-sans-serif,system-ui}
+.deriv-caption{margin:8px 4px 0;color:var(--muted);font:700 .82rem/1.4 ui-sans-serif,system-ui}
+.constant-grid,.slope-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:16px}.constant-grid article,.slope-grid article{padding:16px;border:1px solid var(--line);border-radius:17px}.constant-grid strong,.slope-grid strong{color:var(--accent)}.constant-grid p,.slope-grid p{color:var(--muted);margin:7px 0 0}
+.microscope-grid{display:grid;grid-template-columns:.72fr 1.28fr;gap:14px}.microscope-controls{padding:18px;border:1px solid var(--line);border-radius:18px}.microscope-controls input{width:100%;margin:12px 0}.microscope-values{display:grid;gap:8px}.microscope-values div{display:flex;justify-content:space-between;gap:10px;padding:11px;border:1px solid var(--line);border-radius:13px}.microscope-values span{color:var(--muted)}
+.normalize-panel{margin-top:18px;padding:18px;border:1px solid var(--line);border-radius:20px}.normalize-panel canvas{display:block;width:100%;height:320px}.normalize-result{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:12px}.normalize-result div{padding:10px;border:1px solid var(--line);border-radius:12px;text-align:center}.normalize-result small{display:block;color:var(--muted)}
+.mini-formula{margin:10px 0;padding:12px;border:1px solid var(--line);border-radius:12px;font:800 .95rem/1.4 ui-monospace,SFMono-Regular,Menlo,monospace;overflow:auto}
+.finish-status{margin-top:18px;padding:16px;border-left:4px solid var(--accent);background:color-mix(in srgb,var(--accent) 8%,transparent);font-weight:800}
+@media(max-width:840px){.microscope-grid{grid-template-columns:1fr}.normalize-result{grid-template-columns:1fr 1fr}.chart-card canvas{height:260px}}
+@media(max-width:520px){.dashboard,.constant-grid,.slope-grid{grid-template-columns:1fr}.normalize-result{grid-template-columns:1fr}}
+
+.machine-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:22px 0}.machine-grid div{padding:14px;border:1px solid var(--line);border-radius:16px}.machine-grid dt{color:var(--muted);font:800 .69rem/1.2 ui-sans-serif,system-ui;text-transform:uppercase;letter-spacing:.07em}.machine-grid dd{margin:6px 0 0;font-size:1.25rem;font-variant-numeric:tabular-nums}.status-pass{color:var(--accent)}.status-fail{color:var(--accent2)}
+.knowledge-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:20px}.knowledge-grid article{padding:20px;border:1px solid var(--line);border-radius:18px}.knowledge-grid strong{color:var(--accent);font:900 .76rem/1.2 ui-sans-serif,system-ui;text-transform:uppercase;letter-spacing:.08em}.knowledge-grid p{color:var(--muted)}
+.frontier-grid{display:grid;grid-template-columns:.8fr 1.2fr;gap:14px}.frontier-panel,.certificate-panel{padding:18px;border:1px solid var(--line);border-radius:18px}.frontier-panel input{width:100%}.certificate-result{margin-top:14px;padding:16px;border-left:4px solid var(--accent);background:color-mix(in srgb,var(--accent) 8%,transparent)}
+.comparison-table{width:100%;border-collapse:collapse;margin-top:16px;font-family:ui-sans-serif,system-ui;font-size:.88rem}.comparison-table th,.comparison-table td{padding:10px;border-bottom:1px solid var(--line);text-align:right}.comparison-table th:first-child,.comparison-table td:first-child{text-align:left}.comparison-table th{color:var(--muted);font-size:.72rem;text-transform:uppercase}.canvas-card{padding:14px;border:1px solid var(--line);border-radius:18px}.canvas-card canvas{display:block;width:100%;height:300px}.formula-small{margin:10px 0;padding:12px;border:1px solid var(--line);border-radius:12px;font:800 1rem/1.4 ui-monospace,SFMono-Regular,Menlo,monospace;overflow:auto}
+@media(max-width:840px){.knowledge-grid,.frontier-grid{grid-template-columns:1fr}}@media(max-width:520px){.machine-grid{grid-template-columns:1fr}}
+</style></head><body>
+<a class="skip" href="#conteudo">Pular para o laboratório</a>
+<header><a class="brand" href="../../index.html">MATHeu$</a><span>Temporada 01 · Laboratório 05</span></header>
+<div class="meta">
+  <div class="progress-mini"><span>Progresso real</span><div class="track" role="progressbar" aria-valuemin="0" aria-valuemax="10" aria-valuenow="0"><span id="progress-fill"></span></div><strong id="progress-text">0/10</strong></div>
+  <span>≈ 40–55 min</span><span>Dificuldade <span role="img" aria-label="3 de 3">●●●</span></span><button id="restart" type="button">Recomeçar laboratório</button>
+</div>
+<main id="conteudo">
+<p class="eyebrow">Quando “chegar perto” vira garantia?</p>
+<h1>Ver muitos casos não promete o próximo.</h1>
+<p class="lead">O cerco do círculo fica menor sem parar. Mas uma tabela longa ainda não prova que ele nunca voltará a abrir. Este laboratório separa três coisas que frequentemente são misturadas: observar, encontrar a fronteira exata e garantir todos os casos futuros.</p>
+
+<section class="route" aria-labelledby="route-title"><span class="label">Mapa do laboratório</span><h2 id="route-title">Da aproximação à garantia</h2><div class="route-grid">
+<div class="route-step"><strong>Ato 1</strong><span>apostar como N reage à tolerância</span></div><div class="route-step"><strong>Ato 2</strong><span>operar a máquina de garantias</span></div><div class="route-step"><strong>Ato 3</strong><span>deduzir busca, estimativa e certificado</span></div><div class="route-step"><strong>Ato 4</strong><span>resolver quatro fronteiras</span></div><div class="route-step"><strong>Ato 5</strong><span>auditar o primeiro N e a ausência de recaída</span></div><div class="route-step"><strong>Ato 6</strong><span>provar, comparar e traduzir limite</span></div>
+</div></section>
+
+<section id="bet" class="question"><span class="label">Ato 1 · pare e aposte</span><p>Se uma tolerância 100 vezes menor exige mais lados, o menor N tende a ficar aproximadamente…</p><div class="options"><button data-prediction="hundred" aria-pressed="false">100 vezes maior</button><button data-prediction="ten" aria-pressed="false">10 vezes maior</button><button data-prediction="same" aria-pressed="false">quase igual</button></div><p id="prediction-feedback" class="feedback">O quadro comparativo continua oculto até a aposta. Depois, compare o que é exato com o que é apenas previsão.</p></section>
+
+<section class="lab" aria-labelledby="lab-title"><div class="lab-grid"><div class="visual"><svg id="geometry" viewBox="0 0 640 680" role="img" aria-labelledby="svg-title svg-desc"><title id="svg-title">Círculo cercado por polígonos e régua da largura do cerco</title><desc id="svg-desc">Um polígono interno e outro externo cercam o círculo; uma régua mostra os dois perímetros, o alvo 2 pi e a tolerância escolhida.</desc><g id="drawing"></g></svg></div><div class="controls">
+<span class="label">Ato 2 · máquina de garantias</span><h2 id="lab-title">Escolha ε; encontre três respostas diferentes</h2><p><strong>Exato</strong> procura o primeiro N. <strong>Estimado</strong> usa a lei assintótica. <strong>Certificado</strong> aceita sobrar lados para ganhar uma prova simples.</p>
+<label for="epsilon">Tolerância ε: <output id="epsilon-output">0,010000</output></label><input id="epsilon" type="range" min="0" max="8" step="1" value="2"><div class="quick"><button data-eps-index="0">10⁻¹</button><button data-eps-index="2">10⁻²</button><button data-eps-index="4">10⁻³</button><button data-eps-index="6">10⁻⁴</button><button data-eps-index="7">31×10⁻⁶</button><button data-eps-index="8">10⁻⁵</button></div>
+<dl id="dashboard" class="machine-grid" hidden><div><dt>N exato</dt><dd id="exact-n">56</dd></div><div><dt>estimativa assintótica</dt><dd id="estimate-n">56</dd></div><div><dt>N certificado</dt><dd id="certified-n">79</dd></div><div><dt>largura em N</dt><dd id="width-n">0,009895</dd></div><div><dt>largura em N−1</dt><dd id="width-prev">0,010258</dd></div><div><dt>folga do certificado</dt><dd id="certificate-slack">23 lados</dd></div></dl>
+<div id="width-chart-wrap" class="chart-card" hidden><canvas id="width-chart" aria-label="Largura do cerco e tolerância conforme n cresce"></canvas><small>A primeira interseção é o N exato. A curva não pode voltar a cruzar se a largura for estritamente decrescente.</small></div>
+<p id="post-prediction-hint" class="hint" hidden><strong>Três estatutos:</strong> a busca dá o mínimo; a assíntota dá uma boa previsão; a desigualdade dá uma garantia conservadora.</p>
+<div class="reveal-row"><button id="reveal" class="primary">1. Faça uma aposta acima</button><span id="reveal-status" class="feedback">A aposta libera o quadro e o gráfico. Mover ε conta como investigação, não como senha.</span></div>
+</div></div></section>
+
+<section id="derivation" class="act" hidden><span class="label">Ato 3 · construir a garantia</span><h2>O limite nasce quando “depois de N” vira uma frase provada</h2><p>Os nove passos distinguem o menor N encontrado do N suficiente que pode ser demonstrado por uma desigualdade.</p><div class="deriv-grid"><div class="deriv-figure"><svg id="deriv-svg" viewBox="0 0 500 500"><g id="deriv-drawing"></g></svg><p id="deriv-caption" class="caption">Passo 1: o círculo está entre dois perímetros.</p></div><div><div class="stepper"><button id="prev-step" class="ghost">← anterior</button><button id="next-step" class="primary">próximo →</button><span id="step-status" class="feedback">Passo 1 de 9</span></div><div id="step-dots" class="step-dots"></div><ol id="chain" class="chain">
+<li data-step="1"><p>O cerco contém o alvo: <strong>P⁻<sub>n</sub>&lt;2π&lt;P⁺<sub>n</sub></strong>.</p><details><summary>Por quê?</summary><p>O polígono inscrito usa cordas; o circunscrito usa tangentes.</p></details></li>
+<li data-step="2" hidden><p>A largura é <strong>W<sub>n</sub>=P⁺<sub>n</sub>−P⁻<sub>n</sub>=2n[tg(π/n)−sen(π/n)]</strong>.</p><details><summary>Por quê?</summary><p>Subtraímos as duas fórmulas do Lab 02.</p></details></li>
+<li data-step="3" hidden><p>Escolher ε significa exigir <strong>W<sub>n</sub>&lt;ε</strong>.</p><details><summary>Por quê?</summary><p>ε é a largura máxima tolerada para o intervalo que ainda contém o alvo.</p></details></li>
+<li data-step="4" hidden><p>A busca começa em n=3 e para no primeiro valor que vence ε.</p><details><summary>Por quê?</summary><p>Isso encontra um candidato mínimo; a fronteira exige conferir também N−1.</p></details></li>
+<li data-step="5" hidden><p>O N exato satisfaz <strong>W<sub>N</sub>&lt;ε≤W<sub>N−1</sub></strong>.</p><details><summary>Por quê?</summary><p>N passa e seu antecessor falha; nenhum inteiro menor serve.</p></details></li>
+<li data-step="6" hidden><p>Para dizer “todo n≥N”, precisamos de <strong>W<sub>n</sub> estritamente decrescente</strong>.</p><details><summary>Por quê?</summary><p>Sem monotonicidade, uma sequência poderia cruzar ε e depois recair.</p></details></li>
+<li data-step="7" hidden><p>O Lab 04 fornece <strong>W<sub>n</sub>≈π³/n²</strong>.</p><details><summary>Por quê?</summary><p>A largura soma os dois erros de perímetro: π³/3+2π³/3=π³.</p></details></li>
+<li data-step="8" hidden><p>Invertendo a aproximação: <strong>N<sub>est</sub>≈√(π³/ε)</strong>.</p><details><summary>Por quê?</summary><p>Se π³/n²≈ε, então n²≈π³/ε. O inteiro mínimo ainda exige busca e arredondamento.</p></details></li>
+<li data-step="9" hidden><p>Uma desigualdade simples dá <strong>W<sub>n</sub>&lt;2π³/n²</strong>; portanto <strong>n&gt;√(2π³/ε)</strong> é suficiente.</p><details><summary>Por quê?</summary><p>O certificado é maior que o mínimo, mas vale para todos os n posteriores sem testar um infinito de casos.</p></details></li>
+</ol></div></div>
+<div id="deriv-result" class="result-reveal" hidden><span class="label">Corrente fechada</span><p><strong>Leia primeiro:</strong> a largura exata é a diferença entre tangente e seno repetida n vezes; a estimativa inverte a lei quadrática; o certificado usa uma constante maior para transformar previsão em prova.</p><div class="formula">W<sub>n</sub>=2n[tg(π/n)−sen(π/n)]</div><div class="formula">N<sub>est</sub>≈√(π³/ε)</div><div class="formula">N<sub>cert</sub>=⌊√(2π³/ε)⌋+1</div><div class="dictionary"><div><strong>ε</strong><br>tolerância positiva</div><div><strong>N</strong><br>fronteira inteira</div><div><strong>W<sub>n</sub></strong><br>largura do cerco</div><div><strong>cert</strong><br>suficiente, não mínimo</div></div><p><strong>Unidades:</strong> W e ε são comprimentos quando o raio é 1; N é adimensional.</p><p><strong>Domínio:</strong> n≥3 e ε&gt;0.</p></div>
+</section>
+
+<section id="workbook" class="act" hidden><span class="label">Ato 4 · caderno de fronteiras</span><h2>Quatro perguntas; quatro tipos de erro possíveis</h2><div class="work-grid">
+<article class="work-card"><span class="number">1</span><h3>ε=0,01</h3><p>Qual é o menor N?</p><div class="options"><button data-ex="e1" data-answer="56">56</button><button data-ex="e1" data-answer="55">55</button><button data-ex="e1" data-answer="79">79</button></div><p class="feedback" data-feedback="e1"></p><details><summary>Pista</summary><p>W₅₅ ainda excede 0,01; W₅₆ já fica abaixo.</p></details></article>
+<article class="work-card"><span class="number">2</span><h3>31 milionésimos</h3><p>Para ε=0,000031, o mínimo é…</p><div class="options"><button data-ex="e2" data-answer="1001">1001</button><button data-ex="e2" data-answer="100">100</button><button data-ex="e2" data-answer="31000">31000</button></div><p class="feedback" data-feedback="e2"></p><details><summary>Pista</summary><p>√(π³/ε) fica muito perto de 1000,1.</p></details></article>
+<article class="work-card"><span class="number">3</span><h3>Tolerância 100× menor</h3><p>O N tende a ficar aproximadamente…</p><div class="options"><button data-ex="e3" data-answer="10">10× maior</button><button data-ex="e3" data-answer="100">100× maior</button><button data-ex="e3" data-answer="2">2× maior</button></div><p class="feedback" data-feedback="e3"></p><details><summary>Pista</summary><p>N escala com 1/√ε, não com 1/ε.</p></details></article>
+<article class="work-card"><span class="number">4</span><h3>Certificado versus mínimo</h3><p>Se N<sub>cert</sub>=79 para ε=0,01, isso significa que…</p><div class="options"><button data-ex="e4" data-answer="sufficient">79 certamente basta, mas 56 já é o mínimo</button><button data-ex="e4" data-answer="minimum">79 é o mínimo exato</button><button data-ex="e4" data-answer="fail">79 ainda pode falhar</button></div><p class="feedback" data-feedback="e4"></p><details><summary>Pista</summary><p>Uma cota suficiente pode gastar mais recursos para ganhar uma prova simples.</p></details></article>
+</div></section>
+
+<section id="audit" class="act" hidden><span class="label">Ato 5 · auditoria da fronteira</span><h2>O ponto de cruzamento não basta; audite os vizinhos</h2><div class="frontier-grid"><div class="frontier-panel"><label for="candidate">Candidato n: <output id="candidate-output">56</output></label><input id="candidate" type="range" min="45" max="67" step="1" value="56"><div class="machine-grid"><div><dt>W<sub>n</sub></dt><dd id="candidate-width">0,009895</dd></div><div><dt>veredito</dt><dd id="candidate-status" class="status-pass">passa</dd></div></div><p id="frontier-feedback" class="feedback">Mova o candidato para ver onde falha, onde passa e por que somente o primeiro sucesso é o N exato.</p></div><div class="canvas-card"><canvas id="frontier-chart" aria-label="Vizinhança do N exato e linha da tolerância"></canvas></div></div>
+<div class="knowledge-grid"><article><strong>Observação</strong><p>Mostra muitos valores abaixo de ε. Não exclui uma recaída futura.</p></article><article><strong>Busca exata</strong><p>Encontra o primeiro cruzamento, desde que a largura possa ser calculada.</p></article><article><strong>Prova</strong><p>Monotonicidade e cota superior garantem todos os n≥N.</p></article></div>
+</section>
+
+<section id="finish" class="act" hidden><span class="label">Ato 6 · certificado e limite</span><h2>Troque precisão mínima por garantia explícita</h2><div class="frontier-grid"><div class="certificate-panel"><p>Para o ε escolhido, a desigualdade W<sub>n</sub>&lt;2π³/n² fornece um N suficiente.</p><button id="certify" class="primary">Emitir certificado</button><div id="certificate-result" class="certificate-result" hidden></div></div><div class="canvas-card"><canvas id="scale-chart" aria-label="N exato, estimado e certificado conforme epsilon varia"></canvas></div></div>
+<table class="comparison-table"><thead><tr><th>ε</th><th>N exato</th><th>estimado</th><th>certificado</th></tr></thead><tbody id="comparison-body"></tbody></table>
+<div class="curiosity-grid">
+<article class="curiosity"><span class="label">Curiosidade 1</span><h3>A assíntota às vezes acerta o inteiro</h3><p>Nas tolerâncias-padrão, ⌈√(π³/ε)⌉ coincide com o N exato. Isso é uma felicidade numérica, não um teorema universal.</p></article>
+<article class="curiosity"><span class="label">Curiosidade 2</span><h3>31 milionésimos escolhem 1001</h3><p>A estimativa dá aproximadamente 1000,1. O inteiro seguinte vence; 1000 ainda falha.</p></article>
+<article class="curiosity"><span class="label">Curiosidade 3</span><h3>ε–N antes de ε–δ</h3><p>A definição de limite de sequência é a mesma arquitetura: dado ε, produzir N tal que todo n≥N obedeça.</p></article>
+<article class="curiosity"><span class="label">Curiosidade 4</span><h3>Garantia custa folga</h3><p>O certificado usa 2π³ em vez de π³. Paga lados extras para evitar depender de uma aproximação.</p></article>
+</div>
+<details class="proof"><summary>Oficina — monotonicidade, cota rigorosa e ausência de recaída</summary><p><strong>Monotonicidade.</strong> Escreva x=π/n. Para f(x)=senx/x, o numerador de f'(x) é xcosx−senx; seu oposto senx−xcosx nasce em 0 e tem derivada xsenx&gt;0, logo f'&lt;0. Para g(x)=tgx/x, o numerador de g'(x) é xsec²x−tgx; ele nasce em 0 e sua derivada é 2xsec²x·tgx&gt;0, logo g'&gt;0. Como x diminui quando n cresce, P⁻ sobe, P⁺ desce e W=P⁺−P⁻ decresce.</p><p><strong>Cota.</strong> Para n≥3, 0&lt;x≤π/3. Então senx&lt;x, 1−cosx&lt;x²/2 e cosx≥1/2. Como tgx−senx=senx(1−cosx)/cosx, temos tgx−senx&lt;x³. Portanto W<2n(π/n)³=2π³/n².</p><p><strong>Certificado.</strong> Se n&gt;√(2π³/ε), então W<ε. Escolher ⌊√(2π³/ε)⌋+1 garante a desigualdade estrita. Como W decresce, não há recaída.</p><p class="qed">∎</p></details>
+<div class="finish-grid"><div class="finish-item"><strong>Você observou</strong><p>a curva cruzar uma tolerância.</p></div><div class="finish-item"><strong>Você encontrou</strong><p>o menor inteiro pela fronteira N−1/N.</p></div><div class="finish-item"><strong>Você garantiu</strong><p>todos os casos futuros com uma cota.</p></div><div class="finish-item"><strong>Próxima pergunta</strong><p>o que acontece quando a área vira volume?</p></div></div><p id="finish-status" class="finish-status">0/10 movimentos concluídos.</p>
+</section>
+<nav class="lab-nav"><a href="../04-erro/index.html"><small>Anterior</small>Lab 04 — O erro também tem forma</a><a href="../../index.html"><small>Índice</small>Todos os laboratórios</a><a href="../06-prisma/index.html"><small>Próximo</small>Lab 06 — Do polígono ao prisma</a></nav>
+</main><footer>MATHeu$ · Laboratório 05 · SVG e três Canvas calculados · funcionamento offline.</footer>
+<script>(()=>{'use strict';
+const NS='http://www.w3.org/2000/svg',$=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)],PI=Math.PI;
+const EPS=[.1,.03,.01,.003,.001,.0003,.0001,.000031,.00001],sections=['#derivation','#workbook','#audit','#finish'].map($),drawing=$('#drawing');
+const checkpoints={predicted:false,manipulated:false,revealed:false,derived:false,audited:false,certified:false},solved=new Set();let derivStep=0,initialIndex=2;
+const width=n=>2*n*(Math.tan(PI/n)-Math.sin(PI/n)),findN=e=>{let n=3;while(width(n)>=e)n++;return n},estimate=e=>Math.ceil(Math.sqrt(PI**3/e)),certified=e=>Math.floor(Math.sqrt(2*PI**3/e))+1;
+const fmt=(v,d=6)=>new Intl.NumberFormat('pt-BR',{minimumFractionDigits:d,maximumFractionDigits:d}).format(v),css=n=>getComputedStyle(document.documentElement).getPropertyValue(n);
+const svg=(name,attrs={},text='')=>{const e=document.createElementNS(NS,name);Object.entries(attrs).forEach(([k,v])=>e.setAttribute(k,v));if(text)e.textContent=text;return e};const polar=(cx,cy,r,a)=>[cx+r*Math.cos(a),cy+r*Math.sin(a)];const pts=(cx,cy,r,n,start)=>Array.from({length:n},(_,i)=>polar(cx,cy,r,start+2*PI*i/n));
+function progress(){const t=(checkpoints.predicted?1:0)+(checkpoints.manipulated?1:0)+(checkpoints.revealed?1:0)+(checkpoints.derived?1:0)+solved.size+(checkpoints.audited?1:0)+(checkpoints.certified?1:0),c=Math.min(10,t);$('#progress-fill').style.width=`${c*10}%`;$('#progress-text').textContent=`${c}/10`;$('.track').setAttribute('aria-valuenow',c);$('#finish-status').textContent=c===10?'10/10. Você separou observação, fronteira exata e garantia universal.':`${c}/10 movimentos concluídos.`}
+function label(g,x,y,t,a='start',s=17,c='currentColor'){g.append(svg('text',{x,y,'text-anchor':a,'font-family':'system-ui','font-size':s,'font-weight':800,fill:c},t))}
+function canvas(id,h){const c=$(id),r=c.getBoundingClientRect(),d=Math.min(2,devicePixelRatio||1);c.width=Math.max(1,r.width*d);c.height=h*d;const x=c.getContext('2d');x.setTransform(d,0,0,d,0,0);x.clearRect(0,0,r.width,h);return[x,r.width,h]}
+function current(){const e=EPS[+$('#epsilon').value],N=findN(e);return{e,N,est:estimate(e),cert:certified(e)}}
+function render(){const q=current(),n=q.N,cx=320,cy=260,R=150,t=PI/n,start=-PI/2-t,outR=R/Math.cos(t);$('#epsilon-output').value=$('#epsilon-output').textContent=fmt(q.e,6);$('#exact-n').textContent=q.N;$('#estimate-n').textContent=q.est;$('#certified-n').textContent=q.cert;$('#width-n').textContent=fmt(width(q.N));$('#width-prev').textContent=fmt(width(q.N-1));$('#certificate-slack').textContent=`${q.cert-q.N} lados`;drawing.replaceChildren();drawing.append(svg('polygon',{points:pts(cx,cy,outR,n,start).map(p=>p.join(',')).join(' '),fill:'color-mix(in srgb,var(--accent2) 9%,transparent)',stroke:'var(--accent2)','stroke-width':2}));drawing.append(svg('circle',{cx,cy,r:R,fill:'none',stroke:'currentColor','stroke-width':3,'stroke-dasharray':'4 8'}));drawing.append(svg('polygon',{points:pts(cx,cy,R,n,start).map(p=>p.join(',')).join(' '),fill:'color-mix(in srgb,var(--accent) 10%,transparent)',stroke:'var(--accent)','stroke-width':2}));label(drawing,cx,55,`N exato = ${q.N}`,'middle',24);label(drawing,cx,455,`W(N−1) = ${fmt(width(q.N-1))}  ≥  ε`,'middle',17,'var(--accent2)');label(drawing,cx,490,`W(N) = ${fmt(width(q.N))}  <  ε`,'middle',17,'var(--accent)');const x0=80,x1=560,y=585,scale=v=>x0+(v-(2*PI-q.e*.7))/(q.e*1.4)*(x1-x0),pin=2*n*Math.sin(PI/n),pout=2*n*Math.tan(PI/n);drawing.append(svg('line',{x1:x0,y1:y,x2:x1,y2:y,stroke:'var(--line)','stroke-width':5}));drawing.append(svg('line',{x1:scale(2*PI-q.e/2),y1:y-18,x2:scale(2*PI+q.e/2),y2:y-18,stroke:'var(--focus)','stroke-width':6,'stroke-linecap':'round'}));[[pin,'P−','var(--accent)'],[2*PI,'2π','currentColor'],[pout,'P+','var(--accent2)']].forEach(([v,l,c])=>{const X=scale(v);drawing.append(svg('line',{x1:X,y1:y-12,x2:X,y2:y+12,stroke:c,'stroke-width':4}));label(drawing,X,y+38,l,'middle',15,c)});label(drawing,cx,652,`faixa laranja = ε = ${fmt(q.e)}`,'middle',16,'var(--focus)');if(checkpoints.predicted)renderWidthChart();if(checkpoints.revealed){renderDeriv();syncCandidate();renderFrontier();renderScale()}}
+function renderWidthChart(){const[x,W,H]=canvas('#width-chart',280),q=current(),L=44,R=W-20,T=18,B=H-38,maxN=Math.max(120,Math.ceil(q.N*1.5)),mapX=n=>L+(Math.log(n)-Math.log(3))/(Math.log(maxN)-Math.log(3))*(R-L),vals=Array.from({length:maxN-2},(_,i)=>width(i+3)),lo=Math.log10(Math.min(q.e/3,...vals)),hi=Math.log10(Math.max(...vals)),mapY=v=>B-(Math.log10(v)-lo)/(hi-lo)*(B-T);x.strokeStyle=css('--line');x.beginPath();x.moveTo(L,T);x.lineTo(L,B);x.lineTo(R,B);x.stroke();x.strokeStyle=css('--accent');x.lineWidth=2;x.beginPath();for(let n=3;n<=maxN;n++){const X=mapX(n),Y=mapY(width(n));n===3?x.moveTo(X,Y):x.lineTo(X,Y)}x.stroke();x.strokeStyle=css('--focus');x.setLineDash([6,6]);x.beginPath();x.moveTo(L,mapY(q.e));x.lineTo(R,mapY(q.e));x.stroke();x.setLineDash([]);x.fillStyle=css('--accent2');x.beginPath();x.arc(mapX(q.N),mapY(width(q.N)),6,0,2*PI);x.fill();x.fillStyle=css('--ink');x.font='700 12px system-ui';x.fillText('Wₙ',L+8,18);x.fillText('ε',R-20,mapY(q.e)-7);x.fillText(`N=${q.N}`,Math.min(R-45,mapX(q.N)+8),mapY(width(q.N))+17)}
+function revealState(){if(!checkpoints.predicted){$('#reveal').textContent='1. Faça uma aposta acima'}else if(!checkpoints.revealed){$('#reveal').textContent='2. Abrir a garantia'}else{$('#reveal').textContent='Garantia aberta abaixo ↓'}}
+$$('[data-prediction]').forEach(b=>b.onclick=()=>{$$('[data-prediction]').forEach(q=>q.setAttribute('aria-pressed','false'));b.setAttribute('aria-pressed','true');checkpoints.predicted=true;$('#dashboard').hidden=false;$('#width-chart-wrap').hidden=false;$('#post-prediction-hint').hidden=false;$('#prediction-feedback').textContent=b.dataset.prediction==='ten'?'Correto: a raiz quadrada transforma 100× em aproximadamente 10×.':'Hipótese registrada. A lei N≈1/√ε dará o veredito.';render();revealState();progress()});
+function changed(){if(+$('#epsilon').value!==initialIndex)checkpoints.manipulated=true;render();progress()}$('#epsilon').oninput=changed;$$('[data-eps-index]').forEach(b=>b.onclick=()=>{$('#epsilon').value=b.dataset.epsIndex;changed()});
+$('#reveal').onclick=()=>{if(!checkpoints.predicted){$('#bet').scrollIntoView({behavior:'smooth'});return}sections.forEach(s=>s.hidden=false);checkpoints.revealed=true;render();revealState();progress();$('#derivation').scrollIntoView({behavior:'smooth'})};
+const chain=$$('#chain>li'),dots=$('#step-dots');chain.forEach((_,i)=>{const b=document.createElement('button');b.textContent=i+1;b.onclick=()=>{derivStep=i;renderDeriv()};dots.append(b)});
+function renderDeriv(){chain.forEach((li,i)=>li.hidden=i!==derivStep);$$('#step-dots button').forEach((b,i)=>i===derivStep?b.setAttribute('aria-current','step'):b.removeAttribute('aria-current'));$('#prev-step').disabled=derivStep===0;$('#next-step').disabled=derivStep===8;$('#step-status').textContent=`Passo ${derivStep+1} de 9`;$('#deriv-result').hidden=derivStep!==8;if(derivStep===8&&!checkpoints.derived){checkpoints.derived=true;progress()}const g=$('#deriv-drawing'),q=current(),s=derivStep;g.replaceChildren();const captions=['O alvo começa preso entre dois perímetros.','A diferença entre as bordas vira Wₙ.','ε desenha a largura máxima aceitável.','A busca percorre inteiros até a primeira vitória.','N−1 falha e N passa: essa é a fronteira exata.','Monotonicidade elimina qualquer recaída futura.','A forma n⁻² prevê a escala da fronteira.','Inverter a lei fornece a estimativa de N.','A cota superior troca minimalidade por prova.'];$('#deriv-caption').textContent=captions[s];const x0=70,x1=430,y=235;g.append(svg('line',{x1:x0,y1:y,x2:x1,y2:y,stroke:'var(--line)','stroke-width':5}));if(s<=5){const e=q.e,scale=v=>x0+(v-(2*PI-e))/(2*e)*(x1-x0),pin=2*q.N*Math.sin(PI/q.N),pout=2*q.N*Math.tan(PI/q.N);[[pin,'P−','var(--accent)'],[2*PI,'2π','currentColor'],[pout,'P+','var(--accent2)']].forEach(([v,l,c])=>{const X=scale(v);g.append(svg('line',{x1:X,y1:y-25,x2:X,y2:y+25,stroke:c,'stroke-width':5}));label(g,X,y+52,l,'middle',17,c)});if(s>=1){g.append(svg('line',{x1:scale(pin),y1:160,x2:scale(pout),y2:160,stroke:'var(--focus)','stroke-width':7,'stroke-linecap':'round'}));label(g,(scale(pin)+scale(pout))/2,140,'Wₙ','middle',18,'var(--focus)')}if(s>=2){label(g,250,330,`exigir Wₙ < ε = ${fmt(e)}`,'middle',20)}if(s>=3)label(g,250,380,'3, 4, 5, … até o primeiro sucesso','middle',18);if(s>=4)label(g,250,425,`W${q.N-1} ≥ ε > W${q.N}`,'middle',19);if(s===5)label(g,250,470,'Wₙ ↓  ⇒  sem recaída','middle',20)}else{const formulas=['Wₙ ≈ π³/n²','N ≈ √(π³/ε)','Wₙ < 2π³/n²  ⇒  n > √(2π³/ε)'];label(g,250,170,formulas[s-6],'middle',s===8?18:24,s===8?'var(--accent)':'var(--focus)');g.append(svg('path',{d:'M 100 300 Q 250 170 400 300',fill:'none',stroke:'var(--accent)','stroke-width':4}));g.append(svg('line',{x1:100,y1:330,x2:400,y2:330,stroke:'var(--line)','stroke-width':3}));label(g,100,365,'ε grande','middle',16);label(g,400,365,'ε pequeno','middle',16);label(g,250,430,s===6?'forma':'inversão','middle',18)}}
+$('#prev-step').onclick=()=>{derivStep=Math.max(0,derivStep-1);renderDeriv()};$('#next-step').onclick=()=>{derivStep=Math.min(8,derivStep+1);renderDeriv()};
+const ans={e1:'56',e2:'1001',e3:'10',e4:'sufficient'},msg={e1:'Exato: W₅₅ ainda falha e W₅₆ já vence 0,01.',e2:'Exato: a fronteira está entre 1000 e 1001.',e3:'Exato: N escala aproximadamente com 1/√ε.',e4:'Exato: 79 é suficiente por prova, mas 56 é o mínimo exato.'};$$('[data-ex]').forEach(b=>b.onclick=()=>{const k=b.dataset.ex,ok=b.dataset.answer===ans[k],f=$(`[data-feedback="${k}"]`);f.textContent=ok?msg[k]:'Ainda não. Use a pista e compare mínimo, estimativa e certificado.';if(ok&&!solved.has(k)){solved.add(k);$$(`[data-ex="${k}"]`).forEach(q=>q.disabled=true);progress()}});
+function syncCandidate(){const q=current(),c=$('#candidate');c.min=Math.max(3,q.N-11);c.max=q.N+11;if(+c.value<c.min||+c.value>c.max)c.value=q.N;$('#candidate-output').value=$('#candidate-output').textContent=c.value;const w=width(+c.value),pass=w<q.e;$('#candidate-width').textContent=fmt(w);$('#candidate-status').textContent=pass?'passa':'falha';$('#candidate-status').className=pass?'status-pass':'status-fail'}
+function renderFrontier(){const[x,W,H]=canvas('#frontier-chart',300),q=current(),a=Math.max(3,q.N-12),b=q.N+12,L=42,R=W-20,T=18,B=H-38,mapX=n=>L+(n-a)/(b-a)*(R-L),vals=Array.from({length:b-a+1},(_,i)=>width(a+i)),lo=Math.min(...vals,q.e)*.96,hi=Math.max(...vals,q.e)*1.04,mapY=v=>B-(v-lo)/(hi-lo)*(B-T);x.strokeStyle=css('--line');x.beginPath();x.moveTo(L,T);x.lineTo(L,B);x.lineTo(R,B);x.stroke();x.strokeStyle=css('--focus');x.setLineDash([6,6]);x.beginPath();x.moveTo(L,mapY(q.e));x.lineTo(R,mapY(q.e));x.stroke();x.setLineDash([]);for(let n=a;n<=b;n++){x.fillStyle=n<q.N?css('--accent2'):css('--accent');x.beginPath();x.arc(mapX(n),mapY(width(n)),n===q.N?6:3,0,2*PI);x.fill()}x.fillStyle=css('--ink');x.font='700 12px system-ui';x.fillText(`N=${q.N}`,mapX(q.N)+8,mapY(width(q.N))+15);x.fillText('ε',R-15,mapY(q.e)-7)}
+$('#candidate').oninput=()=>{checkpoints.audited=true;syncCandidate();renderFrontier();progress()};
+function renderScale(){const[x,W,H]=canvas('#scale-chart',300),L=46,R=W-20,T=18,B=H-40,rows=EPS.map(e=>({e,n:findN(e),est:estimate(e),cert:certified(e)})),mapX=e=>L+(Math.log10(EPS[0])-Math.log10(e))/(Math.log10(EPS[0])-Math.log10(EPS.at(-1)))*(R-L),max=Math.max(...rows.map(r=>r.cert)),mapY=n=>B-(Math.log(n)-Math.log(10))/(Math.log(max)-Math.log(10))*(B-T);x.strokeStyle=css('--line');x.beginPath();x.moveTo(L,T);x.lineTo(L,B);x.lineTo(R,B);x.stroke();[['n',css('--accent')],['est',css('--focus')],['cert',css('--accent2')]].forEach(([key,c])=>{x.strokeStyle=c;x.lineWidth=2;x.beginPath();rows.forEach((r,i)=>{const X=mapX(r.e),Y=mapY(r[key]);i?x.lineTo(X,Y):x.moveTo(X,Y)});x.stroke()});x.fillStyle=css('--ink');x.font='700 12px system-ui';x.fillText('exato',L+8,18);x.fillText('estimado',L+8,36);x.fillText('certificado',L+8,54)}
+function fillTable(){const tb=$('#comparison-body');tb.replaceChildren();[.1,.01,.001,.0001,.00001].forEach(e=>{const tr=document.createElement('tr');[fmt(e,5),findN(e),estimate(e),certified(e)].forEach(v=>{const td=document.createElement('td');td.textContent=v;tr.append(td)});tb.append(tr)})}fillTable();
+$('#certify').onclick=()=>{const q=current();checkpoints.certified=true;$('#certificate-result').hidden=false;$('#certificate-result').innerHTML=`Para ε=${fmt(q.e)}, escolha n≥<strong>${q.cert}</strong>. A cota prova Wₙ&lt;ε para todos esses n. O mínimo exato é ${q.N}; o certificado gasta ${q.cert-q.N} lados de folga.`;progress()};
+window.addEventListener('resize',()=>{render();if(!$('#audit').hidden)renderFrontier();if(!$('#finish').hidden)renderScale()});$('#restart').onclick=()=>location.reload();render();revealState();progress();
+})();</script></body></html>
