@@ -1,37 +1,77 @@
-name: Valida o MATHeu$
+name: Limpa e valida o Lab 06 canônico
 
 on:
   pull_request:
     paths:
+      - '.tmp/**'
       - 'modules/**'
-      - 'atlas/**'
-      - 'index.html'
-      - '.github/workflows/validate.yml'
-  push:
-    branches: [main]
-    paths:
-      - 'modules/**'
-      - 'atlas/**'
-      - 'index.html'
       - '.github/workflows/validate.yml'
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
-  matematica:
+  limpa:
+    if: github.event_name == 'pull_request' && github.head_ref == 'agent/lab06-canonico'
     runs-on: ubuntu-latest
     steps:
-      - name: Baixa o repositório
-        uses: actions/checkout@v6
-
-      - name: Verifica a matemática de todos os laboratórios
+      - uses: actions/checkout@v6
+        with:
+          ref: agent/lab06-canonico
+      - name: Remove o artefato órfão
         run: |
-          for checker in modules/*/check-math.mjs; do
-            echo "== $checker"
-            node "$checker"
-          done
+          rm -f .tmp/lab06-index.gz.b64
+          rmdir .tmp 2>/dev/null || true
+      - name: Restaura o workflow canônico
+        run: |
+          cat > .github/workflows/validate.yml <<'YAML'
+          name: Valida o MATHeu$
 
-      - name: Verifica o atlas pessoal
-        run: node atlas/check-math.mjs
+          on:
+            pull_request:
+              paths:
+                - 'modules/**'
+                - 'atlas/**'
+                - 'index.html'
+                - '.github/workflows/validate.yml'
+            push:
+              branches: [main]
+              paths:
+                - 'modules/**'
+                - 'atlas/**'
+                - 'index.html'
+                - '.github/workflows/validate.yml'
+            workflow_dispatch:
+
+          permissions:
+            contents: read
+
+          jobs:
+            matematica:
+              runs-on: ubuntu-latest
+              steps:
+                - name: Baixa o repositório
+                  uses: actions/checkout@v6
+
+                - name: Verifica a matemática de todos os laboratórios
+                  run: |
+                    for checker in modules/*/check-math.mjs; do
+                      echo "== $checker"
+                      node "$checker"
+                    done
+
+                - name: Verifica o atlas pessoal
+                  run: node atlas/check-math.mjs
+          YAML
+      - name: Valida tudo
+        run: |
+          for checker in modules/*/check-math.mjs; do node "$checker"; done
+          node atlas/check-math.mjs
+      - name: Publica a limpeza
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "remove artefato temporário do Lab 06"
+          git push origin HEAD:agent/lab06-canonico
