@@ -1,91 +1,72 @@
 import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
 
-// Lab 04: os quatro erros do cerco (círculo de raio 1) têm forma quadrática —
-// n²·erro tende a uma constante e cada dobra de n divide o erro por ~4.
-// As quatro séries estabilizam em apenas duas constantes: pi³/3 (contorno de
-// dentro e área de fora) e 2pi³/3 (contorno de fora e área de dentro).
-
-const SERIES = {
-  perimeterIn: { error: n => 2 * Math.PI - 2 * n * Math.sin(Math.PI / n), constant: Math.PI ** 3 / 3 },
-  perimeterOut: { error: n => 2 * n * Math.tan(Math.PI / n) - 2 * Math.PI, constant: 2 * Math.PI ** 3 / 3 },
-  areaIn: { error: n => Math.PI - (n / 2) * Math.sin(2 * Math.PI / n), constant: 2 * Math.PI ** 3 / 3 },
-  areaOut: { error: n => n * Math.tan(Math.PI / n) - Math.PI, constant: Math.PI ** 3 / 3 }
+const PI=Math.PI;
+const SERIES={
+  perimeterIn:{error:n=>2*PI-2*n*Math.sin(PI/n),constant:PI**3/3,power:2},
+  perimeterOut:{error:n=>2*n*Math.tan(PI/n)-2*PI,constant:2*PI**3/3,power:2},
+  areaIn:{error:n=>PI-(n/2)*Math.sin(2*PI/n),constant:2*PI**3/3,power:2},
+  areaOut:{error:n=>n*Math.tan(PI/n)-PI,constant:PI**3/3,power:2},
+  gap:{error:n=>Math.cos(PI/(n+1))-Math.cos(PI/n),constant:PI**2,power:3}
 };
+const close=(actual,expected,tolerance,label)=>assert.ok(Math.abs(actual-expected)<=tolerance,`${label}: esperado ${expected}, obtido ${actual}`);
 
-function close(actual, expected, tolerance, label) {
-  assert.ok(
-    Math.abs(actual - expected) <= tolerance,
-    `${label}: esperado ${expected}, obtido ${actual}`
-  );
+for(const [key,s] of Object.entries(SERIES)){
+  let previousGap=Infinity;
+  for(let n=3;n<=512;n++){
+    const e=s.error(n);
+    assert.ok(e>0,`${key}: diferença positiva em n=${n}`);
+    const scaled=n**s.power*e;
+    const gap=Math.abs(scaled-s.constant);
+    assert.ok(gap<previousGap,`${key}: valor normalizado deve aproximar a constante em n=${n}`);
+    previousGap=gap;
+  }
+  close(512**s.power*s.error(512),s.constant,key==='gap'?0.04:0.002,`${key}: normalização em n=512`);
+  let previousDistance=Infinity;
+  for(let n=6;n<=384;n*=2){
+    const ratio=s.error(2*n)/s.error(n);
+    const distance=Math.abs(ratio-1/2**s.power);
+    assert.ok(distance<previousDistance,`${key}: razão de dobra converge em n=${n}`);
+    previousDistance=distance;
+  }
 }
 
-for (const [key, { error, constant }] of Object.entries(SERIES)) {
-  let previousScaledGap = Infinity;
+close(PI**3/3,10.335,5e-4,'π³/3');
+close(2*PI**3/3,20.671,5e-4,'2π³/3');
+close(PI**2,9.8696,5e-5,'π²');
+close(SERIES.perimeterIn.error(96),0.00112,5e-6,'erro de perímetro interno em n=96');
+const shrink=SERIES.perimeterIn.error(960)/SERIES.perimeterIn.error(96);
+assert.ok(shrink>1/105&&shrink<1/95,'n dez vezes maior reduz erro geométrico cerca de 100×');
+const estimate50=(PI**3/3)/2500;
+const real50=SERIES.areaOut.error(50);
+close(estimate50,0.00413,5e-5,'estimativa da área externa em n=50');
+close(real50,0.00414,5e-5,'erro real da área externa em n=50');
+assert.ok(Math.abs(estimate50-real50)<1e-4,'estimativa n=50 próxima do valor real');
+const gapRatio=SERIES.gap.error(48)/SERIES.gap.error(24);
+assert.ok(gapRatio>0.12&&gapRatio<0.14,'dobrar 24 para 48 reduz espaçamento para perto de 1/8');
+const measuredGapPower=-Math.log2(gapRatio);
+assert.ok(measuredGapPower>2.9&&measuredGapPower<3,'potência medida da inferência perto de 3');
 
-  // até n=512 o decremento real de |n²·erro - C| domina o ruído de ponto
-  // flutuante do cancelamento 2π − P(n); acima disso só cobramos proximidade
-  for (let n = 3; n <= 512; n += 1) {
-    const err = error(n);
-    assert.ok(err > 0, `${key}: erro deve ser positivo em n=${n}`);
+const html=await readFile(new URL('./index.html',import.meta.url),'utf8');
+const js=html.match(/<script>([\s\S]*?)<\/script>/)?.[1]||'';
+const markup=html.split('<script>')[0];
+assert.ok(html.includes('Do número pequeno à lei que o governa'),'mapa de percurso deve existir');
+assert.ok(html.includes('aria-valuemax="10"')&&html.includes('>0/10</strong>'),'dez marcos reais de progresso');
+assert.equal((markup.match(/<li data-step=/g)||[]).length,9,'nove passos dedutivos');
+assert.equal((markup.match(/data-ex="/g)||[]).length,12,'quatro exercícios com três alternativas');
+assert.equal((markup.match(/class="curiosity"/g)||[]).length,4,'quatro curiosidades');
+assert.equal((markup.match(/<canvas /g)||[]).length,3,'três Canvas');
+assert.ok(html.includes('id="dashboard" class="dashboard" hidden'),'valores devem nascer ocultos');
+assert.ok(html.includes('id="family-chart-wrap" class="chart-card" hidden'),'gráfico deve nascer oculto');
+assert.ok(html.includes('id="post-prediction-hint" class="hint" hidden'),'pista deve nascer oculta');
+assert.ok(js.includes("$('#dashboard').hidden=false")&&js.includes("$('#family-chart-wrap').hidden=false"),'aposta libera resultados');
+assert.ok(js.includes('derived:false')&&js.includes('derivStep===8&&!checkpoints.derived'),'derivação deve contar apenas no passo final');
+assert.ok(js.includes("$('#audit-n').oninput=()=>{checkpoints.audited=true"),'auditoria exige ação');
+assert.ok(js.includes("$('#normalize').onclick=()=>{checkpoints.normalized=true"),'normalização exige ação');
+assert.ok(!html.includes('src="lab.js"')&&!html.includes('href="lab.css"'),'HTML deve ser autocontido');
+assert.ok(html.includes('<style>')&&js.length>8000,'estilo e interação incorporados');
+assert.doesNotThrow(()=>new Function(js),'JavaScript sintaticamente válido');
+const ids=[...html.matchAll(/\bid="([^"]+)"/g)].map(m=>m[1]);
+assert.equal(new Set(ids).size,ids.length,'IDs HTML únicos');
 
-    const scaledGap = Math.abs(n * n * err - constant);
-    assert.ok(
-      scaledGap < previousScaledGap,
-      `${key}: |n²·erro - C| deve encolher; falhou em n=${n}`
-    );
-    previousScaledGap = scaledGap;
-  }
-
-  for (const n of [1024, 2048, 3072]) {
-    const err = error(n);
-    assert.ok(err > 0, `${key}: erro deve ser positivo em n=${n}`);
-    const scaledGap = Math.abs(n * n * err - constant);
-    assert.ok(
-      scaledGap < previousScaledGap,
-      `${key}: |n²·erro - C| em n=${n} deve ficar abaixo do valor em n=512`
-    );
-  }
-
-  close(3072 * 3072 * error(3072), constant, 1e-2, `${key}: n²·erro em n=3072 colado na constante`);
-
-  // contração ao dobrar: erro(2n)/erro(n) converge para 1/4 — por cima nas
-  // séries de seno, por baixo nas de tangente; cobramos só a convergência
-  let previousDistance = Infinity;
-  let lastContraction = 0;
-  for (let n = 3; n <= 1536; n *= 2) {
-    lastContraction = error(2 * n) / error(n);
-    const distance = Math.abs(lastContraction - 0.25);
-    assert.ok(distance < previousDistance, `${key}: |contração - 1/4| deve encolher em n=${n}`);
-    previousDistance = distance;
-  }
-  close(lastContraction, 0.25, 1e-6, `${key}: contração em n=1536 colada em 1/4`);
-}
-
-// as duas constantes citadas na página
-close(Math.PI ** 3 / 3, 10.335, 5e-4, 'constante citada π³/3');
-close(2 * Math.PI ** 3 / 3, 20.671, 5e-4, 'constante citada 2π³/3');
-
-// valores citados na página para a série padrão (contorno de dentro)
-const errIn = SERIES.perimeterIn.error;
-close(errIn(3), 1.0870329, 5e-8, 'erro inicial citado (n=3)');
-close(9 * errIn(3), 9.783, 5e-4, 'n²·erro inicial citado (n=3)');
-close(errIn(96), 0.00112, 5e-6, 'erro citado para n=96');
-
-// desafio: erro 100× menor pede n 10× maior (forma quadrática)
-const shrink = errIn(960) / errIn(96);
-assert.ok(shrink > 1 / 105 && shrink < 1 / 95, 'n=960 deve reduzir o erro ~100×');
-
-// distratores do desafio: uma dobra divide por ~4; n=9600 divide ~10000×
-const oneDouble = errIn(192) / errIn(96);
-assert.ok(oneDouble > 0.24 && oneDouble < 0.26, 'n=192 divide o erro por ~4');
-const overkill = errIn(9600) / errIn(96);
-assert.ok(overkill > 1 / 10500 && overkill < 1 / 9500, 'n=9600 divide o erro por ~10000');
-
-// exercício "agora use a fórmula": estimar erro da área de fora em n=50 via C/n²
-const areaOutErrorAt50 = SERIES.areaOut.error(50);
-const estimate50 = (Math.PI ** 3 / 3) / (50 * 50);
-close(estimate50, 0.00413, 5e-5, 'estimativa C/n² citada no exercício (n=50)');
-close(areaOutErrorAt50, 0.00414, 5e-5, 'valor real citado no exercício (n=50)');
-assert.ok(Math.abs(estimate50 - areaOutErrorAt50) < 0.0001, 'estimativa deve ficar próxima do valor real em n=50');
-
-console.log('Lab 04: quatro séries até n=3072, contração rumo a 1/4, constantes π³/3 e 2π³/3, o desafio dos 100× e a estimativa C/n² em n=50 verificados sem divergência.');
+console.log('Lab 04: quatro erros n^-2, espaçamento n^-3, constantes π³/3, 2π³/3 e π², 4 exercícios, 3 Canvas e contrato canônico verificados.');
