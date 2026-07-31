@@ -58,6 +58,7 @@ jobs:
           check = Path('modules/03-areas/check-math.mjs')
           text = check.read_text(encoding='utf-8')
           text = text.replace("const js = await readFile(new URL('./lab.js', import.meta.url), 'utf8');", "const js = html.match(/<script>([\\s\\S]*?)<\\/script>/)?.[1] || '';" )
+          text = text.replace("assert.equal((html.match(/data-ex=\"/g) || []).length, 12, 'quatro exercícios com três alternativas');", "assert.equal(((html.split('<script>')[0]).match(/data-ex=\"/g) || []).length, 12, 'quatro exercícios com três alternativas');")
           marker = "assert.ok(html.includes('id=\"compare-scale\"'), 'escala deve exigir uma ação explícita');\n"
           addition = """assert.ok(html.includes('id=\"area-values\" class=\"values\" hidden'), 'medidas devem nascer ocultas antes da aposta');
           assert.ok(html.includes('id=\"area-chart-wrap\" class=\"chart-wrap\" hidden'), 'gráfico deve nascer oculto antes da aposta');
