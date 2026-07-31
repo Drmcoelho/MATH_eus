@@ -1,108 +1,106 @@
 import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
 
-// Lab 03: para um círculo de raio R = 1, o polígono inscrito tem área
-// (n/2)·sen(2pi/n) e o circunscrito n·tg(pi/n). A fórmula do leque,
-// área = perímetro × apótema / 2, vale exatamente para os dois; do lado de
-// fora o apótema é o próprio R, então o excesso percentual da área é
-// idêntico ao do contorno. Do lado de dentro a razão entre o erro relativo
-// da área e o do contorno sobe em direção a 4.
-
-const CIRCLE_AREA = Math.PI;
-const CIRCLE_LENGTH = 2 * Math.PI;
-
-function close(actual, expected, tolerance, label) {
-  assert.ok(
-    Math.abs(actual - expected) <= tolerance,
-    `${label}: esperado ${expected}, obtido ${actual}`
-  );
-}
-
-function areaIn(n) {
-  return (n / 2) * Math.sin(2 * Math.PI / n);
-}
-
-function areaOut(n) {
-  return n * Math.tan(Math.PI / n);
-}
-
-function perimeterIn(n) {
-  return 2 * n * Math.sin(Math.PI / n);
-}
-
-function perimeterOut(n) {
-  return 2 * n * Math.tan(Math.PI / n);
-}
+const PI = Math.PI;
+const areaIn = (n, r = 1) => (n * r * r / 2) * Math.sin(2 * PI / n);
+const areaOut = (n, r = 1) => n * r * r * Math.tan(PI / n);
+const perimeterIn = (n, r = 1) => 2 * n * r * Math.sin(PI / n);
+const perimeterOut = (n, r = 1) => 2 * n * r * Math.tan(PI / n);
+const close = (actual, expected, tolerance, label) =>
+  assert.ok(Math.abs(actual - expected) <= tolerance, `${label}: esperado ${expected}, obtido ${actual}`);
 
 let previousIn = 0;
 let previousOut = Infinity;
-let previousRatio = 0;
+let previousCrossRatio = 0;
+let previousAreaRatio = 0;
 
 for (let n = 3; n <= 1000; n += 1) {
-  const theta = Math.PI / n;
+  const theta = PI / n;
   const ain = areaIn(n);
   const aout = areaOut(n);
+  const circle = PI;
+  const errorIn = circle - ain;
+  const errorOut = aout - circle;
 
-  assert.ok(ain < CIRCLE_AREA, `área interna deve ficar abaixo do círculo em n=${n}`);
-  assert.ok(aout > CIRCLE_AREA, `área externa deve ficar acima do círculo em n=${n}`);
-  assert.ok(ain > previousIn, `área interna deve crescer com n; falhou em n=${n}`);
-  assert.ok(aout < previousOut, `área externa deve decrescer com n; falhou em n=${n}`);
+  assert.ok(ain < circle, `área interna deve ficar abaixo do círculo em n=${n}`);
+  assert.ok(aout > circle, `área externa deve ficar acima do círculo em n=${n}`);
+  assert.ok(ain > previousIn, `área interna deve crescer em n=${n}`);
+  assert.ok(aout < previousOut, `área externa deve decrescer em n=${n}`);
   previousIn = ain;
   previousOut = aout;
 
-  // fórmula do leque, exata para os dois polígonos
   close(ain, perimeterIn(n) * Math.cos(theta) / 2, 1e-12, `leque interno n=${n}`);
-  close(aout, perimeterOut(n) * 1 / 2, 1e-12, `leque externo n=${n}`);
+  close(aout, perimeterOut(n) / 2, 1e-12, `leque externo n=${n}`);
+  close(aout / circle, perimeterOut(n) / (2 * PI), 1e-14, `igualdade relativa externa n=${n}`);
 
-  // fora: excesso relativo da área é idêntico ao do contorno (igualdade exata)
-  close(aout / CIRCLE_AREA, perimeterOut(n) / CIRCLE_LENGTH, 1e-14, `empate externo n=${n}`);
+  const relativeAreaIn = errorIn / circle;
+  const relativePerimeterIn = (2 * PI - perimeterIn(n)) / (2 * PI);
+  const crossRatio = relativeAreaIn / relativePerimeterIn;
+  assert.ok(crossRatio > previousCrossRatio, `razão área/perímetro interna deve crescer em n=${n}`);
+  assert.ok(crossRatio < 4, `razão área/perímetro interna deve ficar abaixo de 4 em n=${n}`);
+  previousCrossRatio = crossRatio;
 
-  // dentro: erro relativo da área ÷ erro relativo do contorno sobe rumo a 4
-  const ratio = (1 - ain / CIRCLE_AREA) / (1 - perimeterIn(n) / CIRCLE_LENGTH);
-  assert.ok(ratio > previousRatio, `a razão dos erros relativos deve crescer; falhou em n=${n}`);
-  assert.ok(ratio < 4, `a razão dos erros relativos deve ficar abaixo de 4; falhou em n=${n}`);
-  previousRatio = ratio;
+  const areaRatio = errorIn / errorOut;
+  assert.ok(areaRatio > previousAreaRatio, `razão falta/sobra deve crescer em n=${n}`);
+  assert.ok(areaRatio < 2, `razão falta/sobra deve ficar abaixo de 2 em n=${n}`);
+  previousAreaRatio = areaRatio;
 }
 
-close(previousRatio, 4, 1e-3, 'razão dos erros relativos em n=1000 deve estar colada em 4');
+close(previousCrossRatio, 4, 1e-3, 'razão dos erros relativos internos em n=1000');
+close(previousAreaRatio, 2, 2e-5, 'razão falta interna/sobra externa em n=1000');
+close(2 * PI * 1 / 2, PI, 1e-15, 'círculo como leque-limite');
 
-// círculo como caso-limite do leque: área = contorno × raio / 2
-close(CIRCLE_LENGTH * 1 / 2, CIRCLE_AREA, 1e-15, 'leque aplicado ao círculo');
+close(areaIn(12), 3, 1e-12, 'área interna do dodecágono');
+close(areaOut(12), 3.2154, 5e-5, 'área externa do dodecágono');
+close(Math.cos(PI / 12), 0.9659, 5e-5, 'apótema do dodecágono');
+close(areaIn(12) / PI, 0.9549, 5e-5, 'cobertura da área interna');
+close((PI - areaIn(12)) / (areaOut(12) - PI), 1.9187, 5e-5, 'razão falta/sobra em n=12');
 
-// valores citados na página (n = 12)
-close(areaIn(12), 3, 1e-12, 'área interna do dodecágono é exatamente 3');
-close(areaOut(12), 3.2154, 5e-5, 'área externa citada para n=12');
-close(Math.cos(Math.PI / 12), 0.9659, 5e-5, 'apótema citado para n=12');
-close(perimeterIn(12) / CIRCLE_LENGTH, 0.9886, 5e-5, 'cobertura do contorno citada para n=12');
-close(areaIn(12) / CIRCLE_AREA, 0.9549, 5e-5, 'cobertura da área citada para n=12');
-close(areaOut(12) / CIRCLE_AREA - 1, 0.0235, 5e-5, 'excesso citado para n=12');
+const hexArea = 12 * Math.sqrt(3) / 2;
+close(hexArea, 10.3923, 5e-5, 'hexágono por perímetro e apótema');
 
-// aposta: a área de dentro erra bem mais que o contorno
-assert.ok(areaIn(12) / CIRCLE_AREA < perimeterIn(12) / CIRCLE_LENGTH, 'cobertura da área deve ficar abaixo da do contorno');
+for (const n of [6, 12, 24, 48, 96]) {
+  for (const r of [0.5, 1, 1.3, 2]) {
+    close(areaIn(n, 2 * r), 4 * areaIn(n, r), 1e-11, `escala interna n=${n}, r=${r}`);
+    close(areaOut(n, 2 * r), 4 * areaOut(n, r), 1e-11, `escala externa n=${n}, r=${r}`);
+    close(PI * (2 * r) ** 2 - areaIn(n, 2 * r), 4 * (PI * r ** 2 - areaIn(n, r)), 1e-11, `erro interno escala n=${n}`);
+  }
+}
 
-// desafio: hexágono de perímetro 12 e apótema raiz de 3
-const hexSide = 2;
-const hexApothem = Math.sqrt(3);
-const hexAreaByFormula = 12 * hexApothem / 2;
-const hexAreaByFan = 6 * (hexSide * hexApothem / 2);
-close(6 * hexSide, 12, 1e-12, 'perímetro do hexágono do desafio');
-close(hexAreaByFormula, 10.3923, 5e-5, 'área do hexágono do desafio');
-close(hexAreaByFormula, hexAreaByFan, 1e-12, 'leque do hexágono do desafio');
+const e12 = PI - areaIn(12);
+const e24 = PI - areaIn(24);
+assert.ok(Math.abs(e24 / e12 - 0.25) < 0.01, 'dobrar n deve reduzir o erro interno para perto de 1/4');
 
-// exercício "agora use a ideia": erro do contorno vs. erro da área em n=12 e n=24
-const errPerim12 = 1 - perimeterIn(12) / CIRCLE_LENGTH;
-const errArea12 = 1 - areaIn(12) / CIRCLE_AREA;
-close(errPerim12, 0.01138, 5e-5, 'erro do contorno citado no exercício (n=12)');
-close(errArea12, 0.04507, 5e-5, 'erro da área citado no exercício (n=12)');
-const ratioAreaPerim12 = errArea12 / errPerim12;
-assert.ok(ratioAreaPerim12 < 4, 'a razão em n=12 deve estar abaixo do limite 4');
+const html = await readFile(new URL('./index.html', import.meta.url), 'utf8');
+const js = html.match(/<script>([\s\S]*?)<\/script>/)?.[1] || '';
+assert.ok(html.includes('Uma figura, três comparações, seis atos'), 'mapa do percurso deve existir');
+assert.ok(html.includes('role="progressbar"'), 'progresso real deve existir');
+assert.equal((html.match(/<li data-step=/g) || []).length, 9, 'Ato 3 deve ter nove passos');
+assert.equal(((html.split('<script>')[0]).match(/data-ex="/g) || []).length, 12, 'quatro exercícios com três alternativas');
+assert.equal((html.match(/class="curiosity"/g) || []).length, 4, 'quatro curiosidades');
+assert.equal((html.match(/<canvas /g) || []).length, 3, 'três Canvas calculados');
+assert.ok(html.includes('Ato 5 · anatomia do erro'), 'anatomia do erro deve existir');
+assert.ok(html.includes('Oficina — constantes assintóticas'), 'Oficina assintótica deve existir');
+assert.ok(html.includes('link rel="icon"'), 'favicon explícito deve existir');
+assert.ok(!html.includes('disabled>1. Faça uma aposta'), 'botão principal não pode nascer desabilitado');
+assert.ok(js.includes("sections.forEach(s=>s.hidden=false)"), 'uma revelação deve abrir todos os atos');
+assert.ok(js.includes("chain.forEach((li,i)=>li.hidden=i!==derivStep)"), 'somente um passo deve ficar ativo');
+assert.ok(js.includes("$('#deriv-result').hidden=derivStep!==8"), 'fórmulas devem nascer apenas no passo 9');
+assert.ok(html.includes('id="area-values" class="values" hidden'), 'medidas devem nascer ocultas antes da aposta');
+assert.ok(html.includes('id="area-chart-wrap" class="chart-wrap" hidden'), 'gráfico deve nascer oculto antes da aposta');
+assert.ok(html.includes('id="post-prediction-hint" class="hint" hidden'), 'pista qualitativa deve nascer oculta');
+assert.ok(js.includes("$('#area-values').hidden=false") && js.includes("$('#area-chart-wrap').hidden=false"), 'aposta deve liberar medidas e gráfico');
+assert.ok(!html.includes('href="lab.css"'), 'HTML publicado não pode depender de CSS externo');
+assert.ok(!html.includes('src="lab.js"'), 'HTML publicado não pode depender de JavaScript externo');
+assert.ok(html.includes('<style>') && js.length > 5000, 'HTML autocontido deve incorporar estilo e interação');
+assert.ok(html.includes('id="compare-scale"'), 'escala deve exigir uma ação explícita');
+assert.ok(js.includes("$('#error-n').oninput=()=>{checkpoints.audited=true"), 'auditoria só deve contar após manipulação');
+assert.ok(js.includes("$('#compare-scale').onclick=()=>{checkpoints.scaled=true"), 'escala só deve contar após execução explícita');
+assert.ok(!js.includes('checkpoints.audited=true;progress()}'), 'renderização inicial não pode creditar auditoria');
+assert.ok(!js.includes("x.textAlign='start';checkpoints.scaled=true"), 'renderização inicial não pode creditar escala');
+assert.doesNotThrow(() => new Function(js), 'JavaScript deve ser sintaticamente válido');
 
-const errPerim24 = 1 - perimeterIn(24) / CIRCLE_LENGTH;
-const errArea24 = 1 - areaIn(24) / CIRCLE_AREA;
-close(errPerim24, 0.00285, 5e-5, 'erro do contorno citado no exercício (n=24)');
-close(errArea24, 0.01138, 5e-5, 'erro da área citado no exercício (n=24)');
-const ratioAreaPerim24 = errArea24 / errPerim24;
-assert.ok(ratioAreaPerim24 < 4, 'a razão em n=24 deve estar abaixo do limite 4');
-assert.ok(ratioAreaPerim24 > ratioAreaPerim12, 'a razão deve se aproximar de 4 quando n aumenta');
-assert.ok(4 - ratioAreaPerim24 < 4 - ratioAreaPerim12, 'n=24 deve estar mais perto de 4 que n=12');
+const ids = [...html.matchAll(/\bid="([^"]+)"/g)].map(m => m[1]);
+assert.equal(new Set(ids).size, ids.length, 'IDs HTML devem ser únicos');
 
-console.log('Lab 03: 998 casos de área, o leque exato, o empate externo, a razão rumo a 4, o hexágono do desafio e o exercício da razão em n=12/24 verificados sem divergência.');
+console.log('Lab 03: 998 cercos de área, leques exatos, três assimetrias, escala quadrática, 4 exercícios, 4 curiosidades, 3 Canvas e contrato canônico verificados.');
