@@ -1,0 +1,85 @@
+name: One-shot finaliza Lab 03 autocontido
+on:
+  push:
+    branches: [agent/lab03-canonico]
+permissions:
+  contents: write
+jobs:
+  fix:
+    if: "!contains(github.event.head_commit.message, '[self-contained-done]')"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: agent/lab03-canonico
+      - name: Protege a aposta e incorpora os assets
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          page = Path('modules/03-areas/index.html')
+          html = page.read_text(encoding='utf-8')
+          html = html.replace('<dl class="values">', '<dl id="area-values" class="values" hidden>', 1)
+          html = html.replace('<div class="chart-wrap">', '<div id="area-chart-wrap" class="chart-wrap" hidden>', 1)
+          html = html.replace('<p class="hint"><strong>Primeira pista:</strong>', '<p id="post-prediction-hint" class="hint" hidden><strong>Primeira pista:</strong>', 1)
+
+          js_path = Path('modules/03-areas/lab.js')
+          js = js_path.read_text(encoding='utf-8')
+          old = "checkpoints.predicted=true;$('#prediction-feedback').textContent="
+          new = "checkpoints.predicted=true;$('#area-values').hidden=false;$('#area-chart-wrap').hidden=false;$('#post-prediction-hint').hidden=false;renderGeometry();$('#prediction-feedback').textContent="
+          if old not in js and new not in js:
+              raise SystemExit('ponto da aposta não encontrado')
+          js = js.replace(old, new, 1)
+          js_path.write_text(js, encoding='utf-8')
+
+          base_css = Path('modules/02-perimetros/lab.css').read_text(encoding='utf-8')
+          local_css_path = Path('modules/03-areas/lab.css')
+          local_css = local_css_path.read_text(encoding='utf-8')
+          local_css = local_css.replace('@import url("../02-perimetros/lab.css");', '', 1).lstrip()
+          css = base_css.rstrip() + '\n\n/* Extensões específicas do Lab 03 */\n' + local_css.rstrip()
+
+          if '<link rel="stylesheet" href="lab.css">' not in html:
+              raise SystemExit('link CSS do Lab 03 não encontrado')
+          if '<script src="lab.js"></script>' not in html:
+              raise SystemExit('script externo do Lab 03 não encontrado')
+          html = html.replace('<link rel="stylesheet" href="lab.css">', '<style>\n' + css + '\n</style>', 1)
+          html = html.replace('<script src="lab.js"></script>', '<script>\n' + js.rstrip() + '\n</script>', 1)
+          page.write_text(html, encoding='utf-8')
+
+          check = Path('modules/03-areas/check-math.mjs')
+          text = check.read_text(encoding='utf-8')
+          text = text.replace("const js = await readFile(new URL('./lab.js', import.meta.url), 'utf8');", "const js = html.match(/<script>([\\s\\S]*?)<\\/script>/)?.[1] || '';" )
+          marker = "assert.ok(html.includes('id=\"compare-scale\"'), 'escala deve exigir uma ação explícita');\n"
+          addition = """assert.ok(html.includes('id=\"area-values\" class=\"values\" hidden'), 'medidas devem nascer ocultas antes da aposta');
+          assert.ok(html.includes('id=\"area-chart-wrap\" class=\"chart-wrap\" hidden'), 'gráfico deve nascer oculto antes da aposta');
+          assert.ok(html.includes('id=\"post-prediction-hint\" class=\"hint\" hidden'), 'pista qualitativa deve nascer oculta');
+          assert.ok(js.includes("$('#area-values').hidden=false") && js.includes("$('#area-chart-wrap').hidden=false"), 'aposta deve liberar medidas e gráfico');
+          assert.ok(!html.includes('href=\"lab.css\"'), 'HTML publicado não pode depender de CSS externo');
+          assert.ok(!html.includes('src=\"lab.js\"'), 'HTML publicado não pode depender de JavaScript externo');
+          assert.ok(html.includes('<style>') && js.length > 5000, 'HTML autocontido deve incorporar estilo e interação');
+          """
+          if addition.strip() not in text:
+              if marker not in text:
+                  raise SystemExit('ponto do checker não encontrado')
+              text = text.replace(marker, addition + marker)
+          check.write_text(text, encoding='utf-8')
+
+          local_css_path.unlink()
+          js_path.unlink()
+          PY
+      - name: Valida a obra e o contrato autocontido
+        run: |
+          for checker in modules/*/check-math.mjs; do node "$checker"; done
+          node atlas/check-math.mjs
+          test ! -e modules/03-areas/lab.css
+          test ! -e modules/03-areas/lab.js
+          ! grep -q 'href="lab.css"' modules/03-areas/index.html
+          ! grep -q 'src="lab.js"' modules/03-areas/index.html
+      - name: Consolida e remove o one-shot
+        run: |
+          rm .github/workflows/one-shot-real-progress.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "protege a aposta e torna o Lab 03 autocontido [self-contained-done]"
+          git push origin HEAD:agent/lab03-canonico
