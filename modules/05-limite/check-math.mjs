@@ -33,6 +33,7 @@ assert.equal(findN(.000031),1001,'desafio 31 milionésimos');
 close(Math.sqrt(PI**3/.000031),1000.1,.2,'estimativa mental do desafio');
 assert.ok(findN(.0001)/findN(.01)>9&&findN(.0001)/findN(.01)<11,'100× menos ε pede cerca de 10× N');
 assert.equal(certified(.01),79,'certificado citado para ε=.01');
+assert.ok(certified(.01)>findN(.01),'certificado suficiente pode ser conservador sem fingir minimalidade');
 
 const html=await readFile(new URL('./index.html',import.meta.url),'utf8');
 const js=html.match(/<script>([\s\S]*?)<\/script>/)?.[1]||'';
@@ -58,4 +59,4 @@ assert.doesNotThrow(()=>new Function(js),'JavaScript sintaticamente válido');
 const ids=[...html.matchAll(/\bid="([^"]+)"/g)].map(m=>m[1]);
 assert.equal(new Set(ids).size,ids.length,'IDs únicos');
 
-console.log('Lab 05: monotonicidade, fronteiras exatas, estimativas, certificados, 10 marcos, 4 exercícios, 3 Canvas e contrato canônico verificados.');
+console.log('Lab 05: monotonicidade, fronteiras mínimas, estimativas não certificadas, certificados conservadores, 10 marcos, 4 exercícios, 3 Canvas e contrato canônico verificados.');
