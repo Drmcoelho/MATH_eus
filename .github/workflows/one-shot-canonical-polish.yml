@@ -1,0 +1,79 @@
+name: One-shot acabamento canônico
+on:
+  push:
+    branches: [agent/lab03-canonico]
+permissions:
+  contents: write
+jobs:
+  polish:
+    if: "!contains(github.event.head_commit.message, '[polish-done]')"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: agent/lab03-canonico
+      - name: Corrige favicon, Atlas e rótulos do Lab 02
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          root = Path('.')
+          for page in root.rglob('*.html'):
+              text = page.read_text(encoding='utf-8')
+              if 'rel="icon"' in text or "rel='icon'" in text:
+                  continue
+              depth = len(page.parent.parts)
+              href = ('../' * depth) + 'favicon.svg' if depth else 'favicon.svg'
+              link = f'<link rel="icon" href="{href}" type="image/svg+xml">\n'
+              marker = '</head>'
+              if marker not in text:
+                  raise SystemExit(f'HTML sem </head>: {page}')
+              page.write_text(text.replace(marker, link + marker, 1), encoding='utf-8')
+
+          atlas = Path('atlas/index.html')
+          text = atlas.read_text(encoding='utf-8')
+          old = '.site small{color:var(--muted)}'
+          new = '.site small{display:block;color:var(--muted)}'
+          if old not in text and new not in text:
+              raise SystemExit('assinatura CSS do Atlas não encontrada')
+          atlas.write_text(text.replace(old, new), encoding='utf-8')
+
+          lab2 = Path('modules/02-perimetros/lab.js')
+          text = lab2.read_text(encoding='utf-8')
+          old_m = "label(drawing,p[0]+10,p[1]-8,q)"
+          new_m = "label(drawing,p[0]+(q==='M'?-18:10),p[1]+(q==='M'?24:-8),q)"
+          old_l = "label(drawing,(M[0]+V[0])/2,(M[1]+V[1])/2-10,'Lᵢₙ/2','middle')"
+          new_l = "label(drawing,(M[0]+V[0])/2+28,(M[1]+V[1])/2-22,'Lᵢₙ/2','middle')"
+          if old_m not in text and new_m not in text:
+              raise SystemExit('assinatura do rótulo M não encontrada')
+          if old_l not in text and new_l not in text:
+              raise SystemExit('assinatura do meio-lado não encontrada')
+          text = text.replace(old_m, new_m).replace(old_l, new_l)
+          lab2.write_text(text, encoding='utf-8')
+          PY
+      - name: Verifica matemática e estrutura
+        run: |
+          for checker in modules/*/check-math.mjs; do
+            echo "== $checker"
+            node "$checker"
+          done
+          node atlas/check-math.mjs
+          python - <<'PY'
+          from pathlib import Path
+          pages = list(Path('.').rglob('*.html'))
+          missing = [str(p) for p in pages if 'rel="icon"' not in p.read_text(encoding='utf-8')]
+          if missing:
+              raise SystemExit('favicon ausente: ' + ', '.join(missing))
+          assert '.site small{display:block;color:var(--muted)}' in Path('atlas/index.html').read_text(encoding='utf-8')
+          lab2 = Path('modules/02-perimetros/lab.js').read_text(encoding='utf-8')
+          assert "q==='M'?-18:10" in lab2 and "+28,(M[1]+V[1])/2-22" in lab2
+          print(f'{len(pages)} páginas com favicon; acabamentos confirmados')
+          PY
+      - name: Consolida e remove o one-shot
+        run: |
+          rm .github/workflows/one-shot-canonical-polish.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "aplica acabamento global e valida Lab 03 [polish-done]"
+          git push origin HEAD:agent/lab03-canonico
