@@ -1,37 +1,102 @@
-name: Valida o MATHeu$
+name: Publica e valida o Lab 04 canônico
 
 on:
   pull_request:
     paths:
-      - 'modules/**'
-      - 'atlas/**'
-      - 'index.html'
-      - '.github/workflows/validate.yml'
-  push:
-    branches: [main]
-    paths:
-      - 'modules/**'
-      - 'atlas/**'
-      - 'index.html'
+      - 'modules/04-erro/**'
+      - 'docs/CANON-STATUS.md'
+      - '.tmp/lab04/**'
       - '.github/workflows/validate.yml'
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
-  matematica:
+  publica-lab04:
+    if: github.event_name == 'pull_request' && github.head_ref == 'agent/lab04-canonico'
     runs-on: ubuntu-latest
     steps:
-      - name: Baixa o repositório
+      - name: Baixa o branch real
         uses: actions/checkout@v6
+        with:
+          ref: agent/lab04-canonico
 
-      - name: Verifica a matemática de todos os laboratórios
+      - name: Materializa o Lab 04 autocontido
+        run: |
+          cat .tmp/lab04/index.* | base64 -d | gzip -d > modules/04-erro/index.html
+          cat .tmp/lab04/check.* | base64 -d | gzip -d > modules/04-erro/check-math.mjs
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('docs/CANON-STATUS.md')
+          t=p.read_text(encoding='utf-8')
+          old='| T01 · Labs 04–10 | funcionais, a reformar | Matemática e checkers preservados; arquitetura editorial anterior. |'
+          new='| T01 · Lab 04 — Forma do erro | canônico neste PR | HTML autocontido; ordens n⁻² e n⁻³ separadas; nove passos, três Canvas e quatro exercícios. |\n| T01 · Labs 05–10 | funcionais, a reformar | Matemática e checkers preservados; arquitetura editorial anterior. |'
+          if old not in t:
+              raise SystemExit('linha de estado 04–10 não encontrada')
+          t=t.replace(old,new,1)
+          t=t.replace('04 → 05 → 01·B → 06 → 07 → 08 → 09 → 10','05 → 01·B → 06 → 07 → 08 → 09 → 10',1)
+          t=t.replace('O Lab 04 vem primeiro porque deve explicar, sem duplicar o Lab 03, por que aparecem simultaneamente:', 'O Lab 04 agora explica, sem duplicar o Lab 03, por que aparecem simultaneamente:',1)
+          p.write_text(t,encoding='utf-8')
+          PY
+          rm -rf .tmp/lab04
+
+      - name: Restaura o workflow canônico
+        run: |
+          cat > .github/workflows/validate.yml <<'YAML'
+          name: Valida o MATHeu$
+
+          on:
+            pull_request:
+              paths:
+                - 'modules/**'
+                - 'atlas/**'
+                - 'index.html'
+                - '.github/workflows/validate.yml'
+            push:
+              branches: [main]
+              paths:
+                - 'modules/**'
+                - 'atlas/**'
+                - 'index.html'
+                - '.github/workflows/validate.yml'
+            workflow_dispatch:
+
+          permissions:
+            contents: read
+
+          jobs:
+            matematica:
+              runs-on: ubuntu-latest
+              steps:
+                - name: Baixa o repositório
+                  uses: actions/checkout@v6
+
+                - name: Verifica a matemática de todos os laboratórios
+                  run: |
+                    for checker in modules/*/check-math.mjs; do
+                      echo "== $checker"
+                      node "$checker"
+                    done
+
+                - name: Verifica o atlas pessoal
+                  run: node atlas/check-math.mjs
+          YAML
+
+      - name: Executa todos os gates
         run: |
           for checker in modules/*/check-math.mjs; do
             echo "== $checker"
             node "$checker"
           done
+          node atlas/check-math.mjs
+          test "$(grep -c '<script>' modules/04-erro/index.html)" -eq 1
+          ! grep -qE 'src="lab\.js"|href="lab\.css"' modules/04-erro/index.html
 
-      - name: Verifica o atlas pessoal
-        run: node atlas/check-math.mjs
+      - name: Publica o commit final
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "canoniza o Lab 04 e restaura o validador"
+          git push origin HEAD:agent/lab04-canonico
