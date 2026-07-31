@@ -33,4 +33,5 @@ O interlúdio preserva sua dramaturgia própria:
 - quatro curiosidades;
 - experimento adversarial das duas espirais;
 - prova acessível e checker matemático/estrutural;
-- nenhuma trava invisível ou dependência remota.
+- HTML de publicação integralmente autocontido;
+- nenhuma trava invisível, dependência remota ou build obrigatório.
