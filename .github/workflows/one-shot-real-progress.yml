@@ -1,0 +1,61 @@
+name: One-shot progresso real do Lab 03
+on:
+  push:
+    branches: [agent/lab03-canonico]
+permissions:
+  contents: write
+jobs:
+  fix:
+    if: "!contains(github.event.head_commit.message, '[progress-done]')"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: agent/lab03-canonico
+      - name: Exige ações reais para auditoria e escala
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          page = Path('modules/03-areas/index.html')
+          text = page.read_text(encoding='utf-8')
+          old = '  <p>Dobrar ρ quadruplica o círculo, os dois polígonos e os erros absolutos. As razões relativas permanecem iguais porque numerador e denominador recebem o mesmo fator ρ².</p>\n  <div class="scale-grid">'
+          new = '  <p>Dobrar ρ quadruplica o círculo, os dois polígonos e os erros absolutos. As razões relativas permanecem iguais porque numerador e denominador recebem o mesmo fator ρ².</p>\n  <div class="reveal-row"><button id="compare-scale" type="button" class="primary">Executar comparação ρ → 2ρ</button><span id="scale-feedback" class="feedback" aria-live="polite">A figura já mostra os dois casos; execute a comparação para registrar a investigação.</span></div>\n  <div class="scale-grid">'
+          if old not in text and 'id="compare-scale"' not in text:
+              raise SystemExit('ponto de inserção da escala não encontrado')
+          page.write_text(text.replace(old, new), encoding='utf-8')
+
+          js = Path('modules/03-areas/lab.js')
+          text = js.read_text(encoding='utf-8')
+          text = text.replace(";checkpoints.audited=true;progress()}\n$('#error-n').oninput=renderErrors;", ";}\n$('#error-n').oninput=()=>{checkpoints.audited=true;renderErrors();progress()};")
+          text = text.replace("});x.textAlign='start';checkpoints.scaled=true;progress()}\nwindow.addEventListener", "});x.textAlign='start'}\n$('#compare-scale').onclick=()=>{checkpoints.scaled=true;renderScale();$('#scale-feedback').textContent='Comparação executada: círculo, falta e sobra foram multiplicados por 4; as razões relativas permaneceram iguais.';progress()};\nwindow.addEventListener")
+          js.write_text(text, encoding='utf-8')
+
+          check = Path('modules/03-areas/check-math.mjs')
+          text = check.read_text(encoding='utf-8')
+          needle = "assert.ok(js.includes(\"$('#deriv-result').hidden=derivStep!==8\"), 'fórmulas devem nascer apenas no passo 9');\n"
+          addition = """assert.ok(html.includes('id=\"compare-scale\"'), 'escala deve exigir uma ação explícita');
+          assert.ok(js.includes("$('#error-n').oninput=()=>{checkpoints.audited=true"), 'auditoria só deve contar após manipulação');
+          assert.ok(js.includes("$('#compare-scale').onclick=()=>{checkpoints.scaled=true"), 'escala só deve contar após execução explícita');
+          assert.ok(!js.includes('checkpoints.audited=true;progress()}'), 'renderização inicial não pode creditar auditoria');
+          assert.ok(!js.includes("x.textAlign='start';checkpoints.scaled=true"), 'renderização inicial não pode creditar escala');
+          """
+          if addition.strip() not in text:
+              if needle not in text:
+                  raise SystemExit('ponto do checker não encontrado')
+              text = text.replace(needle, needle + addition)
+          check.write_text(text, encoding='utf-8')
+          PY
+      - name: Valida toda a obra
+        run: |
+          node --check modules/03-areas/lab.js
+          for checker in modules/*/check-math.mjs; do node "$checker"; done
+          node atlas/check-math.mjs
+      - name: Consolida e remove o one-shot
+        run: |
+          rm .github/workflows/one-shot-real-progress.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "torna auditoria e escala marcos reais [progress-done]"
+          git push origin HEAD:agent/lab03-canonico
