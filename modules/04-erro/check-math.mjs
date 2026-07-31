@@ -69,4 +69,4 @@ assert.doesNotThrow(()=>new Function(js),'JavaScript sintaticamente válido');
 const ids=[...html.matchAll(/\bid="([^"]+)"/g)].map(m=>m[1]);
 assert.equal(new Set(ids).size,ids.length,'IDs HTML únicos');
 
-console.log('Lab 04: quatro erros n^-2, espaçamento n^-3, constantes π³/3, 2π³/3 e π², 4 exercícios, 3 Canvas e contrato canônico verificados.');
+console.log('Lab 04: quatro erros n^-2, espaçamento n^-3, constantes π³/3, 2π³/3 e π², 10 marcos, 4 exercícios, 3 Canvas e contrato canônico verificados.');
