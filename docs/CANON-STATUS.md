@@ -15,6 +15,7 @@ Um laboratório só recebe o estado **canônico** quando possui, de modo funcion
 - pelo menos quatro exercícios com feedback e pistas;
 - curiosidades que ampliam a estrutura sem interromper a descoberta;
 - experimento específico sobre erro, escala, ruído ou caso adversarial;
+- progresso que só credita ações efetivamente executadas, nunca mera renderização;
 - fechamento que explicita a transformação cognitiva e abre a próxima pergunta;
 - checker matemático e estrutural;
 - ausência de porta falsa, overflow horizontal, erro de console ou dependência remota necessária.
