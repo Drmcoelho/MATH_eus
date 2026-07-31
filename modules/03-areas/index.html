@@ -39,7 +39,7 @@
 <a class="skip" href="#conteudo">Pular para o laboratório</a>
 <header><a class="brand" href="../../index.html">MATHeu$</a><span>Temporada 01 · Laboratório 03</span></header>
 <div class="meta">
-  <div class="progress-mini"><span>Progresso real</span><div class="track" role="progressbar" aria-valuemin="0" aria-valuemax="9" aria-valuenow="0"><span id="progress-fill"></span></div><strong id="progress-text">0/9</strong></div>
+  <div class="progress-mini"><span>Progresso real</span><div class="track" role="progressbar" aria-valuemin="0" aria-valuemax="10" aria-valuenow="0"><span id="progress-fill"></span></div><strong id="progress-text">0/10</strong></div>
   <span>≈ 35–50 min</span><span>Dificuldade <span role="img" aria-label="2 de 3">●●○</span></span>
   <button id="restart" type="button">Recomeçar laboratório</button>
 </div>
@@ -224,7 +224,7 @@
     <div class="finish-item"><strong>Você separou</strong><p>três razões de erro que parecem iguais, mas não são.</p></div>
     <div class="finish-item"><strong>Próxima pergunta</strong><p>se todos os erros caem como n⁻², de onde vem essa potência?</p></div>
   </div>
-  <p id="finish-status" class="finish-status">0/9 movimentos concluídos.</p>
+  <p id="finish-status" class="finish-status">0/10 movimentos concluídos.</p>
 </section>
 
 <nav class="lab-nav" aria-label="Continuar no MATHeu$">
@@ -238,7 +238,7 @@
 (()=>{'use strict';
 const NS='http://www.w3.org/2000/svg',$=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 const drawing=$('#drawing'),sides=$('#sides'),radius=$('#radius'),sections=['#derivation','#workbook','#errors','#scale'].map($);
-const checkpoints={predicted:false,manipulated:false,revealed:false,audited:false,scaled:false},solved=new Set();
+const checkpoints={predicted:false,manipulated:false,revealed:false,derived:false,audited:false,scaled:false},solved=new Set();
 let derivStep=0,mode='regions',initialN=12,initialRadius=1;
 const fmt=(v,d=4)=>new Intl.NumberFormat('pt-BR',{minimumFractionDigits:d,maximumFractionDigits:d}).format(v);
 const pct=v=>new Intl.NumberFormat('pt-BR',{style:'percent',minimumFractionDigits:2,maximumFractionDigits:2}).format(v);
@@ -247,7 +247,7 @@ const polar=(cx,cy,r,a)=>[cx+r*Math.cos(a),cy+r*Math.sin(a)];
 const poly=(cx,cy,r,n,start)=>Array.from({length:n},(_,i)=>polar(cx,cy,r,start+2*Math.PI*i/n));
 const ain=(n,r=1)=>(n*r*r/2)*Math.sin(2*Math.PI/n),aout=(n,r=1)=>n*r*r*Math.tan(Math.PI/n),pin=(n,r=1)=>2*n*r*Math.sin(Math.PI/n),pout=(n,r=1)=>2*n*r*Math.tan(Math.PI/n);
 const css=name=>getComputedStyle(document.documentElement).getPropertyValue(name);
-function progress(){const total=(checkpoints.predicted?1:0)+(checkpoints.manipulated?1:0)+(checkpoints.revealed?1:0)+solved.size+(checkpoints.audited?1:0)+(checkpoints.scaled?1:0);const capped=Math.min(9,total);$('#progress-fill').style.width=`${capped/9*100}%`;$('#progress-text').textContent=`${capped}/9`;$('.track').setAttribute('aria-valuenow',capped);$('#finish-status').textContent=capped===9?'9/9. A área foi vista, construída, testada, escalada e auditada.':`${capped}/9 movimentos concluídos.`}
+function progress(){const total=(checkpoints.predicted?1:0)+(checkpoints.manipulated?1:0)+(checkpoints.revealed?1:0)+(checkpoints.derived?1:0)+solved.size+(checkpoints.audited?1:0)+(checkpoints.scaled?1:0);const capped=Math.min(10,total);$('#progress-fill').style.width=`${capped/10*100}%`;$('#progress-text').textContent=`${capped}/10`;$('.track').setAttribute('aria-valuenow',capped);$('#finish-status').textContent=capped===10?'10/10. A área foi vista, construída, testada, escalada e auditada.':`${capped}/10 movimentos concluídos.`}
 function label(g,x,y,t,a='start',size=18,color='currentColor'){g.append(svg('text',{x,y,'text-anchor':a,'font-family':'system-ui','font-size':size,'font-weight':800,fill:color},t))}
 function canvas(id,h){const c=$(id),r=c.getBoundingClientRect(),dpr=Math.min(2,devicePixelRatio||1);c.width=Math.max(1,r.width*dpr);c.height=h*dpr;const x=c.getContext('2d');x.setTransform(dpr,0,0,dpr,0,0);x.clearRect(0,0,r.width,h);return[x,r.width,h]}
 function renderGeometry(){const n=+sides.value,rho=+radius.value,t=Math.PI/n,cx=320,cy=340,R=110+25*rho,outR=R/Math.cos(t),start=-Math.PI/2-t,Ai=ain(n,rho),Ac=Math.PI*rho*rho,Ao=aout(n,rho),ap=rho*Math.cos(t);
@@ -266,7 +266,7 @@ function changed(){if(+sides.value!==initialN||+radius.value!==initialRadius)che
 sides.oninput=changed;radius.oninput=changed;$$('[data-n]').forEach(b=>b.onclick=()=>{sides.value=b.dataset.n;changed()});$$('[data-mode]').forEach(b=>b.onclick=()=>{mode=b.dataset.mode;$$('[data-mode]').forEach(q=>q.setAttribute('aria-pressed',String(q===b)));checkpoints.manipulated=true;renderGeometry();progress()});
 $('#reveal').onclick=()=>{if(!checkpoints.predicted){$('#bet').scrollIntoView({behavior:'smooth',block:'start'});$('#prediction-feedback').textContent='Escolha uma hipótese. Ela pode morrer depois; precisa apenas nascer antes.';return}sections.forEach(s=>s.hidden=false);checkpoints.revealed=true;updateReveal();renderDeriv();renderErrors();renderScale();progress();$('#derivation').scrollIntoView({behavior:'smooth',block:'start'})};
 const chain=$$('#chain>li'),dots=$('#step-dots');chain.forEach((_,i)=>{const b=document.createElement('button');b.type='button';b.textContent=String(i+1);b.setAttribute('aria-label',`Ir ao passo ${i+1}`);b.onclick=()=>{derivStep=i;renderDeriv()};dots.append(b)});
-function renderDeriv(){chain.forEach((li,i)=>li.hidden=i!==derivStep);$$('#step-dots button').forEach((b,i)=>{if(i===derivStep)b.setAttribute('aria-current','step');else b.removeAttribute('aria-current')});$('#prev-step').disabled=derivStep===0;$('#next-step').disabled=derivStep===8;$('#step-status').textContent=`Passo ${derivStep+1} de 9${derivStep===8?' — cerco de áreas fechado.':''}`;$('#deriv-result').hidden=derivStep!==8;
+function renderDeriv(){chain.forEach((li,i)=>li.hidden=i!==derivStep);$$('#step-dots button').forEach((b,i)=>{if(i===derivStep)b.setAttribute('aria-current','step');else b.removeAttribute('aria-current')});$('#prev-step').disabled=derivStep===0;$('#next-step').disabled=derivStep===8;$('#step-status').textContent=`Passo ${derivStep+1} de 9${derivStep===8?' — cerco de áreas fechado.':''}`;$('#deriv-result').hidden=derivStep!==8;if(derivStep===8&&!checkpoints.derived){checkpoints.derived=true;progress()}
 const g=$('#deriv-drawing'),cx=250,cy=250,R=160,n=+sides.value,t=Math.PI/n,start=-Math.PI/2-t,outR=R/Math.cos(t),s=derivStep,inner=poly(cx,cy,R,n,start),outer=poly(cx,cy,outR,n,start),M=polar(cx,cy,R*Math.cos(t),-Math.PI/2),V=polar(cx,cy,R,-Math.PI/2+t),T=polar(cx,cy,R,-Math.PI/2),E=polar(cx,cy,outR,-Math.PI/2+t);g.replaceChildren();
 const captions=['O centro reparte o polígono interno em n triângulos congruentes.','Um triângulo recebe base ℓin e altura a.','A área do triângulo é base × altura ÷ 2.','A soma das bases é o perímetro: Ain=Pin·a/2.','O triângulo fundamental fornece seno e cosseno.','A identidade de ângulo duplo comprime o produto.','No exterior, ρ já é a altura de cada triângulo.','O perímetro externo vezes ρ/2 fecha Aout.','Inclusão geométrica: interno < círculo < externo.'];$('#deriv-caption').textContent=captions[s];
 if(s<=5){g.append(svg('polygon',{points:inner.map(p=>p.join(',')).join(' '),fill:'color-mix(in srgb,var(--accent) 12%,transparent)',stroke:'var(--accent)','stroke-width':3}));inner.forEach(p=>g.append(svg('line',{x1:cx,y1:cy,x2:p[0],y2:p[1],stroke:'var(--accent)','stroke-width':1.6,opacity:.7})));if(s>=1){g.append(svg('polygon',{points:[[cx,cy],M,V].map(p=>p.join(',')).join(' '),fill:'color-mix(in srgb,var(--focus) 24%,transparent)',stroke:'var(--focus)','stroke-width':4}));label(g,(M[0]+V[0])/2+4,(M[1]+V[1])/2-9,'ℓin/2');label(g,(cx+M[0])/2-10,(cy+M[1])/2,'a','end');label(g,(cx+V[0])/2+10,(cy+V[1])/2,'ρ')}if(s===2)label(g,cx,474,'△ = ℓin·a/2','middle',20);if(s===3)label(g,cx,474,'Ain = Pin·a/2','middle',20);if(s===4)label(g,cx,474,'Ain = nρ² sen(π/n) cos(π/n)','middle',18);if(s===5)label(g,cx,474,'Ain = (nρ²/2) sen(2π/n)','middle',19)}
