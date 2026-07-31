@@ -1,37 +1,121 @@
-name: Valida o MATHeu$
+name: Publica e valida o Interlúdio 01·B canônico
 
 on:
   pull_request:
     paths:
       - 'modules/**'
-      - 'atlas/**'
-      - 'index.html'
-      - '.github/workflows/validate.yml'
-  push:
-    branches: [main]
-    paths:
-      - 'modules/**'
-      - 'atlas/**'
-      - 'index.html'
+      - 'docs/**'
       - '.github/workflows/validate.yml'
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
-  matematica:
+  publica:
+    if: github.event_name == 'pull_request' && github.head_ref == 'agent/interludio01b-canonico'
     runs-on: ubuntu-latest
     steps:
-      - name: Baixa o repositório
+      - name: Baixa o branch real
         uses: actions/checkout@v6
+        with:
+          ref: agent/interludio01b-canonico
 
-      - name: Verifica a matemática de todos os laboratórios
+      - name: Incorpora CSS e JavaScript no HTML
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          root = Path('modules/01b-poligono-escondido')
+          page = root / 'index.html'
+          css_path = root / 'lab.css'
+          js_path = root / 'lab.js'
+          html = page.read_text(encoding='utf-8')
+          css = css_path.read_text(encoding='utf-8')
+          js = js_path.read_text(encoding='utf-8')
+
+          if '<link rel="stylesheet" href="lab.css">' not in html:
+              raise SystemExit('link CSS não encontrado')
+          if '<script src="lab.js"></script>' not in html:
+              raise SystemExit('script externo não encontrado')
+
+          html = html.replace('<link rel="stylesheet" href="lab.css">', '<style>\n' + css + '\n</style>', 1)
+          html = html.replace('<script src="lab.js"></script>', '<script>\n' + js.rstrip() + '\n</script>', 1)
+          page.write_text(html, encoding='utf-8')
+
+          check = root / 'check-math.mjs'
+          text = check.read_text(encoding='utf-8')
+          text = text.replace("const js=readFileSync(new URL('./lab.js',import.meta.url),'utf8');\nconst css=readFileSync(new URL('./lab.css',import.meta.url),'utf8');", "const js=html.match(/<script>([\\s\\S]*?)<\\/script>/)?.[1]||'';\nconst css=html.match(/<style>([\\s\\S]*?)<\\/style>/)?.[1]||'';")
+          anchor = "assert.match(css,/\\.stepper\\{position:sticky/);"
+          extra = "\nassert.ok(!html.includes('href=\"lab.css\"')&&!html.includes('src=\"lab.js\"'),'HTML publicado deve ser autocontido');\nassert.ok(html.includes('<style>')&&js.length>8000,'CSS e JavaScript devem estar incorporados');"
+          if extra.strip() not in text:
+              if anchor not in text:
+                  raise SystemExit('âncora do checker não encontrada')
+              text = text.replace(anchor, anchor + extra)
+          check.write_text(text, encoding='utf-8')
+
+          css_path.unlink()
+          js_path.unlink()
+          PY
+
+      - name: Restaura o workflow canônico
+        run: |
+          cat > .github/workflows/validate.yml <<'YAML'
+          name: Valida o MATHeu$
+
+          on:
+            pull_request:
+              paths:
+                - 'modules/**'
+                - 'atlas/**'
+                - 'index.html'
+                - '.github/workflows/validate.yml'
+            push:
+              branches: [main]
+              paths:
+                - 'modules/**'
+                - 'atlas/**'
+                - 'index.html'
+                - '.github/workflows/validate.yml'
+            workflow_dispatch:
+
+          permissions:
+            contents: read
+
+          jobs:
+            matematica:
+              runs-on: ubuntu-latest
+              steps:
+                - name: Baixa o repositório
+                  uses: actions/checkout@v6
+
+                - name: Verifica a matemática de todos os laboratórios
+                  run: |
+                    for checker in modules/*/check-math.mjs; do
+                      echo "== $checker"
+                      node "$checker"
+                    done
+
+                - name: Verifica o atlas pessoal
+                  run: node atlas/check-math.mjs
+          YAML
+
+      - name: Valida o repositório inteiro
         run: |
           for checker in modules/*/check-math.mjs; do
             echo "== $checker"
             node "$checker"
           done
+          node atlas/check-math.mjs
+          test ! -e modules/01b-poligono-escondido/lab.css
+          test ! -e modules/01b-poligono-escondido/lab.js
+          ! grep -q 'href="lab.css"' modules/01b-poligono-escondido/index.html
+          ! grep -q 'src="lab.js"' modules/01b-poligono-escondido/index.html
 
-      - name: Verifica o atlas pessoal
-        run: node atlas/check-math.mjs
+      - name: Publica o commit final
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "canoniza o Interlúdio 01·B como HTML autocontido"
+          git push origin HEAD:agent/interludio01b-canonico
