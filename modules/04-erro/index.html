@@ -1,748 +1,268 @@
 <!doctype html>
 <html lang="pt-BR">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Laboratório 04 do MATHeu$: o erro vira objeto de estudo — dobre os lados e descubra a forma quadrática.">
-  <title>Lab 04 — O erro também tem forma · MATHeu$</title>
-  <style>
-    :root {
-      color-scheme: light dark;
-      --bg: #f4f1e8;
-      --ink: #171713;
-      --muted: #666258;
-      --paper: rgba(255, 255, 255, .66);
-      --line: rgba(23, 23, 19, .15);
-      --accent: #246b52;
-      --accent-2: #9b3f31;
-      --circle: #252520;
-      --focus: #d4872d;
-      --shadow: 0 18px 60px rgba(48, 43, 31, .09);
-    }
-
-    @media (prefers-color-scheme: dark) {
-      :root {
-        --bg: #11130f;
-        --ink: #f0eee7;
-        --muted: #b8b3a8;
-        --paper: rgba(255, 255, 255, .055);
-        --line: rgba(255, 255, 255, .14);
-        --accent: #7bc5a3;
-        --accent-2: #ef9788;
-        --circle: #f0eee7;
-        --focus: #ffc267;
-        --shadow: none;
-      }
-    }
-
-    * { box-sizing: border-box; }
-
-    html { scroll-behavior: smooth; }
-
-    body {
-      margin: 0;
-      background: var(--bg);
-      color: var(--ink);
-      font: 18px/1.55 ui-serif, Georgia, Cambria, "Times New Roman", serif;
-    }
-
-    button, input { font: inherit; }
-
-    a { color: var(--accent); }
-
-    :focus-visible {
-      outline: 3px solid var(--focus);
-      outline-offset: 3px;
-    }
-
-    .skip-link {
-      position: absolute;
-      left: 12px;
-      top: -80px;
-      padding: 10px 14px;
-      background: var(--ink);
-      color: var(--bg);
-      z-index: 20;
-    }
-
-    .skip-link:focus { top: 12px; }
-
-    header, main, footer {
-      width: min(1120px, calc(100% - 32px));
-      margin-inline: auto;
-    }
-
-    header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 16px;
-      padding: 22px 0;
-      border-bottom: 1px solid var(--line);
-      font-family: ui-sans-serif, system-ui, sans-serif;
-      font-size: .86rem;
-    }
-
-    header a { text-decoration: none; }
-
-    .brand { font-weight: 800; letter-spacing: -.02em; }
-
-    main { padding: 58px 0 88px; }
-
-    .eyebrow {
-      margin: 0 0 12px;
-      color: var(--accent);
-      font: 800 .76rem/1.2 ui-sans-serif, system-ui, sans-serif;
-      letter-spacing: .15em;
-      text-transform: uppercase;
-    }
-
-    h1, h2, h3 { line-height: 1.08; letter-spacing: -.035em; }
-
-    h1 {
-      max-width: 900px;
-      margin: 0;
-      font-size: clamp(2.9rem, 8vw, 6.6rem);
-    }
-
-    h2 { font-size: clamp(2rem, 5vw, 3.5rem); margin-top: 0; }
-
-    h3 { font-size: 1.25rem; }
-
-    .lead {
-      max-width: 780px;
-      margin: 24px 0 0;
-      color: var(--muted);
-      font-size: clamp(1.18rem, 2.8vw, 1.65rem);
-    }
-
-    .question-card, .lab-card, .formula-card, .challenge-card, details {
-      margin-top: 38px;
-      border: 1px solid var(--line);
-      border-radius: 24px;
-      background: var(--paper);
-      box-shadow: var(--shadow);
-    }
-
-    .question-card, .formula-card, .challenge-card, details { padding: clamp(22px, 4vw, 38px); }
-
-    .question-card strong, .box-label {
-      display: block;
-      color: var(--accent);
-      font: 800 .76rem/1.2 ui-sans-serif, system-ui, sans-serif;
-      letter-spacing: .13em;
-      text-transform: uppercase;
-    }
-
-    .question-card p {
-      max-width: 850px;
-      margin: 12px 0 22px;
-      font-size: clamp(1.45rem, 4vw, 2.45rem);
-      line-height: 1.18;
-    }
-
-    .answer-grid {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 10px;
-    }
-
-    button {
-      border: 1px solid var(--line);
-      border-radius: 999px;
-      padding: 12px 16px;
-      background: transparent;
-      color: var(--ink);
-      cursor: pointer;
-    }
-
-    button:hover { border-color: var(--accent); }
-
-    button[aria-pressed="true"], .primary {
-      border-color: var(--accent);
-      background: var(--accent);
-      color: var(--bg);
-    }
-
-    button:disabled { opacity: .45; cursor: not-allowed; }
-
-    .feedback {
-      min-height: 1.6em;
-      margin: 16px 0 0;
-      color: var(--muted);
-      font-family: ui-sans-serif, system-ui, sans-serif;
-    }
-
-    .lab-card { overflow: hidden; }
-
-    .lab-grid {
-      display: grid;
-      grid-template-columns: minmax(0, 1.35fr) minmax(280px, .65fr);
-    }
-
-    .chart-panel {
-      padding: clamp(18px, 3vw, 30px);
-    }
-
-    .chart-panel svg { width: 100%; height: auto; display: block; }
-
-    .control-panel {
-      padding: clamp(22px, 4vw, 34px);
-      border-left: 1px solid var(--line);
-    }
-
-    .control-panel h2 { font-size: 1.9rem; }
-
-    .control-label {
-      display: block;
-      margin-top: 26px;
-      margin-bottom: 8px;
-      font: 700 .86rem/1.3 ui-sans-serif, system-ui, sans-serif;
-    }
-
-    .quick-values {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-
-    .quick-values button { padding: 8px 12px; font-size: .88rem; }
-
-    .measurements {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      margin: 26px 0;
-    }
-
-    .measurement {
-      padding: 14px;
-      border: 1px solid var(--line);
-      border-radius: 16px;
-    }
-
-    .measurement dt {
-      color: var(--muted);
-      font: 700 .73rem/1.2 ui-sans-serif, system-ui, sans-serif;
-      text-transform: uppercase;
-      letter-spacing: .08em;
-    }
-
-    .measurement dd { margin: 5px 0 0; font-size: 1.32rem; font-variant-numeric: tabular-nums; }
-
-    .hint {
-      padding: 16px;
-      border-left: 4px solid var(--accent);
-      background: color-mix(in srgb, var(--accent) 9%, transparent);
-      color: var(--muted);
-    }
-
-    .reveal-row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-top: 22px; }
-
-    .hint.secret { margin-top: 24px; }
-
-    .formula-card[hidden] { display: none; }
-
-    .formula {
-      margin: 22px 0;
-      padding: 22px;
-      border: 1px solid var(--line);
-      border-radius: 18px;
-      text-align: center;
-      font-size: clamp(1.5rem, 4.4vw, 2.6rem);
-      font-variant-numeric: lining-nums;
-      overflow-x: auto;
-    }
-
-    .dictionary {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
-      margin-top: 18px;
-    }
-
-    .dictionary div { padding: 14px; border-top: 1px solid var(--line); }
-
-    .challenge-options { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
-
-    table.doubling {
-      width: 100%;
-      margin-top: 20px;
-      border-collapse: collapse;
-      font-variant-numeric: tabular-nums;
-      font-family: ui-sans-serif, system-ui, sans-serif;
-      font-size: .93rem;
-    }
-
-    table.doubling th, table.doubling td {
-      padding: 9px 12px;
-      border-top: 1px solid var(--line);
-      text-align: right;
-    }
-
-    table.doubling th {
-      font: 700 .72rem/1.2 ui-sans-serif, system-ui, sans-serif;
-      text-transform: uppercase;
-      letter-spacing: .07em;
-      color: var(--muted);
-    }
-
-    table.doubling td:first-child, table.doubling th:first-child { text-align: left; }
-
-    details summary {
-      cursor: pointer;
-      font-weight: 700;
-      font-size: 1.25rem;
-    }
-
-    details p, details li { color: var(--muted); }
-
-    footer { padding: 28px 0 56px; border-top: 1px solid var(--line); color: var(--muted); }
-
-    @media (max-width: 820px) {
-      .answer-grid, .dictionary { grid-template-columns: 1fr; }
-      .lab-grid { grid-template-columns: 1fr; }
-      .control-panel { border-left: 0; border-top: 1px solid var(--line); }
-    }
-
-    @media (max-width: 480px) {
-      header { align-items: flex-start; flex-direction: column; }
-      main { padding-top: 38px; }
-      .measurements { grid-template-columns: 1fr; }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      html { scroll-behavior: auto; }
-      * { transition: none !important; }
-    }
-
-    .hint-ladder { margin-top: 20px; }
-
-    .hint-ladder details {
-      margin-top: 10px;
-      padding: 14px 18px;
-      border-radius: 14px;
-      box-shadow: none;
-    }
-
-    .hint-ladder summary { font-size: 1rem; }
-
-    .lab-nav {
-      margin-top: 48px;
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 12px;
-      font-family: ui-sans-serif, system-ui, sans-serif;
-    }
-
-    .lab-nav a, .lab-nav .soon {
-      display: block;
-      padding: 16px 18px;
-      border: 1px solid var(--line);
-      border-radius: 18px;
-      background: var(--paper);
-      color: var(--ink);
-      text-decoration: none;
-    }
-
-    .lab-nav a:hover { border-color: var(--accent); }
-
-    .lab-nav small {
-      display: block;
-      margin-bottom: 6px;
-      color: var(--accent);
-      font: 800 .7rem/1.2 ui-sans-serif, system-ui, sans-serif;
-      letter-spacing: .1em;
-      text-transform: uppercase;
-    }
-
-    .lab-nav .soon { color: var(--muted); }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Laboratório visual do MATHeu$: compare cinco diferenças, deduza as leis n^-2 e n^-3 e meça suas constantes.">
+<title>Lab 04 — O erro também tem forma · MATHeu$</title>
 <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<style>
+:root{
+      color-scheme:light dark;
+      --bg:#f3f0e7;--ink:#171713;--muted:#68645b;--paper:#fffdf8cc;
+      --line:#17171324;--accent:#246b52;--accent2:#a04436;--focus:#d8892f;
+      --grid:#17171312;--shadow:0 18px 60px #302b1f16
+    }
+    @media(prefers-color-scheme:dark){:root{
+      --bg:#10120e;--ink:#f1eee6;--muted:#b9b3a8;--paper:#ffffff0d;
+      --line:#ffffff24;--accent:#78c7a3;--accent2:#f19a8c;--focus:#ffc46d;
+      --grid:#ffffff12;--shadow:none
+    }}
+    *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--ink);font:18px/1.55 ui-serif,Georgia,Cambria,serif}
+    button,input{font:inherit}button{color:inherit}a{color:var(--accent)}[hidden]{display:none!important}
+    :focus-visible{outline:3px solid var(--focus);outline-offset:3px}
+    .skip{position:absolute;left:12px;top:-80px;padding:10px 14px;background:var(--ink);color:var(--bg);z-index:40}.skip:focus{top:12px}
+    header,.meta,main,footer{width:min(1120px,calc(100% - 28px));margin-inline:auto}
+    header{display:flex;justify-content:space-between;gap:16px;align-items:center;padding:20px 0;border-bottom:1px solid var(--line);font:700 .84rem/1.2 ui-sans-serif,system-ui}
+    header a{text-decoration:none}.brand{font-weight:900}
+    .meta{display:flex;flex-wrap:wrap;gap:10px 20px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line);color:var(--muted);font:700 .78rem/1.2 ui-sans-serif,system-ui}
+    .meta button{margin-left:auto}.progress-mini{display:flex;gap:10px;align-items:center}.track{width:120px;height:7px;border-radius:99px;background:var(--line);overflow:hidden}.track span{display:block;height:100%;width:0;background:var(--accent);transition:width .25s}
+    main{padding:54px 0 88px}.eyebrow{margin:0 0 12px;color:var(--accent);font:900 .75rem/1.2 ui-sans-serif,system-ui;letter-spacing:.15em;text-transform:uppercase}
+    h1,h2,h3{line-height:1.06;letter-spacing:-.035em}h1{max-width:930px;margin:0;font-size:clamp(3rem,9vw,7rem)}h2{font-size:clamp(2rem,5vw,3.6rem);margin:0 0 14px}h3{font-size:1.25rem;margin:0 0 10px}
+    .lead{max-width:820px;margin:24px 0 0;color:var(--muted);font-size:clamp(1.15rem,2.7vw,1.65rem)}
+    .question,.act,.proof,.work-card,.curiosity,.finish-item,.lab{border:1px solid var(--line);background:var(--paper);box-shadow:var(--shadow)}
+    .question,.act,.proof{margin-top:34px;border-radius:26px;padding:clamp(22px,4vw,38px)}
+    .label{display:block;color:var(--accent);font:900 .74rem/1.2 ui-sans-serif,system-ui;letter-spacing:.13em;text-transform:uppercase}
+    .question>p{max-width:850px;margin:12px 0 22px;font-size:clamp(1.4rem,4vw,2.4rem);line-height:1.18}
+    .options,.quick,.stepper,.step-dots{display:flex;flex-wrap:wrap;gap:10px}.options button,.primary,.ghost,.quick button,.meta button,.step-dots button{border:1px solid var(--line);border-radius:999px;padding:11px 15px;background:transparent;cursor:pointer}
+    .options button:hover,.primary:hover,.ghost:hover,.quick button:hover,.step-dots button:hover{border-color:var(--accent)}
+    button[aria-pressed=true],.primary,.step-dots button[aria-current=step]{border-color:var(--accent);background:var(--accent);color:var(--bg)}
+    button:disabled{opacity:.48;cursor:not-allowed}.feedback{min-height:1.5em;margin:14px 0 0;color:var(--muted);font:600 .91rem/1.45 ui-sans-serif,system-ui}
+    .route{margin-top:30px;padding:22px;border:1px dashed var(--line);border-radius:24px;background:color-mix(in srgb,var(--accent) 6%,transparent)}
+    .route h2{font-size:1.45rem}.route-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.route-step{padding:14px;border:1px solid var(--line);border-radius:16px}.route-step strong{display:block;color:var(--accent);font:800 .78rem/1.2 ui-sans-serif,system-ui}.route-step span{color:var(--muted);font-size:.92rem}
+    .lab{margin-top:34px;border-radius:28px;overflow:hidden}.lab-grid{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(290px,.75fr)}
+    .visual{min-height:650px;padding:16px;background:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:28px 28px}.visual svg{width:100%;height:100%;min-height:610px;display:block}
+    .controls{padding:clamp(22px,4vw,36px);border-left:1px solid var(--line)}.controls label{display:block;margin-top:24px;font:800 .86rem/1.3 ui-sans-serif,system-ui}.controls input[type=range]{width:100%;margin:14px 0;accent-color:var(--accent)}.quick button{padding:8px 12px;font-size:.86rem}
+    .values{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:24px 0}.value{padding:13px;border:1px solid var(--line);border-radius:15px}.value dt{color:var(--muted);font:800 .7rem/1.2 ui-sans-serif,system-ui;letter-spacing:.08em;text-transform:uppercase}.value dd{margin:5px 0 0;font-size:1.25rem;font-variant-numeric:tabular-nums}.inside dd{color:var(--accent)}.outside dd{color:var(--accent2)}
+    .hint{padding:15px;border-left:4px solid var(--accent);background:color-mix(in srgb,var(--accent) 9%,transparent);color:var(--muted)}.reveal-row{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:20px}
+    .chart-wrap{margin-top:18px;padding:13px;border:1px solid var(--line);border-radius:18px}.chart-wrap canvas{display:block;width:100%;height:230px}.chart-wrap small{color:var(--muted);font:700 .76rem/1.3 ui-sans-serif,system-ui}
+    .deriv-grid{display:grid;grid-template-columns:minmax(0,.95fr) minmax(0,1.05fr);gap:24px;align-items:start;margin-top:22px}.deriv-figure{position:sticky;top:12px;padding:12px;border:1px solid var(--line);border-radius:20px;background:var(--bg)}.deriv-figure svg{width:100%;height:auto;display:block}
+    .stepper{align-items:center;margin:14px 0 12px}.step-dots{margin-bottom:12px}.step-dots button{width:38px;height:38px;padding:0;font:900 .8rem/1 ui-sans-serif,system-ui}
+    .chain{list-style:none;margin:0;padding:0}.chain li{position:relative;padding:18px 18px 18px 56px;border:1px solid var(--focus);border-radius:18px;background:color-mix(in srgb,var(--focus) 8%,transparent)}.chain li::before{content:attr(data-step);position:absolute;left:16px;top:18px;display:grid;place-items:center;width:27px;height:27px;border-radius:50%;background:var(--focus);color:var(--bg);font:900 .78rem/1 ui-sans-serif,system-ui}.chain p{margin:0}.chain details{margin-top:12px;padding:11px 13px;border:1px solid var(--line);border-radius:13px}.chain summary{cursor:pointer;font-weight:800}
+    .result-reveal{margin-top:22px;padding:20px;border:1px solid var(--accent);border-radius:20px;background:color-mix(in srgb,var(--accent) 8%,transparent)}.formula{margin:14px 0;padding:18px;border:1px solid var(--line);border-radius:18px;text-align:center;font-size:clamp(1.55rem,4.5vw,2.8rem);overflow:auto}.dictionary{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.dictionary div{padding:14px;border-top:1px solid var(--line)}
+    .proof{box-shadow:none}.proof summary{cursor:pointer;font-weight:900;font-size:1.15rem}.proof p{color:var(--muted)}.qed{text-align:right;color:var(--accent)!important;font-weight:900}
+    .work-grid,.curiosity-grid,.finish-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:22px}.work-card,.curiosity,.finish-item{border-radius:20px;padding:20px;box-shadow:none}.work-card details{margin-top:14px;padding:11px 13px;border:1px solid var(--line);border-radius:13px}.work-card summary{cursor:pointer;font-weight:800}.number{display:inline-grid;place-items:center;width:34px;height:34px;margin-bottom:12px;border-radius:50%;background:var(--accent);color:var(--bg);font:900 .82rem/1 ui-sans-serif,system-ui}
+    .error-grid{display:grid;grid-template-columns:.75fr 1.25fr;gap:14px;align-items:start}.error-controls{padding:18px;border:1px solid var(--line);border-radius:18px}.error-controls label{font:800 .86rem/1.3 ui-sans-serif,system-ui}.error-controls input{width:100%;margin:12px 0}.error-canvas{padding:14px;border:1px solid var(--line);border-radius:18px}.error-canvas canvas{width:100%;height:300px;display:block}.error-result{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:14px}
+    .finish-item strong{display:block;color:var(--accent);font:900 .78rem/1.2 ui-sans-serif,system-ui;text-transform:uppercase;letter-spacing:.08em}.finish-item p{margin:7px 0 0;color:var(--muted)}
+    .lab-nav{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-top:40px;font-family:ui-sans-serif,system-ui}.lab-nav a{display:block;padding:16px 18px;border:1px solid var(--line);border-radius:18px;background:var(--paper);color:var(--ink);text-decoration:none}.lab-nav small{display:block;margin-bottom:5px;color:var(--accent);font:900 .68rem/1.2 ui-sans-serif,system-ui;letter-spacing:.1em;text-transform:uppercase}
+    footer{padding:28px 0 54px;border-top:1px solid var(--line);color:var(--muted)}
+    @media(max-width:840px){.route-grid{grid-template-columns:1fr 1fr}.lab-grid,.deriv-grid,.error-grid{grid-template-columns:1fr}.controls{border-left:0;border-top:1px solid var(--line)}.deriv-figure{position:relative;top:0}.work-grid,.curiosity-grid,.finish-grid{grid-template-columns:1fr}.visual{min-height:480px}.visual svg{min-height:450px}.stepper{position:sticky;bottom:8px;z-index:5;padding:10px;border:1px solid var(--line);border-radius:18px;background:color-mix(in srgb,var(--bg) 92%,transparent);backdrop-filter:blur(10px)}}
+    @media(max-width:520px){header{align-items:flex-start;flex-direction:column}.meta button{margin-left:0}.route-grid,.values,.dictionary,.error-result{grid-template-columns:1fr}main{padding-top:38px}}
+    @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
+
+/* Lab 04 */
+
+.mode-row,.series-row{display:flex;flex-wrap:wrap;gap:9px;margin-top:16px}
+.mode-row button,.series-row button{border:1px solid var(--line);border-radius:999px;padding:8px 12px;background:transparent;color:inherit;cursor:pointer;font:750 .82rem/1.2 ui-sans-serif,system-ui}
+.mode-row button[aria-pressed=true],.series-row button[aria-pressed=true]{background:var(--accent);border-color:var(--accent);color:var(--bg)}
+.dashboard{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:22px 0}.dashboard div{padding:13px;border:1px solid var(--line);border-radius:15px}.dashboard dt{color:var(--muted);font:800 .68rem/1.2 ui-sans-serif,system-ui;text-transform:uppercase;letter-spacing:.07em}.dashboard dd{margin:5px 0 0;font-variant-numeric:tabular-nums;font-size:1.12rem}
+.chart-stack{display:grid;gap:14px}.chart-card{padding:15px;border:1px solid var(--line);border-radius:18px}.chart-card canvas{display:block;width:100%;height:290px}.chart-card small{color:var(--muted);font:700 .75rem/1.35 ui-sans-serif,system-ui}
+.deriv-caption{margin:8px 4px 0;color:var(--muted);font:700 .82rem/1.4 ui-sans-serif,system-ui}
+.constant-grid,.slope-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:16px}.constant-grid article,.slope-grid article{padding:16px;border:1px solid var(--line);border-radius:17px}.constant-grid strong,.slope-grid strong{color:var(--accent)}.constant-grid p,.slope-grid p{color:var(--muted);margin:7px 0 0}
+.microscope-grid{display:grid;grid-template-columns:.72fr 1.28fr;gap:14px}.microscope-controls{padding:18px;border:1px solid var(--line);border-radius:18px}.microscope-controls input{width:100%;margin:12px 0}.microscope-values{display:grid;gap:8px}.microscope-values div{display:flex;justify-content:space-between;gap:10px;padding:11px;border:1px solid var(--line);border-radius:13px}.microscope-values span{color:var(--muted)}
+.normalize-panel{margin-top:18px;padding:18px;border:1px solid var(--line);border-radius:20px}.normalize-panel canvas{display:block;width:100%;height:320px}.normalize-result{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:12px}.normalize-result div{padding:10px;border:1px solid var(--line);border-radius:12px;text-align:center}.normalize-result small{display:block;color:var(--muted)}
+.mini-formula{margin:10px 0;padding:12px;border:1px solid var(--line);border-radius:12px;font:800 .95rem/1.4 ui-monospace,SFMono-Regular,Menlo,monospace;overflow:auto}
+.finish-status{margin-top:18px;padding:16px;border-left:4px solid var(--accent);background:color-mix(in srgb,var(--accent) 8%,transparent);font-weight:800}
+@media(max-width:840px){.microscope-grid{grid-template-columns:1fr}.normalize-result{grid-template-columns:1fr 1fr}.chart-card canvas{height:260px}}
+@media(max-width:520px){.dashboard,.constant-grid,.slope-grid{grid-template-columns:1fr}.normalize-result{grid-template-columns:1fr}}
+
+</style>
 </head>
 <body>
-  <a class="skip-link" href="#conteudo">Pular para o laboratório</a>
-  <header>
-    <a class="brand" href="../../index.html">MATHeu$</a>
-    <span>Temporada 01 · Laboratório 04</span>
-  </header>
+<a class="skip" href="#conteudo">Pular para o laboratório</a>
+<header><a class="brand" href="../../index.html">MATHeu$</a><span>Temporada 01 · Laboratório 04</span></header>
+<div class="meta">
+  <div class="progress-mini"><span>Progresso real</span><div class="track" role="progressbar" aria-valuemin="0" aria-valuemax="10" aria-valuenow="0"><span id="progress-fill"></span></div><strong id="progress-text">0/10</strong></div>
+  <span>≈ 40–55 min</span><span>Dificuldade <span role="img" aria-label="3 de 3">●●●</span></span>
+  <button id="restart" type="button">Recomeçar laboratório</button>
+</div>
+<main id="conteudo">
+<p class="eyebrow">O erro também tem forma</p>
+<h1>Dobrar os lados não divide tudo do mesmo jeito.</h1>
+<p class="lead">Perímetro e área melhoram quase quatro vezes quando n dobra. Mas a distância entre duas assinaturas vizinhas encolhe quase oito vezes. O erro geométrico e o poder de distinguir formas parecem parentes — até serem interrogados separadamente.</p>
 
-  <main id="conteudo">
-    <p class="eyebrow">O erro também tem forma</p>
-    <h1>O erro encolhe. Mas encolhe com que forma?</h1>
-    <p class="lead">Três laboratórios deixaram números de erro para trás. Agora o erro deixa de ser resto e vira o objeto: vamos dobrar os lados repetidas vezes e medir o que acontece.</p>
+<section class="route" aria-labelledby="route-title">
+  <span class="label">Mapa do laboratório</span><h2 id="route-title">Do número pequeno à lei que o governa</h2>
+  <div class="route-grid">
+    <div class="route-step"><strong>Ato 1</strong><span>apostar o efeito de dobrar n</span></div>
+    <div class="route-step"><strong>Ato 2</strong><span>comparar cinco diferenças</span></div>
+    <div class="route-step"><strong>Ato 3</strong><span>deduzir n⁻² e n⁻³ em nove passos</span></div>
+    <div class="route-step"><strong>Ato 4</strong><span>resolver quatro transferências</span></div>
+    <div class="route-step"><strong>Ato 5</strong><span>medir inclinações e constantes</span></div>
+    <div class="route-step"><strong>Ato 6</strong><span>provar, prever e abrir garantias</span></div>
+  </div>
+</section>
 
-    <section class="question-card" aria-labelledby="aposta-titulo">
-      <strong id="aposta-titulo">Pare e aposte</strong>
-      <p>Cada vez que o número de lados dobra, o erro do cerco fica aproximadamente…</p>
-      <div class="answer-grid" role="group" aria-label="Escolha sua previsão">
-        <button type="button" data-prediction="half" aria-pressed="false">na metade</button>
-        <button type="button" data-prediction="quarter" aria-pressed="false">em um quarto</button>
-        <button type="button" data-prediction="hundredth" aria-pressed="false">em um centésimo</button>
-      </div>
-      <p id="prediction-feedback" class="feedback" aria-live="polite">Escolha antes de apertar o botão de dobrar. A tabela dará o veredito.</p>
-    </section>
+<section id="bet" class="question" aria-labelledby="bet-title">
+  <span class="label">Ato 1 · pare e aposte</span>
+  <p id="bet-title">Se o erro do perímetro interno vale E em n lados, quanto ele tende a valer em 2n lados?</p>
+  <div class="options" role="group" aria-label="Escolha sua previsão">
+    <button type="button" data-prediction="half" aria-pressed="false">E/2</button>
+    <button type="button" data-prediction="quarter" aria-pressed="false">E/4</button>
+    <button type="button" data-prediction="eighth" aria-pressed="false">E/8</button>
+  </div>
+  <p id="prediction-feedback" class="feedback" aria-live="polite">Registre uma hipótese antes de abrir as curvas. Depois descobriremos por que uma das três respostas também estará certa — para outra diferença.</p>
+</section>
 
-    <section class="lab-card" aria-labelledby="lab-title">
-      <div class="lab-grid">
-        <div class="chart-panel">
-          <svg id="chart" viewBox="0 0 640 320" aria-hidden="true"><g id="chart-drawing"></g></svg>
-          <table class="doubling" aria-label="Tabela de duplicação do número de lados">
-            <thead>
-              <tr><th scope="col">n</th><th scope="col">erro</th><th scope="col">erro ÷ anterior</th><th scope="col">n² × erro</th></tr>
-            </thead>
-            <tbody id="rows"></tbody>
-          </table>
-        </div>
+<section class="lab" aria-labelledby="lab-title">
+  <div class="lab-grid">
+    <div class="visual">
+      <svg id="geometry" viewBox="0 0 640 680" role="img" aria-labelledby="svg-title svg-desc"><title id="svg-title">Comparação entre polígonos de n e 2n lados e os resíduos junto ao círculo</title><desc id="svg-desc">Dois painéis mostram um polígono com n lados e outro com o dobro. Marcas ampliadas destacam o erro geométrico e o espaço entre assinaturas vizinhas.</desc><g id="drawing"></g></svg>
+    </div>
+    <div class="controls">
+      <span class="label">Ato 2 · laboratório das cinco diferenças</span><h2 id="lab-title">Escolha n e veja o que a dobra realmente faz</h2>
+      <p>O raio é 1. Quatro séries medem erro até o círculo; a quinta mede a distância entre as razões de n e n+1 lados.</p>
+      <label for="sides">Número de lados n: <output id="sides-output">24</output></label>
+      <input id="sides" type="range" min="6" max="192" step="1" value="24">
+      <div class="quick"><button data-n="6">6</button><button data-n="12">12</button><button data-n="24">24</button><button data-n="48">48</button><button data-n="96">96</button><button data-n="192">192</button></div>
+      <div class="mode-row" role="group" aria-label="Escolher família"><button data-mode="all" aria-pressed="true">todas</button><button data-mode="perimeter" aria-pressed="false">perímetros</button><button data-mode="area" aria-pressed="false">áreas</button><button data-mode="inference" aria-pressed="false">inferência</button></div>
 
-        <div class="control-panel">
-          <p class="box-label">Brinque</p>
-          <h2 id="lab-title">Dobre e meça</h2>
-          <p>Escolha uma série de erro dos laboratórios anteriores (círculo de raio 1) e dobre os lados quantas vezes quiser.</p>
+      <dl id="dashboard" class="dashboard" hidden>
+        <div><dt>erro P dentro</dt><dd id="ep-in">0,0179</dd></div><div><dt>erro P fora</dt><dd id="ep-out">0,0362</dd></div>
+        <div><dt>erro A dentro</dt><dd id="ea-in">0,0358</dd></div><div><dt>erro A fora</dt><dd id="ea-out">0,0180</dd></div>
+        <div><dt>espaço f(n+1)−f(n)</dt><dd id="signature-gap">0,000670</dd></div><div><dt>expoente medido</dt><dd id="measured-power">≈2,00</dd></div>
+      </dl>
+      <div id="family-chart-wrap" class="chart-card" hidden><canvas id="family-chart" aria-label="Gráfico logarítmico das cinco diferenças"></canvas><small>Linhas paralelas têm a mesma potência; altura diferente significa constante diferente.</small></div>
+      <p id="post-prediction-hint" class="hint" hidden><strong>Olhe a inclinação:</strong> quatro curvas descem com declive −2. A curva da inferência desce mais depressa, com declive −3.</p>
+      <div class="reveal-row"><button id="reveal" type="button" class="primary">1. Faça uma aposta acima</button><span id="reveal-status" class="feedback">A aposta libera valores e gráfico; a manipulação é recomendada, não uma trava.</span></div>
+    </div>
+  </div>
+</section>
 
-          <span class="control-label" id="series-label">Série de erro</span>
-          <div class="quick-values" role="group" aria-labelledby="series-label">
-            <button type="button" data-series="perimeterIn" aria-pressed="true">contorno de dentro</button>
-            <button type="button" data-series="perimeterOut" aria-pressed="false">contorno de fora</button>
-            <button type="button" data-series="areaIn" aria-pressed="false">área de dentro</button>
-            <button type="button" data-series="areaOut" aria-pressed="false">área de fora</button>
-          </div>
+<section id="derivation" class="act" hidden aria-labelledby="derivation-title">
+  <span class="label">Ato 3 · a potência nasce do defeito local</span><h2 id="derivation-title">Nove passos para separar n⁻² de n⁻³</h2>
+  <p>Não começaremos com “é quadrático”. Começaremos com o que seno, tangente e cosseno deixam de fazer perto de zero.</p>
+  <div class="deriv-grid">
+    <div class="deriv-figure"><svg id="deriv-svg" viewBox="0 0 500 500" role="img" aria-label="Dedução visual progressiva das leis do erro"><g id="deriv-drawing"></g></svg><p id="deriv-caption" class="deriv-caption">Passo 1: a meia-fatia x=π/n diminui quando n cresce.</p></div>
+    <div>
+      <div class="stepper"><button id="prev-step" class="ghost">← anterior</button><button id="next-step" class="primary">próximo →</button><span id="step-status" class="feedback">Passo 1 de 9</span></div>
+      <div id="step-dots" class="step-dots"></div>
+      <ol id="chain" class="chain">
+        <li data-step="1"><p>Escreva <strong>x=π/n</strong>. Aumentar n torna x pequeno; toda a aproximação será uma pergunta sobre esse pequeno ângulo.</p><details><summary>Por quê?</summary><p>Uma volta é dividida em n setores, e o triângulo fundamental usa metade de cada setor.</p></details></li>
+        <li data-step="2" hidden><p>Perto de zero, o arco x excede sen x por uma folga cúbica: <strong>x−sen x≈x³/6</strong>.</p><details><summary>O que “cúbica” significa?</summary><p>Se x cai pela metade, essa folga cai para aproximadamente 1/8.</p></details></li>
+        <li data-step="3" hidden><p>O perímetro interno repete essa folga <strong>2n</strong> vezes: E<sub>P−</sub>=2n(x−sen x)≈2n·x³/6.</p><details><summary>Feche a potência</summary><p>Como x=π/n, temos n·x³=π³/n².</p></details></li>
+        <li data-step="4" hidden><p>A tangente ultrapassa o arco por <strong>tg x−x≈x³/3</strong>, cerca do dobro da folga do seno.</p><details><summary>Consequência</summary><p>O perímetro externo mantém n⁻², mas recebe constante duas vezes maior.</p></details></li>
+        <li data-step="5" hidden><p>Assim E<sub>P+</sub>≈2π³/(3n²), enquanto E<sub>P−</sub>≈π³/(3n²).</p><details><summary>Por que a mesma potência?</summary><p>Ambos repetem n vezes uma falha cúbica de tamanho π/n.</p></details></li>
+        <li data-step="6" hidden><p>Nas áreas, o leque troca as constantes: <strong>E<sub>A−</sub>≈2π³/(3n²)</strong> e <strong>E<sub>A+</sub>≈π³/(3n²)</strong>.</p><details><summary>Por que trocam?</summary><p>A área interna perde também pelo apótema; a externa usa o raio do círculo como apótema exato.</p></details></li>
+        <li data-step="7" hidden><p>A inferência pergunta outra coisa: qual a distância entre cos(π/n) e cos(π/(n+1))? Essa separação é aproximadamente <strong>π²/n³</strong>.</p><details><summary>De onde vem o cubo?</summary><p>A derivada de cos(π/n) em relação a n é aproximadamente π²/n³; agora não há multiplicação final por n lados.</p></details></li>
+        <li data-step="8" hidden><p>Dobrar n produz dois fatores: erros geométricos <strong>×1/4</strong>; espaço entre assinaturas <strong>×1/8</strong>.</p><details><summary>Regra geral</summary><p>Se E(n)≈C/nᵖ, então E(2n)/E(n)≈1/2ᵖ.</p></details></li>
+        <li data-step="9" hidden><p>Multiplique de volta pela potência correta: n²E estabiliza nas quatro geometrias; n³Δ estabiliza na inferência.</p><details><summary>O que estabiliza?</summary><p>π³/3, 2π³/3 e π² — as assinaturas constantes das cinco curvas.</p></details></li>
+      </ol>
+    </div>
+  </div>
+  <div id="deriv-result" class="result-reveal" hidden>
+    <span class="label">Corrente fechada</span>
+    <p><strong>Leia primeiro:</strong> quatro erros geométricos são uma constante dividida por n ao quadrado; a separação usada para inferir n é uma constante dividida por n ao cubo.</p>
+    <div class="formula">E<sub>geom</sub>(n) ≈ C/n²</div><div class="formula">Δ<sub>inferência</sub>(n) ≈ π²/n³</div>
+    <div class="dictionary"><div><strong>E</strong><br>distância até a medida circular</div><div><strong>Δ</strong><br>distância entre assinaturas vizinhas</div><div><strong>C</strong><br>constante da série</div><div><strong>≈</strong><br>lei assintótica, não igualdade exata</div></div>
+    <p><strong>Unidades:</strong> erros de perímetro têm unidade linear; erros de área, unidade quadrada; Δ é adimensional.</p>
+    <p><strong>Domínio:</strong> n inteiro, n≥3; as aproximações melhoram quando n cresce.</p>
+  </div>
+</section>
 
-          <div class="reveal-row">
-            <button id="double" type="button" class="primary">Dobrar n</button>
-            <span id="double-status" class="feedback" aria-live="polite">n = 3 · nenhuma dobra ainda</span>
-          </div>
+<section id="workbook" class="act" hidden aria-labelledby="workbook-title">
+  <span class="label">Ato 4 · caderno de transferências</span><h2 id="workbook-title">Quatro exercícios, quatro direções</h2>
+  <div class="work-grid">
+    <article class="work-card"><span class="number">1</span><h3>Área externa em n=50</h3><p>Usando C=π³/3≈10,335, estime C/50².</p><div class="options"><button data-ex="estimate" data-answer="0.00413">0,00413</button><button data-ex="estimate" data-answer="0.0413">0,0413</button><button data-ex="estimate" data-answer="0.000413">0,000413</button></div><p data-feedback="estimate" class="feedback"></p><details><summary>Pista</summary><p>50²=2500.</p></details></article>
+    <article class="work-card"><span class="number">2</span><h3>A dobra mais rápida</h3><p>Ao passar de n para 2n, o espaço entre assinaturas vizinhas fica perto de…</p><div class="options"><button data-ex="gap" data-answer="eighth">1/8</button><button data-ex="gap" data-answer="quarter">1/4</button><button data-ex="gap" data-answer="half">1/2</button></div><p data-feedback="gap" class="feedback"></p><details><summary>Pista</summary><p>A potência é 3.</p></details></article>
+    <article class="work-card"><span class="number">3</span><h3>Reduzir cem vezes</h3><p>Para tornar um erro geométrico cerca de 100× menor, n deve ficar aproximadamente…</p><div class="options"><button data-ex="hundred" data-answer="10">10× maior</button><button data-ex="hundred" data-answer="100">100× maior</button><button data-ex="hundred" data-answer="2">2× maior</button></div><p data-feedback="hundred" class="feedback"></p><details><summary>Pista</summary><p>(10n)²=100n².</p></details></article>
+    <article class="work-card"><span class="number">4</span><h3>O espelho das constantes</h3><p>Qual par tende à mesma constante 2π³/3?</p><div class="options"><button data-ex="pair" data-answer="pout-ain">perímetro externo e área interna</button><button data-ex="pair" data-answer="pin-aout">perímetro interno e área externa</button><button data-ex="pair" data-answer="inside">os dois internos</button></div><p data-feedback="pair" class="feedback"></p><details><summary>Pista</summary><p>Na área, a assimetria se inverte.</p></details></article>
+  </div>
+</section>
 
-          <dl class="measurements" aria-label="Última medição">
-            <div class="measurement"><dt>n atual</dt><dd id="n-value">3</dd></div>
-            <div class="measurement"><dt>erro</dt><dd id="err-value">1,0870329</dd></div>
-            <div class="measurement"><dt>erro ÷ anterior</dt><dd id="ratio-value">—</dd></div>
-            <div class="measurement"><dt>n² × erro</dt><dd id="scaled-value">9,783</dd></div>
-          </dl>
+<section id="microscope" class="act" hidden aria-labelledby="microscope-title">
+  <span class="label">Ato 5 · microscópio logarítmico</span><h2 id="microscope-title">Meça a inclinação em vez de acreditar no rótulo</h2>
+  <div class="microscope-grid">
+    <div class="microscope-controls">
+      <label for="audit-n">n para comparar com 2n: <output id="audit-n-output">24</output></label><input id="audit-n" type="range" min="6" max="192" value="24">
+      <div class="series-row" role="group" aria-label="Série auditada"><button data-series="p-in" aria-pressed="true">P dentro</button><button data-series="p-out">P fora</button><button data-series="a-in">A dentro</button><button data-series="a-out">A fora</button><button data-series="gap">inferência</button></div>
+      <div class="microscope-values"><div><span>E(n)</span><strong id="audit-e">0,0179</strong></div><div><span>E(2n)/E(n)</span><strong id="audit-ratio">0,250</strong></div><div><span>p medido</span><strong id="audit-power">2,00</strong></div></div>
+      <p id="audit-feedback" class="feedback">Mova n ou troque a série para registrar a auditoria.</p>
+    </div>
+    <div class="chart-card"><canvas id="audit-chart" aria-label="Curva logarítmica da série escolhida e triângulo de inclinação"></canvas><small>p=−log₂(E(2n)/E(n)). Uma razão 1/4 produz p=2; uma razão 1/8 produz p=3.</small></div>
+  </div>
 
-          <p class="hint"><strong>Olhe de novo:</strong> a coluna <em>erro ÷ anterior</em> se aproxima de um valor fixo. E a coluna <em>n² × erro</em> para de mudar. Duas pistas, um mesmo segredo.</p>
+  <div class="normalize-panel"><div class="reveal-row"><button id="normalize" class="primary">Normalizar pelas potências corretas</button><span id="normalize-feedback" class="feedback">Multiplicar pelo n adequado deve transformar curvas inclinadas em patamares.</span></div><canvas id="constant-chart" aria-label="Valores normalizados convergindo para constantes"></canvas><div class="normalize-result"><div><small>n²E P−</small><strong id="c-pin">10,33</strong></div><div><small>n²E P+</small><strong id="c-pout">20,67</strong></div><div><small>n²E A−</small><strong id="c-ain">20,67</strong></div><div><small>n²E A+</small><strong id="c-aout">10,33</strong></div><div><small>n³Δ</small><strong id="c-gap">9,87</strong></div></div></div>
+</section>
 
-          <div class="reveal-row">
-            <button id="reveal" type="button" class="primary" disabled>Dar nome à forma</button>
-            <span id="reveal-status" class="feedback" aria-live="polite">Aposte e dobre n pelo menos três vezes.</span>
-          </div>
-        </div>
-      </div>
-    </section>
+<section id="finish" class="act" hidden aria-labelledby="finish-title">
+  <span class="label">Ato 6 · prova, curiosidades e próxima porta</span><h2 id="finish-title">A potência explica o ritmo; a constante identifica a família</h2>
+  <div class="constant-grid"><article><strong>π³/3</strong><p>perímetro interno e área externa</p></article><article><strong>2π³/3</strong><p>perímetro externo e área interna</p></article><article><strong>π²</strong><p>separação entre assinaturas vizinhas</p></article><article><strong>1/4 × 1/8</strong><p>duas velocidades que não devem ser confundidas</p></article></div>
+  <div class="curiosity-grid">
+    <article class="curiosity"><span class="label">Curiosidade 1</span><h3>Log–log transforma potência em reta</h3><p>log E=log C−p log n. A potência aparece como inclinação −p.</p></article>
+    <article class="curiosity"><span class="label">Curiosidade 2</span><h3>Normalizar é uma autópsia</h3><p>Se n²E fica horizontal, a hipótese n⁻² ganhou uma assinatura visual independente.</p></article>
+    <article class="curiosity"><span class="label">Curiosidade 3</span><h3>Precisão geométrica não é identificabilidade</h3><p>O círculo é aproximado rapidamente, mas polígonos vizinhos tornam-se ainda mais difíceis de distinguir.</p></article>
+    <article class="curiosity"><span class="label">Curiosidade 4</span><h3>Metade do ruído não dobra o alcance</h3><p>Como Δ≈π²/n³, reduzir a tolerância pela metade aumenta o alcance apenas por 2^(1/3).</p></article>
+  </div>
+  <details class="proof"><summary>Oficina — derivação assintótica completa</summary><p>Com x=π/n:</p><div class="mini-formula">sen x=x−x³/6+O(x⁵) · tg x=x+x³/3+O(x⁵)</div><p>Substituindo nas fórmulas dos perímetros:</p><div class="mini-formula">E(P−)=π³/(3n²)+O(n⁻⁴) · E(P+)=2π³/(3n²)+O(n⁻⁴)</div><p>Para as áreas, use sen(2x)=2x−(2x)³/6+O(x⁵):</p><div class="mini-formula">E(A−)=2π³/(3n²)+O(n⁻⁴) · E(A+)=π³/(3n²)+O(n⁻⁴)</div><p>Finalmente, f(n)=cos(π/n). Pelo teorema do valor médio, f(n+1)−f(n)=f'(ξ) para algum ξ entre n e n+1, e f'(ξ)=π sen(π/ξ)/ξ²≈π²/ξ³. Portanto Δ≈π²/n³.</p></details>
+  <div class="finish-grid"><div class="finish-item"><strong>Você separou</strong><p>erro até o círculo de espaçamento entre assinaturas.</p></div><div class="finish-item"><strong>Você deduziu</strong><p>n⁻² a partir de n cópias de uma falha cúbica.</p></div><div class="finish-item"><strong>Você mediu</strong><p>potências pela dobra, sem confiar no título.</p></div><div class="finish-item"><strong>Próxima pergunta</strong><p>como transformar uma aproximação em garantia formal?</p></div></div>
+  <p id="finish-status" class="finish-status">0/10 movimentos concluídos.</p>
+</section>
 
-    <section id="formula-card" class="formula-card" hidden aria-labelledby="formula-title">
-      <p class="box-label">Entenda</p>
-      <h2 id="formula-title">A forma se chama quadrática</h2>
-      <p>A tabela mostrou duas estabilizações: cada dobra divide o erro por cerca de 4, e o produto n² × erro para num valor fixo. As duas dizem a mesma coisa:</p>
+<nav class="lab-nav"><a href="../03-areas/index.html"><small>Anterior</small>Lab 03 — A área que o círculo esconde</a><a href="../../index.html"><small>Índice</small>Todos os laboratórios</a><a href="../05-limite/index.html"><small>Próximo</small>Lab 05 — Quando a aproximação vira garantia?</a></nav>
+</main>
+<footer>MATHeu$ · Laboratório 04 · HTML autocontido · SVG e três Canvas calculados · funcionamento offline.</footer>
 
-      <div class="formula" aria-label="erro é aproximadamente uma constante dividida por n ao quadrado">
-        erro ≈ C / n²
-      </div>
+<script>
+(()=>{'use strict';
+const NS='http://www.w3.org/2000/svg',$=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const PI=Math.PI,sides=$('#sides'),drawing=$('#drawing'),sections=['#derivation','#workbook','#microscope','#finish'].map($);
+const checkpoints={predicted:false,manipulated:false,revealed:false,derived:false,audited:false,normalized:false},solved=new Set();
+let mode='all',derivStep=0,auditSeries='p-in',initialN=24;
+const fmt=(v,d=5)=>new Intl.NumberFormat('pt-BR',{minimumFractionDigits:d,maximumFractionDigits:d}).format(v);
+const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n);
+const svg=(name,attrs={},text='')=>{const e=document.createElementNS(NS,name);Object.entries(attrs).forEach(([k,v])=>e.setAttribute(k,v));if(text)e.textContent=text;return e};
+const polar=(cx,cy,r,a)=>[cx+r*Math.cos(a),cy+r*Math.sin(a)];
+const points=(cx,cy,r,n,start)=>Array.from({length:n},(_,i)=>polar(cx,cy,r,start+2*PI*i/n));
+const SERIES={
+ 'p-in':{label:'P dentro',family:'perimeter',power:2,constant:PI**3/3,color:()=>css('--accent'),error:n=>2*PI-2*n*Math.sin(PI/n)},
+ 'p-out':{label:'P fora',family:'perimeter',power:2,constant:2*PI**3/3,color:()=>css('--accent2'),error:n=>2*n*Math.tan(PI/n)-2*PI},
+ 'a-in':{label:'A dentro',family:'area',power:2,constant:2*PI**3/3,color:()=>css('--focus'),error:n=>PI-(n/2)*Math.sin(2*PI/n)},
+ 'a-out':{label:'A fora',family:'area',power:2,constant:PI**3/3,color:()=>css('--ink'),error:n=>n*Math.tan(PI/n)-PI},
+ 'gap':{label:'inferência',family:'inference',power:3,constant:PI**2,color:()=>'#8f7ad1',error:n=>Math.cos(PI/(n+1))-Math.cos(PI/n)}
+};
+function progress(){const total=(checkpoints.predicted?1:0)+(checkpoints.manipulated?1:0)+(checkpoints.revealed?1:0)+(checkpoints.derived?1:0)+solved.size+(checkpoints.audited?1:0)+(checkpoints.normalized?1:0);const c=Math.min(10,total);$('#progress-fill').style.width=`${c/10*100}%`;$('#progress-text').textContent=`${c}/10`;$('.track').setAttribute('aria-valuenow',c);$('#finish-status').textContent=c===10?'10/10. Você previu, deduziu, mediu inclinações e estabilizou as constantes.':`${c}/10 movimentos concluídos.`}
+function label(g,x,y,t,a='start',size=17,color='currentColor'){g.append(svg('text',{x,y,'text-anchor':a,'font-family':'system-ui','font-size':size,'font-weight':800,fill:color},t))}
+function canvas(id,h){const c=$(id),r=c.getBoundingClientRect(),d=Math.min(2,devicePixelRatio||1);c.width=Math.max(1,r.width*d);c.height=h*d;const x=c.getContext('2d');x.setTransform(d,0,0,d,0,0);x.clearRect(0,0,r.width,h);return[x,r.width,h]}
+function renderGeometry(){const n=+sides.value;$('#sides-output').value=$('#sides-output').textContent=String(n);$('#ep-in').textContent=fmt(SERIES['p-in'].error(n));$('#ep-out').textContent=fmt(SERIES['p-out'].error(n));$('#ea-in').textContent=fmt(SERIES['a-in'].error(n));$('#ea-out').textContent=fmt(SERIES['a-out'].error(n));$('#signature-gap').textContent=fmt(SERIES.gap.error(n),7);$('#measured-power').textContent=mode==='inference'?'≈3,00':mode==='all'?'≈2 e ≈3':'≈2,00';drawing.replaceChildren();
+ const panels=[[170,n,'n lados'],[470,2*n,'2n lados']];
+ for(const [cx,k,title] of panels){const cy=292,R=112,start=-PI/2-PI/k,pts=points(cx,cy,R,k,start);drawing.append(svg('circle',{cx,cy,r:R,fill:'none',stroke:'currentColor','stroke-width':3,'stroke-dasharray':'4 8',opacity:.75}));drawing.append(svg('polygon',{points:pts.map(p=>p.join(',')).join(' '),fill:'color-mix(in srgb,var(--accent) 10%,transparent)',stroke:'var(--accent)','stroke-width':k>96?2:3}));const ap=R*Math.cos(PI/k),gap=R-ap;drawing.append(svg('line',{x1:cx,y1:cy-R,x2:cx,y2:cy-ap,stroke:'var(--accent2)','stroke-width':8,'stroke-linecap':'round'}));label(drawing,cx,105,title,'middle',22);label(drawing,cx,430,`erro radial ×200 ≈ ${fmt(gap/R*200,3)}`,'middle',15,'var(--accent2)')}
+ drawing.append(svg('line',{x1:320,y1:78,x2:320,y2:470,stroke:'var(--line)','stroke-width':2}));label(drawing,320,525,'Dobrar n torna a borda mais fiel — mas não revela ainda a potência.','middle',18);const g=SERIES.gap.error(n),g2=SERIES.gap.error(2*n);label(drawing,320,585,`espaço entre assinaturas: razão Δ(2n)/Δ(n) = ${fmt(g2/g,3)}`,'middle',17,'#8f7ad1');label(drawing,320,638,`erros geométricos: razão típica ≈ ${fmt(SERIES['p-in'].error(2*n)/SERIES['p-in'].error(n),3)}`,'middle',17,'var(--accent)');if(checkpoints.predicted)renderFamilyChart();if(checkpoints.revealed)renderDeriv()}
+function activeKeys(){return Object.keys(SERIES).filter(k=>mode==='all'||SERIES[k].family===mode)}
+function renderFamilyChart(){const[x,W,H]=canvas('#family-chart',290),L=44,R=W-20,T=18,B=H-38,ns=Array.from({length:379},(_,i)=>i+6),keys=activeKeys(),all=keys.flatMap(k=>ns.map(n=>SERIES[k].error(n))),lo=Math.log10(Math.min(...all)),hi=Math.log10(Math.max(...all)),mapX=n=>L+(Math.log(n)-Math.log(6))/(Math.log(384)-Math.log(6))*(R-L),mapY=v=>B-(Math.log10(v)-lo)/(hi-lo)*(B-T);x.strokeStyle=css('--line');x.beginPath();x.moveTo(L,T);x.lineTo(L,B);x.lineTo(R,B);x.stroke();keys.forEach(k=>{const s=SERIES[k];x.strokeStyle=s.color();x.lineWidth=2;x.beginPath();ns.forEach((n,i)=>{const X=mapX(n),Y=mapY(s.error(n));i?x.lineTo(X,Y):x.moveTo(X,Y)});x.stroke()});x.fillStyle=css('--ink');x.font='700 12px system-ui';x.fillText('6',L-4,H-10);x.fillText('384',R-22,H-10);keys.forEach((k,i)=>{x.fillStyle=SERIES[k].color();x.fillText(SERIES[k].label,L+8,18+i*18)})}
+function revealPrediction(){if(!checkpoints.predicted){$('#reveal').textContent='1. Faça uma aposta acima';$('#reveal-status').textContent='O gráfico e os valores permanecem ocultos para não sabotar a previsão.'}else if(!checkpoints.revealed){$('#reveal').textContent='2. Abrir a anatomia do erro';$('#reveal-status').textContent=checkpoints.manipulated?'Aposta e experimento feitos.':'Aposta feita. Manipular é útil, não obrigatório.'}else{$('#reveal').textContent='Anatomia aberta abaixo ↓';$('#reveal-status').textContent='Agora existem dedução, exercícios, microscópio, constantes e prova.'}}
+$$('[data-prediction]').forEach(b=>b.onclick=()=>{$$('[data-prediction]').forEach(q=>q.setAttribute('aria-pressed','false'));b.setAttribute('aria-pressed','true');checkpoints.predicted=true;$('#dashboard').hidden=false;$('#family-chart-wrap').hidden=false;$('#post-prediction-hint').hidden=false;$('#prediction-feedback').textContent=b.dataset.prediction==='quarter'?'Aposta correta para os quatro erros geométricos. A resposta E/8 ainda voltará para a inferência.':'Aposta registrada. As curvas separarão o que cai por quatro do que cai por oito.';renderGeometry();revealPrediction();progress()});
+function changed(){if(+sides.value!==initialN)checkpoints.manipulated=true;renderGeometry();progress()}
+sides.oninput=changed;$$('[data-n]').forEach(b=>b.onclick=()=>{sides.value=b.dataset.n;changed()});$$('[data-mode]').forEach(b=>b.onclick=()=>{mode=b.dataset.mode;$$('[data-mode]').forEach(q=>q.setAttribute('aria-pressed',String(q===b)));checkpoints.manipulated=true;renderGeometry();progress()});
+$('#reveal').onclick=()=>{if(!checkpoints.predicted){$('#bet').scrollIntoView({behavior:'smooth',block:'start'});$('#prediction-feedback').textContent='Escolha uma hipótese antes de abrir as curvas.';return}sections.forEach(s=>s.hidden=false);checkpoints.revealed=true;renderDeriv();renderAudit();renderConstants();revealPrediction();progress();$('#derivation').scrollIntoView({behavior:'smooth',block:'start'})};
+const chain=$$('#chain>li'),dots=$('#step-dots');chain.forEach((_,i)=>{const b=document.createElement('button');b.type='button';b.textContent=String(i+1);b.onclick=()=>{derivStep=i;renderDeriv()};dots.append(b)});
+function renderDeriv(){chain.forEach((li,i)=>li.hidden=i!==derivStep);$$('#step-dots button').forEach((b,i)=>{if(i===derivStep)b.setAttribute('aria-current','step');else b.removeAttribute('aria-current')});$('#prev-step').disabled=derivStep===0;$('#next-step').disabled=derivStep===8;$('#step-status').textContent=`Passo ${derivStep+1} de 9${derivStep===8?' — potências separadas.':''}`;$('#deriv-result').hidden=derivStep!==8;if(derivStep===8&&!checkpoints.derived){checkpoints.derived=true;progress()}
+ const g=$('#deriv-drawing'),s=derivStep;g.replaceChildren();const captions=['A meia-fatia x=π/n é o pequeno parâmetro.','O seno fica abaixo do arco por uma folga cúbica.','Repetir n folgas cúbicas deixa n⁻².','A tangente fica acima do arco com constante dupla.','Os dois perímetros compartilham a potência 2.','As áreas trocam as duas constantes.','Assinaturas vizinhas perdem a multiplicação por n.','Dobrar n revela 1/4 e 1/8.','Normalizar remove a inclinação e expõe constantes.'];$('#deriv-caption').textContent=`Passo ${s+1}: ${captions[s]}`;
+ if(s<=1){const cx=250,cy=295,R=150,xang=.55;g.append(svg('circle',{cx,cy,r:R,fill:'none',stroke:'currentColor','stroke-width':2,'stroke-dasharray':'4 8'}));const A=polar(cx,cy,R,-PI/2),B=polar(cx,cy,R,-PI/2+xang);g.append(svg('line',{x1:cx,y1:cy,x2:A[0],y2:A[1],stroke:'var(--accent)','stroke-width':4}));g.append(svg('line',{x1:cx,y1:cy,x2:B[0],y2:B[1],stroke:'var(--accent)','stroke-width':4}));g.append(svg('line',{x1:B[0],y1:B[1],x2:B[0],y2:A[1],stroke:'var(--focus)','stroke-width':5}));label(g,cx+20,cy-R-12,'arco x');label(g,B[0]+12,(B[1]+A[1])/2,'sen x');label(g,250,472,s===0?'x = π/n':'x − sen x ≈ x³/6','middle',22)}
+ else if(s<=5){const vals=s<3?[1,1/3]:s===3?[1/6,1/3]:s===4?[PI**3/3,2*PI**3/3]:[PI**3/3,2*PI**3/3,2*PI**3/3,PI**3/3],names=s<3?['n','x³']:s===3?['seno','tangente']:s===4?['P dentro','P fora']:['P dentro','P fora','A dentro','A fora'],max=Math.max(...vals);vals.forEach((v,i)=>{const w=70,x=55+i*(390/vals.length),h=230*v/max;g.append(svg('rect',{x,y:390-h,width:w,height:h,rx:8,fill:i%2?'var(--accent2)':'var(--accent)',opacity:.82}));label(g,x+w/2,420,names[i],'middle',13);label(g,x+w/2,375-h,fmt(v,3),'middle',13)});label(g,250,470,s===2?'n·(π/n)³ = π³/n²':s===3?'constante dupla, mesma potência':s===4?'π³/3 e 2π³/3':'as constantes trocam de lugar','middle',20)}
+ else if(s===6){const n=18,a=160,b=340,y=250;g.append(svg('line',{x1:70,y1:y,x2:430,y2:y,stroke:'currentColor','stroke-width':3}));g.append(svg('circle',{cx:a,cy:y,r:9,fill:'var(--accent)'}));g.append(svg('circle',{cx:b,cy:y,r:9,fill:'#8f7ad1'}));g.append(svg('line',{x1:a,y1:y-25,x2:b,y2:y-25,stroke:'var(--focus)','stroke-width':6}));label(g,a,y+38,'cos(π/n)','middle');label(g,b,y+38,'cos(π/(n+1))','middle');label(g,250,y-45,'Δ ≈ π²/n³','middle',24);label(g,250,450,'não há soma de n lados para devolver uma potência','middle',17)}
+ else if(s===7){label(g,250,90,'dobrar n','middle',28);g.append(svg('line',{x1:250,y1:115,x2:140,y2:230,stroke:'var(--accent)','stroke-width':5}));g.append(svg('line',{x1:250,y1:115,x2:360,y2:230,stroke:'#8f7ad1','stroke-width':5}));label(g,140,270,'n⁻² → 1/4','middle',24,'var(--accent)');label(g,360,270,'n⁻³ → 1/8','middle',24,'#8f7ad1');label(g,250,420,'1/2ᵖ denuncia a potência p','middle',20)}
+ else{const rows=[['P−',PI**3/3],['P+',2*PI**3/3],['A−',2*PI**3/3],['A+',PI**3/3],['Δ',PI**2]];rows.forEach(([name,v],i)=>{const y=70+i*78;label(g,55,y+18,name,'middle',18);g.append(svg('rect',{x:90,y,width:300*v/(2*PI**3/3),height:32,rx:8,fill:i===4?'#8f7ad1':i%2?'var(--accent2)':'var(--accent)'}));label(g,410,y+22,fmt(v,2),'end',16)});label(g,250,485,'n²E ou n³Δ → constante','middle',20)}}
+$('#prev-step').onclick=()=>{derivStep=Math.max(0,derivStep-1);renderDeriv()};$('#next-step').onclick=()=>{derivStep=Math.min(8,derivStep+1);renderDeriv()};
+const answers={estimate:'0.00413',gap:'eighth',hundred:'10',pair:'pout-ain'},messages={estimate:'Exato: 10,335/2500≈0,004134; o valor real é ≈0,004141.',gap:'Exato: n⁻³ produz 1/2³=1/8.',hundred:'Exato: erro ∝1/n²; multiplicar n por 10 divide por 100.',pair:'Exato: o excesso do perímetro e a falta da área compartilham 2π³/3.'};
+$$('[data-ex]').forEach(b=>b.onclick=()=>{const k=b.dataset.ex,ok=b.dataset.answer===answers[k],f=$(`[data-feedback="${k}"]`);f.textContent=ok?messages[k]:'Ainda não. Use a potência ou abra a pista.';if(ok&&!solved.has(k)){solved.add(k);$$(`[data-ex="${k}"]`).forEach(q=>{q.disabled=true;q.setAttribute('aria-pressed',String(q===b))});progress()}});
+function renderAudit(){const n=+$('#audit-n').value,s=SERIES[auditSeries],e=s.error(n),ratio=s.error(2*n)/e,p=-Math.log2(ratio);$('#audit-n-output').value=$('#audit-n-output').textContent=String(n);$('#audit-e').textContent=fmt(e,7);$('#audit-ratio').textContent=fmt(ratio,4);$('#audit-power').textContent=fmt(p,3);$('#audit-feedback').textContent=`${s.label}: ao dobrar n, a razão é ${fmt(ratio,4)} e a potência medida é ${fmt(p,3)}.`;const[x,W,H]=canvas('#audit-chart',290),L=45,R=W-24,T=20,B=H-40,ns=Array.from({length:379},(_,i)=>i+6),vals=ns.map(k=>s.error(k)),lo=Math.log10(Math.min(...vals)),hi=Math.log10(Math.max(...vals)),mapX=k=>L+(Math.log(k)-Math.log(6))/(Math.log(384)-Math.log(6))*(R-L),mapY=v=>B-(Math.log10(v)-lo)/(hi-lo)*(B-T);x.strokeStyle=css('--line');x.beginPath();x.moveTo(L,T);x.lineTo(L,B);x.lineTo(R,B);x.stroke();x.strokeStyle=s.color();x.lineWidth=2;x.beginPath();ns.forEach((k,i)=>{const X=mapX(k),Y=mapY(s.error(k));i?x.lineTo(X,Y):x.moveTo(X,Y)});x.stroke();const X1=mapX(n),Y1=mapY(e),X2=mapX(2*n),Y2=mapY(s.error(2*n));x.strokeStyle=css('--focus');x.setLineDash([6,5]);x.beginPath();x.moveTo(X1,Y1);x.lineTo(X2,Y1);x.lineTo(X2,Y2);x.stroke();x.setLineDash([]);x.fillStyle=s.color();[ [X1,Y1],[X2,Y2] ].forEach(([X,Y])=>{x.beginPath();x.arc(X,Y,6,0,2*PI);x.fill()});x.fillStyle=css('--ink');x.font='700 12px system-ui';x.fillText(`p≈${fmt(p,2)}`,Math.min(W-60,X2+8),Math.max(18,Y2-8))}
+$('#audit-n').oninput=()=>{checkpoints.audited=true;renderAudit();progress()};$$('[data-series]').forEach(b=>b.onclick=()=>{auditSeries=b.dataset.series;$$('[data-series]').forEach(q=>q.setAttribute('aria-pressed',String(q===b)));checkpoints.audited=true;renderAudit();progress()});
+function renderConstants(){const[x,W,H]=canvas('#constant-chart',320),L=45,R=W-18,T=18,B=H-38,ns=Array.from({length:379},(_,i)=>i+6),keys=Object.keys(SERIES),vals=keys.flatMap(k=>ns.map(n=>n**SERIES[k].power*SERIES[k].error(n))),lo=Math.min(...vals),hi=Math.max(...vals),mapX=n=>L+(Math.log(n)-Math.log(6))/(Math.log(384)-Math.log(6))*(R-L),mapY=v=>B-(v-lo)/(hi-lo)*(B-T);x.strokeStyle=css('--line');x.beginPath();x.moveTo(L,T);x.lineTo(L,B);x.lineTo(R,B);x.stroke();keys.forEach(k=>{const s=SERIES[k];x.strokeStyle=s.color();x.lineWidth=2;x.beginPath();ns.forEach((n,i)=>{const X=mapX(n),Y=mapY(n**s.power*s.error(n));i?x.lineTo(X,Y):x.moveTo(X,Y)});x.stroke()});const n=+sides.value;$('#c-pin').textContent=fmt(n*n*SERIES['p-in'].error(n),2);$('#c-pout').textContent=fmt(n*n*SERIES['p-out'].error(n),2);$('#c-ain').textContent=fmt(n*n*SERIES['a-in'].error(n),2);$('#c-aout').textContent=fmt(n*n*SERIES['a-out'].error(n),2);$('#c-gap').textContent=fmt(n**3*SERIES.gap.error(n),2);x.fillStyle=css('--ink');x.font='700 12px system-ui';x.fillText('6',L-3,H-9);x.fillText('384',R-22,H-9)}
+$('#normalize').onclick=()=>{checkpoints.normalized=true;renderConstants();$('#normalize-feedback').textContent='Normalização executada: as cinco curvas inclinam cada vez menos e se aproximam de três patamares.';progress()};
+window.addEventListener('resize',()=>{renderGeometry();if(!$('#microscope').hidden){renderAudit();renderConstants()}});$('#restart').onclick=()=>location.reload();renderGeometry();revealPrediction();progress();
+})();
 
-      <div class="dictionary" aria-label="Dicionário da fórmula">
-        <div><strong>C</strong><br>a constante da série — o valor onde n² × erro estabiliza</div>
-        <div><strong>n</strong><br>número de lados</div>
-        <div><strong>≈</strong><br>aproximação que melhora conforme n cresce</div>
-      </div>
-
-      <p><strong>O que ela diz:</strong> dobrar n multiplica n² por 4 — por isso o erro cai para um quarto. Dez vezes mais lados, cem vezes menos erro.</p>
-      <p><strong>Honestidade:</strong> uma tabela que estabiliza é evidência experimental, não demonstração. A origem exata das constantes está na Oficina.</p>
-      <p class="hint"><strong>No gráfico:</strong> com as duas escalas logarítmicas, "quadrática" vira uma linha reta — a cada dobra de n, o erro desce o mesmo tanto. A forma do erro é literalmente visível.</p>
-    </section>
-
-    <section id="challenge" class="challenge-card" hidden aria-labelledby="challenge-title">
-      <p class="box-label">Agora use a forma</p>
-      <h2 id="challenge-title">Com n = 96, o erro do contorno de dentro é ≈ 0,00112. Para um erro cem vezes menor, quantos lados?</h2>
-      <p>Sem calcular seno nenhum: a forma quadrática responde sozinha.</p>
-      <div class="challenge-options" role="group" aria-label="Escolha o número de lados">
-        <button type="button" data-answer="192">192</button>
-        <button type="button" data-answer="960">960</button>
-        <button type="button" data-answer="9600">9600</button>
-      </div>
-      <p id="challenge-feedback" class="feedback" aria-live="polite"></p>
-    </section>
-
-    <section id="pairs-card" class="formula-card" hidden aria-labelledby="pairs-title">
-      <p class="box-label">Entenda as constantes</p>
-      <h2 id="pairs-title">Quatro séries, apenas duas constantes</h2>
-      <p>Troque a série no laboratório e olhe onde n² × erro estabiliza. As quatro séries se acomodam em só dois valores: ≈ 10,335 para <em>contorno de dentro</em> e <em>área de fora</em>; ≈ 20,671 — exatamente o dobro — para <em>contorno de fora</em> e <em>área de dentro</em>.</p>
-      <p>Não é coincidência nova: são os mesmos parentescos dos Laboratórios 02 e 03 — a razão dos erros do cerco descendo para 2 e o empate do circunscrito — agora vistos pelo lado das constantes.</p>
-
-      <div id="exercise-estimate" class="challenge-card" style="margin-top:26px; padding:0; border:0; box-shadow:none; background:transparent;">
-        <p class="box-label">Agora use a fórmula</p>
-        <h3>Sem calcular tangente nenhuma, estime o erro da área de fora em n = 50.</h3>
-        <p>Use erro ≈ C / n² com a constante certa da série.</p>
-        <div class="challenge-options" role="group" aria-label="Escolha a estimativa">
-          <button type="button" data-ex-estimate="right">≈ 0,0041</button>
-          <button type="button" data-ex-estimate="wrong-c">≈ 0,0083</button>
-          <button type="button" data-ex-estimate="wrong-power">≈ 0,2067</button>
-        </div>
-        <p id="estimate-feedback" class="feedback" aria-live="polite"></p>
-        <div class="hint-ladder">
-          <details><summary>Primeira pista</summary><p>Área de fora compartilha constante com qual outra série? Olhe o parágrafo acima: só há dois valores possíveis, ≈10,335 e ≈20,671.</p></details>
-          <details><summary>Pista visual</summary><p>Área de fora está emparelhada com contorno de dentro: constante ≈ 10,335 = π³/3. Divida por n².</p></details>
-          <details><summary>Solução comentada</summary><p>10,335 / 50² = 10,335 / 2500 ≈ 0,00413. Troque a série para "área de fora" no laboratório e dobre até n = 50 (ou perto disso): o valor real bate em ≈ 0,00414 — a diferença é só porque a fórmula é assintótica, cada vez mais exata quanto maior o n. Usar a constante errada (20,671) dobraria a estimativa; usar C/n em vez de C/n² erraria por um fator de 50.</p></details>
-        </div>
-      </div>
-
-      <p class="hint secret"><strong>Segredo de mestre:</strong> agora que o erro tem forma, ele virou promessa: escolha qualquer tolerância — 0,001? 0,000001? — e a forma quadrática entrega um n que garante erro menor. Transformar essa promessa em garantia formal é a pergunta que abre o <a href="../05-limite/index.html">Laboratório 05</a>.</p>
-    </section>
-
-    <details>
-      <summary>Oficina — de onde vêm as constantes e o nome oficial</summary>
-      <p><strong>As folgas cúbicas.</strong> Para θ = π/n pequeno, sen(θ) fica abaixo de θ por aproximadamente θ³/6, e tg(θ) fica acima por aproximadamente θ³/3. O erro do contorno de dentro é 2n(θ − sen θ) ≈ 2n · θ³/6 = π³/(3n²); o de fora, 2n(tg θ − θ) ≈ 2π³/(3n²). As áreas seguem o mesmo caminho com o dobro ou a metade do peso — daí as duas constantes π³/3 ≈ 10,335 e 2π³/3 ≈ 20,671.</p>
-      <p><strong>O nome oficial.</strong> Dizer que o erro "tem forma quadrática" é dizer que n² × erro tende a uma constante. A notação usual é erro = O(1/n²), lida como "da ordem de um sobre n ao quadrado". O símbolo comprime exatamente a experiência da tabela — e só por isso ele entra agora.</p>
-      <p><strong>Estabilizar não é provar.</strong> A tabela dá evidência para finitos valores de n. A garantia para todo n vem das desigualdades por trás das folgas, que o verificador do módulo testa numericamente até n = 3072 e uma demonstração completa fecharia com desigualdades de série de Taylor.</p>
-    </details>
-
-    <nav class="lab-nav" aria-label="Continuar no MATHeu$">
-      <a href="../03-areas/index.html"><small>Anterior</small>Lab 03 — O que acontece com as áreas?</a>
-      <a href="../../index.html"><small>Índice</small>Todos os laboratórios</a>
-      <a href="../05-limite/index.html"><small>Próximo</small>Lab 05 — Quando nasce o limite?</a>
-    </nav>
-  </main>
-
-  <footer>
-    <p>MATHeu$ · Laboratório 04 · HTML autocontido, SVG calculado e funcionamento offline.</p>
-  </footer>
-
-  <script>
-    (() => {
-      'use strict';
-
-      const NS = 'http://www.w3.org/2000/svg';
-
-      const SERIES = {
-        perimeterIn: { label: 'contorno de dentro', error: n => 2 * Math.PI - 2 * n * Math.sin(Math.PI / n) },
-        perimeterOut: { label: 'contorno de fora', error: n => 2 * n * Math.tan(Math.PI / n) - 2 * Math.PI },
-        areaIn: { label: 'área de dentro', error: n => Math.PI - (n / 2) * Math.sin(2 * Math.PI / n) },
-        areaOut: { label: 'área de fora', error: n => n * Math.tan(Math.PI / n) - Math.PI }
-      };
-
-      const N_MAX = 1536;
-
-      const chartDrawing = document.getElementById('chart-drawing');
-      const rowsBody = document.getElementById('rows');
-      const doubleButton = document.getElementById('double');
-      const doubleStatus = document.getElementById('double-status');
-      const nValue = document.getElementById('n-value');
-      const errValue = document.getElementById('err-value');
-      const ratioValue = document.getElementById('ratio-value');
-      const scaledValue = document.getElementById('scaled-value');
-      const reveal = document.getElementById('reveal');
-      const revealStatus = document.getElementById('reveal-status');
-      const formulaCard = document.getElementById('formula-card');
-      const challenge = document.getElementById('challenge');
-      const pairsCard = document.getElementById('pairs-card');
-      const predictionFeedback = document.getElementById('prediction-feedback');
-      const challengeFeedback = document.getElementById('challenge-feedback');
-
-      let seriesKey = 'perimeterIn';
-      let ns = [3];
-      let doublings = 0;
-      let predicted = false;
-
-      function fmt(value, digits = 4) {
-        return new Intl.NumberFormat('pt-BR', {
-          minimumFractionDigits: digits,
-          maximumFractionDigits: digits
-        }).format(value);
-      }
-
-      function el(name, attrs = {}, text = '') {
-        const node = document.createElementNS(NS, name);
-        for (const [key, value] of Object.entries(attrs)) node.setAttribute(key, value);
-        if (text) node.textContent = text;
-        return node;
-      }
-
-      // gráfico log-log: n em [3, 1536], erro em [1e-6, 10]
-      const PLOT = { left: 70, right: 620, top: 20, bottom: 274 };
-
-      function x(n) {
-        const t = (Math.log10(n) - Math.log10(3)) / (Math.log10(N_MAX) - Math.log10(3));
-        return PLOT.left + t * (PLOT.right - PLOT.left);
-      }
-
-      function y(error) {
-        const t = (1 - Math.log10(error)) / 7;
-        return PLOT.top + t * (PLOT.bottom - PLOT.top);
-      }
-
-      function chartLabel(cx, cy, text, anchor = 'middle') {
-        chartDrawing.appendChild(el('text', {
-          x: cx, y: cy,
-          'text-anchor': anchor,
-          'font-family': 'ui-sans-serif, system-ui, sans-serif',
-          'font-size': '13',
-          'font-weight': '600',
-          fill: 'var(--muted)'
-        }, text));
-      }
-
-      function renderChart() {
-        const { error } = SERIES[seriesKey];
-        chartDrawing.replaceChildren();
-
-        for (let exp = 0; exp >= -6; exp -= 1) {
-          const gy = y(10 ** exp);
-          chartDrawing.appendChild(el('line', {
-            x1: PLOT.left, y1: gy, x2: PLOT.right, y2: gy,
-            stroke: 'var(--line)', 'stroke-width': exp % 2 === 0 ? '1.4' : '.7'
-          }));
-          if (exp % 2 === 0) {
-            chartLabel(PLOT.left - 8, gy + 4, exp === 0 ? '1' : `10${exp === -2 ? '⁻²' : exp === -4 ? '⁻⁴' : '⁻⁶'}`, 'end');
-          }
-        }
-
-        for (const gn of [3, 12, 48, 192, 768]) {
-          const gx = x(gn);
-          chartDrawing.appendChild(el('line', {
-            x1: gx, y1: PLOT.top, x2: gx, y2: PLOT.bottom,
-            stroke: 'var(--line)', 'stroke-width': '.7'
-          }));
-          chartLabel(gx, PLOT.bottom + 20, String(gn));
-        }
-
-        chartLabel((PLOT.left + PLOT.right) / 2, PLOT.bottom + 40, 'n — número de lados (escala log)');
-        chartLabel(8, PLOT.top - 6, 'erro (escala log)', 'start');
-
-        const points = ns.map(n => [x(n), y(error(n))]);
-
-        if (points.length > 1) {
-          chartDrawing.appendChild(el('polyline', {
-            points: points.map(point => point.join(',')).join(' '),
-            fill: 'none', stroke: 'var(--accent)', 'stroke-width': '2'
-          }));
-        }
-
-        for (let i = 0; i < ns.length; i += 1) {
-          const dot = el('circle', {
-            cx: points[i][0], cy: points[i][1], r: 5,
-            fill: 'var(--accent)', stroke: 'var(--bg)', 'stroke-width': '2'
-          });
-          dot.appendChild(el('title', {}, `n = ${ns[i]} · erro = ${fmt(error(ns[i]), 7)}`));
-          chartDrawing.appendChild(dot);
-        }
-
-        if (ns.length >= 4) {
-          chartLabel(x(4), y(10 ** -4.8), 'uma reta: a forma do erro', 'start');
-        }
-      }
-
-      function renderTable() {
-        const { error } = SERIES[seriesKey];
-        rowsBody.replaceChildren();
-
-        for (let i = 0; i < ns.length; i += 1) {
-          const n = ns[i];
-          const err = error(n);
-          const row = document.createElement('tr');
-          const contraction = i === 0 ? '—' : fmt(err / error(ns[i - 1]), 4);
-          for (const cell of [String(n), fmt(err, 7), contraction, fmt(n * n * err, 3)]) {
-            const td = document.createElement('td');
-            td.textContent = cell;
-            row.appendChild(td);
-          }
-          rowsBody.appendChild(row);
-        }
-
-        const lastN = ns[ns.length - 1];
-        const lastErr = error(lastN);
-        nValue.textContent = String(lastN);
-        errValue.textContent = fmt(lastErr, 7);
-        ratioValue.textContent = ns.length > 1 ? fmt(lastErr / error(ns[ns.length - 2]), 4) : '—';
-        scaledValue.textContent = fmt(lastN * lastN * lastErr, 3);
-        doubleStatus.textContent = lastN >= N_MAX
-          ? `n = ${lastN} · limite do laboratório`
-          : `n = ${lastN} · ${doublings} ${doublings === 1 ? 'dobra' : 'dobras'}`;
-        doubleButton.disabled = lastN >= N_MAX;
-      }
-
-      function updateReadiness() {
-        const ready = predicted && doublings >= 3;
-        reveal.disabled = !ready || !formulaCard.hidden;
-        if (formulaCard.hidden) {
-          revealStatus.textContent = ready
-            ? 'As duas colunas já contaram o segredo.'
-            : 'Aposte e dobre n pelo menos três vezes.';
-        }
-      }
-
-      function renderAll() {
-        renderTable();
-        renderChart();
-      }
-
-      document.querySelectorAll('[data-prediction]').forEach(button => {
-        button.addEventListener('click', () => {
-          document.querySelectorAll('[data-prediction]').forEach(item => item.setAttribute('aria-pressed', 'false'));
-          button.setAttribute('aria-pressed', 'true');
-          predicted = true;
-          predictionFeedback.textContent = button.dataset.prediction === 'quarter'
-            ? 'Boa aposta. Agora dobre n algumas vezes e vigie a coluna erro ÷ anterior.'
-            : 'Aposta registrada. Dobre n algumas vezes e vigie a coluna erro ÷ anterior.';
-          updateReadiness();
-        });
-      });
-
-      document.querySelectorAll('[data-series]').forEach(button => {
-        button.addEventListener('click', () => {
-          document.querySelectorAll('[data-series]').forEach(item => item.setAttribute('aria-pressed', 'false'));
-          button.setAttribute('aria-pressed', 'true');
-          seriesKey = button.dataset.series;
-          renderAll();
-        });
-      });
-
-      doubleButton.addEventListener('click', () => {
-        const lastN = ns[ns.length - 1];
-        if (lastN >= N_MAX) return;
-        ns.push(lastN * 2);
-        doublings += 1;
-        renderAll();
-        updateReadiness();
-      });
-
-      reveal.addEventListener('click', () => {
-        formulaCard.hidden = false;
-        challenge.hidden = false;
-        reveal.textContent = 'Forma nomeada';
-        reveal.disabled = true;
-        formulaCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      });
-
-      document.querySelectorAll('[data-answer]').forEach(button => {
-        button.addEventListener('click', () => {
-          const answer = button.dataset.answer;
-          if (answer === '960') {
-            challengeFeedback.textContent = 'Exato. Erro 100 vezes menor pede n dez vezes maior, porque 10² = 100. E as constantes têm mais um segredo — veja abaixo.';
-            if (pairsCard.hidden) pairsCard.hidden = false;
-          } else if (answer === '192') {
-            challengeFeedback.textContent = 'Dobrar divide o erro por 4, não por 100. Quantas dobras seriam necessárias — e existe caminho mais direto?';
-          } else {
-            challengeFeedback.textContent = 'Com a forma quadrática, 100 vezes mais lados dariam erro 10.000 vezes menor — muito além do pedido.';
-          }
-        });
-      });
-
-      const estimateFeedback = document.getElementById('estimate-feedback');
-      document.querySelectorAll('[data-ex-estimate]').forEach(button => {
-        button.addEventListener('click', () => {
-          const value = button.dataset.exEstimate;
-          if (value === 'right') {
-            estimateFeedback.textContent = 'Exato: 10,335 / 2500 ≈ 0,00413 — quase o valor real, ≈ 0,00414. Confira trocando a série no painel.';
-          } else if (value === 'wrong-c') {
-            estimateFeedback.textContent = 'Essa é a constante da OUTRA dupla (contorno de fora / área de dentro), ≈ 20,671. Área de fora usa ≈ 10,335.';
-          } else {
-            estimateFeedback.textContent = 'Isso seria C/n, não C/n². A forma é quadrática — divida por n², não por n.';
-          }
-        });
-      });
-
-      renderAll();
-      updateReadiness();
-    })();
-  </script>
+</script>
 </body>
 </html>

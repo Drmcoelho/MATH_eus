@@ -28,7 +28,8 @@ Um laboratório só recebe o estado **canônico** quando possui, de modo funcion
 | T01 · Lab 02 — Perímetros | canônico | Propagação completa do padrão, com oito passos e dois Canvas. |
 | T01 · Lab 03 — Áreas | canônico | HTML autocontido; aposta protegida; nove passos e dez marcos reais de progresso. |
 | Interlúdio 01·B | funcional, a reformar | Boa investigação, mas ainda sem o contrato completo. |
-| T01 · Labs 04–10 | funcionais, a reformar | Matemática e checkers preservados; arquitetura editorial anterior. |
+| T01 · Lab 04 — Forma do erro | canônico neste PR | HTML autocontido; ordens n⁻² e n⁻³ separadas; nove passos, três Canvas e quatro exercícios. |
+| T01 · Labs 05–10 | funcionais, a reformar | Matemática e checkers preservados; arquitetura editorial anterior. |
 | T02 · Labs 01–04 | funcionais, a reformar | Interações ricas, porém sem linguagem editorial unificada. |
 | Atlas do Resto | canônico como portal | Não é laboratório; cumpre seu próprio contrato de atlas interativo. |
 
@@ -37,11 +38,11 @@ Um laboratório só recebe o estado **canônico** quando possui, de modo funcion
 A reforma prossegue em PRs pequenos, cada um terminando um laboratório antes de tocar o seguinte:
 
 ```text
-04 → 05 → 01·B → 06 → 07 → 08 → 09 → 10
+05 → 01·B → 06 → 07 → 08 → 09 → 10
 → T02·01 → T02·02 → T02·03 → T02·04
 ```
 
-O Lab 04 vem primeiro porque deve explicar, sem duplicar o Lab 03, por que aparecem simultaneamente:
+O Lab 04 agora explica, sem duplicar o Lab 03, por que aparecem simultaneamente:
 
 - espaçamento de inferência em ordem `n⁻³`;
 - erros geométricos de perímetro e área em ordem `n⁻²`;
