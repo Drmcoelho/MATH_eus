@@ -34,3 +34,11 @@ Depois: uma extrusão reta multiplica polígono e círculo pela mesma altura. Os
 - caso adversarial do prisma oblíquo;
 - quatro curiosidades, Oficina e checker ampliado;
 - HTML autocontido, offline e sem dependências remotas.
+
+## Validação final
+
+- materialização autocontida concluída no branch;
+- checker próprio ampliado para `n=3…1000`, sete alturas, empate externo e cisalha;
+- todos os checkers do repositório e o Atlas executados pelo job produtor;
+- JavaScript do HTML validado sintaticamente;
+- progresso exige aposta, manipulação, derivação, auditoria, certificado e quatro exercícios.
