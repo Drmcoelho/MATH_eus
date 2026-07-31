@@ -86,6 +86,11 @@ assert.ok(!html.includes('disabled>1. Faça uma aposta'), 'botão principal não
 assert.ok(js.includes("sections.forEach(s=>s.hidden=false)"), 'uma revelação deve abrir todos os atos');
 assert.ok(js.includes("chain.forEach((li,i)=>li.hidden=i!==derivStep)"), 'somente um passo deve ficar ativo');
 assert.ok(js.includes("$('#deriv-result').hidden=derivStep!==8"), 'fórmulas devem nascer apenas no passo 9');
+assert.ok(html.includes('id="compare-scale"'), 'escala deve exigir uma ação explícita');
+assert.ok(js.includes("$('#error-n').oninput=()=>{checkpoints.audited=true"), 'auditoria só deve contar após manipulação');
+assert.ok(js.includes("$('#compare-scale').onclick=()=>{checkpoints.scaled=true"), 'escala só deve contar após execução explícita');
+assert.ok(!js.includes('checkpoints.audited=true;progress()}'), 'renderização inicial não pode creditar auditoria');
+assert.ok(!js.includes("x.textAlign='start';checkpoints.scaled=true"), 'renderização inicial não pode creditar escala');
 assert.doesNotThrow(() => new Function(js), 'JavaScript deve ser sintaticamente válido');
 
 const ids = [...html.matchAll(/\bid="([^"]+)"/g)].map(m => m[1]);
