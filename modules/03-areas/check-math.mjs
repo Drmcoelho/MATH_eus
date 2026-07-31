@@ -72,11 +72,11 @@ const e24 = PI - areaIn(24);
 assert.ok(Math.abs(e24 / e12 - 0.25) < 0.01, 'dobrar n deve reduzir o erro interno para perto de 1/4');
 
 const html = await readFile(new URL('./index.html', import.meta.url), 'utf8');
-const js = await readFile(new URL('./lab.js', import.meta.url), 'utf8');
+const js = html.match(/<script>([\s\S]*?)<\/script>/)?.[1] || '';
 assert.ok(html.includes('Uma figura, três comparações, seis atos'), 'mapa do percurso deve existir');
 assert.ok(html.includes('role="progressbar"'), 'progresso real deve existir');
 assert.equal((html.match(/<li data-step=/g) || []).length, 9, 'Ato 3 deve ter nove passos');
-assert.equal((html.match(/data-ex="/g) || []).length, 12, 'quatro exercícios com três alternativas');
+assert.equal(((html.split('<script>')[0]).match(/data-ex="/g) || []).length, 12, 'quatro exercícios com três alternativas');
 assert.equal((html.match(/class="curiosity"/g) || []).length, 4, 'quatro curiosidades');
 assert.equal((html.match(/<canvas /g) || []).length, 3, 'três Canvas calculados');
 assert.ok(html.includes('Ato 5 · anatomia do erro'), 'anatomia do erro deve existir');
@@ -86,6 +86,13 @@ assert.ok(!html.includes('disabled>1. Faça uma aposta'), 'botão principal não
 assert.ok(js.includes("sections.forEach(s=>s.hidden=false)"), 'uma revelação deve abrir todos os atos');
 assert.ok(js.includes("chain.forEach((li,i)=>li.hidden=i!==derivStep)"), 'somente um passo deve ficar ativo');
 assert.ok(js.includes("$('#deriv-result').hidden=derivStep!==8"), 'fórmulas devem nascer apenas no passo 9');
+assert.ok(html.includes('id="area-values" class="values" hidden'), 'medidas devem nascer ocultas antes da aposta');
+assert.ok(html.includes('id="area-chart-wrap" class="chart-wrap" hidden'), 'gráfico deve nascer oculto antes da aposta');
+assert.ok(html.includes('id="post-prediction-hint" class="hint" hidden'), 'pista qualitativa deve nascer oculta');
+assert.ok(js.includes("$('#area-values').hidden=false") && js.includes("$('#area-chart-wrap').hidden=false"), 'aposta deve liberar medidas e gráfico');
+assert.ok(!html.includes('href="lab.css"'), 'HTML publicado não pode depender de CSS externo');
+assert.ok(!html.includes('src="lab.js"'), 'HTML publicado não pode depender de JavaScript externo');
+assert.ok(html.includes('<style>') && js.length > 5000, 'HTML autocontido deve incorporar estilo e interação');
 assert.ok(html.includes('id="compare-scale"'), 'escala deve exigir uma ação explícita');
 assert.ok(js.includes("$('#error-n').oninput=()=>{checkpoints.audited=true"), 'auditoria só deve contar após manipulação');
 assert.ok(js.includes("$('#compare-scale').onclick=()=>{checkpoints.scaled=true"), 'escala só deve contar após execução explícita');
