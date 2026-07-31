@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import vm from 'node:vm';
 
+// Gate final: este checker é executado também pelo CI ordinário do PR.
 const PI=Math.PI;
 const PROFILES={
   retangulo:{H:1.5,r:()=>1,exact:PI*1.5},
