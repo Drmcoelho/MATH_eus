@@ -70,5 +70,7 @@ assert.match(js,/check\.certified=true/);
 assert.match(css,/\.stepper\{position:sticky/);
 assert.ok(!html.includes('href="lab.css"')&&!html.includes('src="lab.js"'),'HTML publicado deve ser autocontido');
 assert.ok(html.includes('<style>')&&js.length>8000,'CSS e JavaScript devem estar incorporados');
+const ids=[...html.matchAll(/\sid="([^"]+)"/g)].map(match=>match[1]);
+assert.equal(new Set(ids).size,ids.length,'todos os IDs do documento devem ser únicos');
 
-console.log('Interlúdio 01·B: polígono escondido, iteração, coroa, meia-vida n², duas espirais e arquitetura canônica verificados sem divergência.');
+console.log('Interlúdio 01·B: polígono escondido, iteração, coroa, meia-vida n², duas espirais, IDs e arquitetura canônica verificados sem divergência.');
