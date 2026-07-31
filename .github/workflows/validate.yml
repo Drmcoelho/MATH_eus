@@ -24,8 +24,8 @@ jobs:
 
       - name: Materializa o HTML autocontido
         run: |
-          base64 -d .tmp/lab06-index.gz.b64 | gzip -d > modules/06-prisma/index.html
-          rm -f .tmp/lab06-index.gz.b64 .tmp/lab06-index.part*.b64
+          cat .tmp/lab06-new.part00.b64 .tmp/lab06-new.part01.b64 | base64 -d | gzip -d > modules/06-prisma/index.html
+          rm -f .tmp/lab06-*.b64
           rmdir .tmp 2>/dev/null || true
           test -s modules/06-prisma/index.html
           grep -q '<style>' modules/06-prisma/index.html
@@ -41,13 +41,10 @@ jobs:
           s=p.read_text(encoding='utf-8')
           old='| T01 · Labs 06–10 | funcionais, a reformar | Matemática e checkers preservados; arquitetura editorial anterior. |'
           new='| T01 · Lab 06 — Prisma | canônico neste PR | Extrusão, erros absolutos/relativos, três Canvas, nove passos e auditoria de Cavalieri. |\n| T01 · Labs 07–10 | funcionais, a reformar | Matemática e checkers preservados; arquitetura editorial anterior. |'
-          if old in s:
-              s=s.replace(old,new)
+          if old in s:s=s.replace(old,new)
           s=s.replace('06 → 07 → 08 → 09 → 10','07 → 08 → 09 → 10')
-          if '- PR #31:' not in s:
-              marker='- PR #30: canonização do Interlúdio 01·B e próximo gate no Lab 06.'
-              if marker in s:
-                  s=s.replace(marker, marker+'\n- PR #31: canonização do Lab 06 e próximo gate no Lab 07.')
+          marker='- PR #30: canonização do Interlúdio 01·B e próximo gate no Lab 06.'
+          if '- PR #31:' not in s and marker in s:s=s.replace(marker,marker+'\n- PR #31: canonização do Lab 06 e próximo gate no Lab 07.')
           p.write_text(s,encoding='utf-8')
           PY
 
