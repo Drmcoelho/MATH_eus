@@ -67,7 +67,7 @@
 
     .skip-link:focus { top: 12px; }
 
-    header, main, footer {
+    header, .lab-meta, main, footer {
       width: min(1120px, calc(100% - 32px));
       margin-inline: auto;
     }
@@ -86,6 +86,76 @@
     header a { text-decoration: none; }
 
     .brand { font-weight: 800; letter-spacing: -.02em; }
+
+    .lab-meta {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px 20px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--line);
+      font-family: ui-sans-serif, system-ui, sans-serif;
+      font-size: .8rem;
+      color: var(--muted);
+    }
+
+    .lab-progress { display: flex; align-items: center; gap: 10px; }
+
+    .lab-progress-track {
+      width: 120px;
+      height: 6px;
+      border-radius: 999px;
+      background: var(--line);
+      overflow: hidden;
+    }
+
+    .lab-progress-fill {
+      height: 100%;
+      border-radius: 999px;
+      background: var(--accent);
+    }
+
+    .lab-restart {
+      margin-left: auto;
+      padding: 6px 14px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+    }
+
+    .lab-restart:hover,
+    .lab-restart:focus-visible { color: var(--ink); border-color: currentColor; }
+
+    .lab-nav {
+      margin-top: 48px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
+      font-family: ui-sans-serif, system-ui, sans-serif;
+    }
+
+    .lab-nav a {
+      display: block;
+      padding: 16px 18px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: var(--paper);
+      color: var(--ink);
+      text-decoration: none;
+    }
+
+    .lab-nav a:hover { border-color: var(--accent); }
+
+    .lab-nav small {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--accent);
+      font: 800 .7rem/1.2 ui-sans-serif, system-ui, sans-serif;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+    }
 
     main { padding: 58px 0 88px; }
 
@@ -414,6 +484,17 @@
     <a class="brand" href="../../index.html">MATHeu$</a>
     <span>Temporada 01 · Laboratório 08</span>
   </header>
+  <div class="lab-meta">
+    <div class="lab-progress">
+      <span>Lab 08 de 10</span>
+      <div class="lab-progress-track" role="img" aria-label="Progresso na temporada: laboratório 08 de 10">
+        <div class="lab-progress-fill" style="width: 80%"></div>
+      </div>
+    </div>
+    <span>≈ 40–55 min</span>
+    <span>Dificuldade <span role="img" aria-label="3 de 3">●●●</span></span>
+    <button id="restart-lab" type="button" class="lab-restart">Recomeçar laboratório</button>
+  </div>
 
   <main id="conteudo">
     <p class="eyebrow">Acumular é integrar</p>
@@ -447,7 +528,7 @@
               <tbody id="rows"></tbody>
             </table>
           </div>
-          <svg id="chart" viewBox="0 0 640 300" aria-hidden="true"><g id="chart-drawing"></g></svg>
+          <svg id="chart" viewBox="0 0 640 300" role="img" aria-labelledby="chart-title chart-desc"><title id="chart-title">Erro absoluto em escala log-log, por número de cortes</title><desc id="chart-desc">Compara a queda do erro no modo escolhido com os outros dois modos, desenhados em linhas tracejadas — a tabela ao lado só registra o histórico do modo ativo, então esta é a única vista com os três juntos.</desc><g id="chart-drawing"></g></svg>
         </div>
 
         <div class="control-panel">
@@ -656,7 +737,9 @@
       <p><strong>A ordem de cada corte, medida.</strong> Anéis pela borda interna: erro = πR²/n <em>exato</em> — a conta fecha porque Σ i = n(n − 1)/2, e por isso n × erro crava π já no primeiro n. Anéis pelo raio médio: erro zero! A coroa entre r e r + Δr tem área exatamente 2π(r + Δr/2)·Δr — é por isso que as tiras desenroladas pelo raio médio ladrilham o triângulo sem sobra nem falta. Nos discos da esfera o perfil é curvo e o ponto médio deixa de ser exato: sobra 2π/(3n²) (n² × erro = 2π/3 ≈ 2,094, verificado numericamente), enquanto a pilha inscrita erra na ordem 2π/n. Os setores herdam a ordem quadrática do Lab 04: n² × erro → 2π³/3 ≈ 20,671 — e 144 setores já bastam para tolerância 10⁻³.</p>
       <p><strong>Nota histórica.</strong> Arquimedes já cercava áreas por somas por dentro e por fora — o método de exaustão, que é o cerco dos Labs 02–05. Kepler (1615) somou fatias para barris de vinho; Cavalieri (1635) sistematizou os "indivisíveis" — o baralho empurrado do Lab 06 é o exemplo dele. Newton e Leibniz deram a gramática; o ∫ é o S de <em>summa</em> que Leibniz esticou num manuscrito de 1675.</p>
     </details>
-  </main>
+  
+  <nav class="lab-nav" aria-label="Continuar no MATHeu$"><a href="../07-revolucao/index.html"><small>Anterior</small>Lab 07 — Girar cria espaço</a><a href="../../index.html"><small>Índice</small>Todos os laboratórios</a><a href="../09-derivada/index.html"><small>Próximo</small>Lab 09 — Mudar é derivar</a></nav>
+</main>
 
   <footer>
     <p>MATHeu$ · Laboratório 08 · HTML autocontido, SVG calculado e funcionamento offline.</p>
@@ -1152,6 +1235,16 @@
       renderAll();
       updateReadiness();
     })();
+  </script>
+  <script>
+    document.getElementById('restart-lab').addEventListener('click', () => {
+      document.querySelectorAll('input, select, textarea').forEach((el) => {
+        if (el.type === 'checkbox' || el.type === 'radio') el.checked = el.defaultChecked;
+        else el.value = el.defaultValue;
+      });
+      if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+      location.replace(location.pathname);
+    });
   </script>
 </body>
 </html>

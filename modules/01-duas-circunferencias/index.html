@@ -105,9 +105,9 @@
           <label for="sides">Número de lados: <output id="sides-output" for="sides">6</output></label>
           <input id="sides" type="range" min="3" max="40" step="1" value="6">
           <div class="quick" aria-label="Valores rápidos"><button data-n="3">3</button><button data-n="4">4</button><button data-n="6">6</button><button data-n="8">8</button><button data-n="12">12</button><button data-n="24">24</button><button data-n="40">40</button></div>
-          <dl class="values"><div class="value"><dt>R — raio externo</dt><dd>1,0000</dd></div><div class="value"><dt>r — raio interno</dt><dd id="r-value">0,8660</dd></div><div class="value"><dt>r/R</dt><dd id="ratio-value">0,8660</dd></div><div class="value"><dt>π/n</dt><dd id="angle-value">30,00°</dd></div></dl>
+          <dl id="ratio-values" class="values" hidden><div class="value"><dt>R — raio externo</dt><dd>1,0000</dd></div><div class="value"><dt>r — raio interno</dt><dd id="r-value">0,8660</dd></div><div class="value"><dt>r/R</dt><dd id="ratio-value">0,8660</dd></div><div class="value"><dt>π/n</dt><dd id="angle-value">30,00°</dd></div></dl>
           <p class="hint"><strong>Olhe para M:</strong> o ponto de tangência também é o ponto médio do lado. Ali nasce um ângulo reto, e o polígono inteiro cabe num único triângulo.</p>
-          <div class="chart-wrap"><small>GRÁFICO SINCRONIZADO · cada marca é cos(π/n)</small><canvas id="ratio-chart" aria-label="Gráfico da razão r sobre R conforme o número de lados"></canvas></div>
+          <div id="ratio-chart-wrap" class="chart-wrap" hidden><small>GRÁFICO SINCRONIZADO · cada marca é cos(π/n)</small><canvas id="ratio-chart" aria-label="Gráfico da razão r sobre R conforme o número de lados"></canvas></div>
           <div class="reveal-row"><button id="reveal" type="button" class="primary">1. Faça uma aposta acima</button><span id="reveal-status" class="feedback" aria-live="polite">Depois da aposta, este botão revela. Sem uma segunda trava escondida.</span></div>
         </div>
       </div>
@@ -233,7 +233,7 @@
       else{reveal.textContent='Relação aberta abaixo ↓';revealStatus.textContent='Agora existem dedução, quatro exercícios, ruído, curiosidades, prova e fechamento.'}
     }
 
-    $$('[data-prediction]').forEach(b=>b.onclick=()=>{$$('[data-prediction]').forEach(x=>x.setAttribute('aria-pressed','false'));b.setAttribute('aria-pressed','true');checkpoints.predicted=true;predictionFeedback.textContent=b.dataset.prediction==='up'?'Boa hipótese. Agora tente fazê-la sobreviver ao desenho.':'Hipótese registrada. O desenho pode confirmá-la ou destruí-la — ambas as coisas ensinam.';updateReveal();progress()});
+    $$('[data-prediction]').forEach(b=>b.onclick=()=>{$$('[data-prediction]').forEach(x=>x.setAttribute('aria-pressed','false'));b.setAttribute('aria-pressed','true');checkpoints.predicted=true;$('#ratio-values').hidden=false;$('#ratio-chart-wrap').hidden=false;predictionFeedback.textContent=b.dataset.prediction==='up'?'Boa hipótese. Agora tente fazê-la sobreviver ao desenho.':'Hipótese registrada. O desenho pode confirmá-la ou destruí-la — ambas as coisas ensinam.';renderGeometry();updateReveal();progress()});
     sides.oninput=()=>{if(+sides.value!==initialN)checkpoints.manipulated=true;renderGeometry();progress()};
     $$('[data-n]').forEach(b=>b.onclick=()=>{sides.value=b.dataset.n;if(+sides.value!==initialN)checkpoints.manipulated=true;renderGeometry();progress()});
     reveal.onclick=()=>{if(!checkpoints.predicted){$('#bet').scrollIntoView({behavior:'smooth',block:'start'});predictionFeedback.textContent='Escolha qualquer hipótese. Ela não precisa estar certa; precisa vir antes da descoberta.';return}sections.forEach(s=>s.hidden=false);checkpoints.revealed=true;updateReveal();renderDeriv();renderNoise();progress();$('#derivation').scrollIntoView({behavior:'smooth',block:'start'})};
