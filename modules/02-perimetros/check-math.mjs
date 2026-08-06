@@ -35,11 +35,10 @@ close(halfIn96,3.14103,5e-6,'semiperímetro interno n=96');
 close(halfOut96,3.14271,5e-6,'semiperímetro externo n=96');
 
 const base=new URL('./',import.meta.url);
-const [html,js,css]=await Promise.all([
-  readFile(new URL('index.html',base),'utf8'),
-  readFile(new URL('lab.js',base),'utf8'),
-  readFile(new URL('lab.css',base),'utf8')
-]);
+const html=await readFile(new URL('index.html',base),'utf8');
+const js=html.match(/<script>([\s\S]*?)<\/script>/)?.[1]||'';
+const css=html.match(/<style>([\s\S]*?)<\/style>/)?.[1]||'';
+assert.ok(js.length>1000,'script principal deve existir inline');
 assert.doesNotThrow(()=>new Function(js),'JavaScript sintaticamente válido');
 const ids=[...html.matchAll(/\bid="([^"]+)"/g)].map(m=>m[1]);
 assert.equal(new Set(ids).size,ids.length,'IDs HTML únicos');
@@ -49,7 +48,9 @@ assert.ok(!js.includes('predicted&&manipulated')&&!js.includes('predicted && man
 assert.ok(js.includes('sections.forEach(s=>s.hidden=false)'),'uma revelação abre os atos posteriores');
 assert.ok(html.includes('role="progressbar"'),'progresso real visível');
 assert.ok(html.includes('<canvas id="perimeter-chart"')&&html.includes('<canvas id="error-chart"'),'dois Canvas calculados');
-assert.ok(html.includes('lab.css')&&html.includes('lab.js'),'recursos locais explícitos');
+assert.ok(!html.includes('<link rel="stylesheet" href="lab.css">')&&!html.includes('<script src="lab.js">'),'HTML autocontido, sem CSS/JS externos');
+assert.ok(html.includes('id="perimeter-values" class="values" hidden')&&html.includes('id="perimeter-chart-wrap" class="chart-wrap" hidden'),'painel de valores e gráfico nascem ocultos até a aposta');
+assert.ok(js.includes("$('#perimeter-values').hidden=false")&&js.includes("$('#perimeter-chart-wrap').hidden=false"),'a aposta revela o painel e o gráfico, não o carregamento da página');
 assert.equal((html.match(/<li data-step="/g)||[]).length,8,'Ato 3 tem oito passos');
 assert.equal((html.match(/<button data-ex=/g)||[]).length,12,'quatro exercícios com três alternativas');
 assert.equal((html.match(/class="curiosity"/g)||[]).length,4,'quatro curiosidades');
