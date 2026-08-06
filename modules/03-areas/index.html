@@ -112,7 +112,7 @@
       </dl>
 
       <div id="area-chart-wrap" class="chart-wrap" hidden>
-        <canvas id="area-chart" aria-label="Gráfico das áreas interna, circular e externa conforme n cresce"></canvas>
+        <canvas id="area-chart" role="img" aria-label="Gráfico das áreas interna, circular e externa conforme n cresce"></canvas>
         <small>Verde sobe, vermelho desce e ambos comprimem a área do círculo.</small>
       </div>
 
@@ -127,7 +127,7 @@
   <h2 id="derivation-title">O leque revela a fórmula antes da trigonometria</h2>
   <p>Primeiro nasce a identidade geométrica <strong>área = perímetro × apótema ÷ 2</strong>. Só depois entram seno e tangente.</p>
   <div class="deriv-grid">
-    <div class="deriv-figure"><svg id="deriv-svg" viewBox="0 0 500 500" role="img" aria-label="Dedução progressiva das áreas interna e externa"><g id="deriv-drawing"></g></svg><p id="deriv-caption" class="caption">Passo 1: o polígono é repartido pelo centro.</p></div>
+    <div class="deriv-figure"><svg id="deriv-svg" viewBox="0 0 500 500" role="img" aria-labelledby="deriv-svg-title deriv-svg-desc"><title id="deriv-svg-title">Dedução progressiva das áreas interna e externa</title><desc id="deriv-svg-desc">A figura muda a cada passo, destacando apenas a construção que aquele passo introduz.</desc><g id="deriv-drawing"></g></svg><p id="deriv-caption" class="caption">Passo 1: o polígono é repartido pelo centro.</p></div>
     <div>
       <div class="stepper"><button id="prev-step" type="button" class="ghost">← anterior</button><button id="next-step" type="button" class="primary">próximo →</button><span id="step-status" class="feedback" aria-live="polite">Passo 1 de 9</span></div>
       <div id="step-dots" class="step-dots" aria-label="Ir diretamente a um passo"></div>
@@ -187,7 +187,7 @@
       </dl>
       <p id="error-feedback" class="feedback">Dobrar n deve reduzir ambos os erros para perto de um quarto.</p>
     </div>
-    <div class="error-canvas"><canvas id="error-chart" aria-label="Gráfico logarítmico dos erros interno e externo de área"></canvas></div>
+    <div class="error-canvas"><canvas id="error-chart" role="img" aria-label="Gráfico logarítmico dos erros interno e externo de área"></canvas></div>
   </div>
   <div class="law-grid">
     <article><strong>1 · Fora: igualdade exata</strong><p>O excesso relativo da área externa é exatamente igual ao excesso relativo do perímetro externo.</p><div class="mini-formula">Aout/πρ² = Pout/2πρ</div></article>
@@ -201,7 +201,7 @@
   <h2 id="scale-title">O desenho cresce; a porcentagem não</h2>
   <p>Dobrar ρ quadruplica o círculo, os dois polígonos e os erros absolutos. As razões relativas permanecem iguais porque numerador e denominador recebem o mesmo fator ρ².</p>
   <div class="reveal-row"><button id="compare-scale" type="button" class="primary">Executar comparação ρ → 2ρ</button><span id="scale-feedback" class="feedback" aria-live="polite">A figura já mostra os dois casos; execute a comparação para registrar a investigação.</span></div>
-  <div class="scale-grid"><div class="scale-canvas"><canvas id="scale-chart" aria-label="Comparação de áreas e erros para raio rho e dois rho"></canvas></div><div class="scale-notes"><div><strong>ρ → 2ρ</strong><span>áreas ×4</span></div><div><strong>erro absoluto</strong><span>×4</span></div><div><strong>erro relativo</strong><span>inalterado</span></div></div></div>
+  <div class="scale-grid"><div class="scale-canvas"><canvas id="scale-chart" role="img" aria-label="Comparação de áreas e erros para raio rho e dois rho"></canvas></div><div class="scale-notes"><div><strong>ρ → 2ρ</strong><span>áreas ×4</span></div><div><strong>erro absoluto</strong><span>×4</span></div><div><strong>erro relativo</strong><span>inalterado</span></div></div></div>
 
   <div class="curiosity-grid">
     <article class="curiosity"><span class="label">Curiosidade 1</span><h3>O dodecágono vale exatamente 3</h3><p>Com ρ=1, A<sub>in</sub>(12)=6·sen(π/6)=3. A aproximação decimal esconde uma resposta exata.</p></article>

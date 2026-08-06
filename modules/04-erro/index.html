@@ -132,7 +132,7 @@
         <div><dt>erro A dentro</dt><dd id="ea-in">0,0358</dd></div><div><dt>erro A fora</dt><dd id="ea-out">0,0180</dd></div>
         <div><dt>espaço f(n+1)−f(n)</dt><dd id="signature-gap">0,000670</dd></div><div><dt>expoente medido</dt><dd id="measured-power">≈2,00</dd></div>
       </dl>
-      <div id="family-chart-wrap" class="chart-card" hidden><canvas id="family-chart" aria-label="Gráfico logarítmico das cinco diferenças"></canvas><small>Linhas paralelas têm a mesma potência; altura diferente significa constante diferente.</small></div>
+      <div id="family-chart-wrap" class="chart-card" hidden><canvas id="family-chart" role="img" aria-label="Gráfico logarítmico das cinco diferenças"></canvas><small>Linhas paralelas têm a mesma potência; altura diferente significa constante diferente.</small></div>
       <p id="post-prediction-hint" class="hint" hidden><strong>Olhe a inclinação:</strong> quatro curvas descem com declive −2. A curva da inferência desce mais depressa, com declive −3.</p>
       <div class="reveal-row"><button id="reveal" type="button" class="primary">1. Faça uma aposta acima</button><span id="reveal-status" class="feedback">A aposta libera valores e gráfico; a manipulação é recomendada, não uma trava.</span></div>
     </div>
@@ -143,7 +143,7 @@
   <span class="label">Ato 3 · a potência nasce do defeito local</span><h2 id="derivation-title">Nove passos para separar n⁻² de n⁻³</h2>
   <p>Não começaremos com “é quadrático”. Começaremos com o que seno, tangente e cosseno deixam de fazer perto de zero.</p>
   <div class="deriv-grid">
-    <div class="deriv-figure"><svg id="deriv-svg" viewBox="0 0 500 500" role="img" aria-label="Dedução visual progressiva das leis do erro"><g id="deriv-drawing"></g></svg><p id="deriv-caption" class="deriv-caption">Passo 1: a meia-fatia x=π/n diminui quando n cresce.</p></div>
+    <div class="deriv-figure"><svg id="deriv-svg" viewBox="0 0 500 500" role="img" aria-labelledby="deriv-svg-title deriv-svg-desc"><title id="deriv-svg-title">Dedução visual progressiva das leis do erro</title><desc id="deriv-svg-desc">A figura muda a cada passo, destacando apenas a construção que aquele passo introduz.</desc><g id="deriv-drawing"></g></svg><p id="deriv-caption" class="deriv-caption">Passo 1: a meia-fatia x=π/n diminui quando n cresce.</p></div>
     <div>
       <div class="stepper"><button id="prev-step" class="ghost">← anterior</button><button id="next-step" class="primary">próximo →</button><span id="step-status" class="feedback">Passo 1 de 9</span></div>
       <div id="step-dots" class="step-dots"></div>
@@ -189,10 +189,10 @@
       <div class="microscope-values"><div><span>E(n)</span><strong id="audit-e">0,0179</strong></div><div><span>E(2n)/E(n)</span><strong id="audit-ratio">0,250</strong></div><div><span>p medido</span><strong id="audit-power">2,00</strong></div></div>
       <p id="audit-feedback" class="feedback">Mova n ou troque a série para registrar a auditoria.</p>
     </div>
-    <div class="chart-card"><canvas id="audit-chart" aria-label="Curva logarítmica da série escolhida e triângulo de inclinação"></canvas><small>p=−log₂(E(2n)/E(n)). Uma razão 1/4 produz p=2; uma razão 1/8 produz p=3.</small></div>
+    <div class="chart-card"><canvas id="audit-chart" role="img" aria-label="Curva logarítmica da série escolhida e triângulo de inclinação"></canvas><small>p=−log₂(E(2n)/E(n)). Uma razão 1/4 produz p=2; uma razão 1/8 produz p=3.</small></div>
   </div>
 
-  <div class="normalize-panel"><div class="reveal-row"><button id="normalize" class="primary">Normalizar pelas potências corretas</button><span id="normalize-feedback" class="feedback">Multiplicar pelo n adequado deve transformar curvas inclinadas em patamares.</span></div><canvas id="constant-chart" aria-label="Valores normalizados convergindo para constantes"></canvas><div class="normalize-result"><div><small>n²E P−</small><strong id="c-pin">10,33</strong></div><div><small>n²E P+</small><strong id="c-pout">20,67</strong></div><div><small>n²E A−</small><strong id="c-ain">20,67</strong></div><div><small>n²E A+</small><strong id="c-aout">10,33</strong></div><div><small>n³Δ</small><strong id="c-gap">9,87</strong></div></div></div>
+  <div class="normalize-panel"><div class="reveal-row"><button id="normalize" class="primary">Normalizar pelas potências corretas</button><span id="normalize-feedback" class="feedback">Multiplicar pelo n adequado deve transformar curvas inclinadas em patamares.</span></div><canvas id="constant-chart" role="img" aria-label="Valores normalizados convergindo para constantes"></canvas><div class="normalize-result"><div><small>n²E P−</small><strong id="c-pin">10,33</strong></div><div><small>n²E P+</small><strong id="c-pout">20,67</strong></div><div><small>n²E A−</small><strong id="c-ain">20,67</strong></div><div><small>n²E A+</small><strong id="c-aout">10,33</strong></div><div><small>n³Δ</small><strong id="c-gap">9,87</strong></div></div></div>
 </section>
 
 <section id="finish" class="act" hidden aria-labelledby="finish-title">
